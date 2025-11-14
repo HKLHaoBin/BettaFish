@@ -11,6 +11,7 @@ LLMs.
 from __future__ import annotations
 
 import json
+import re
 from functools import lru_cache
 from typing import Any, Dict, List, Optional
 
@@ -96,11 +97,13 @@ class KeywordLabelingClient:
     def _build_system_prompt(self, max_terms: int) -> str:
         labels = ", ".join(LABEL_SCHEMA)
         return (
-            "你是一个关键词分类模型，负责读取短文本并找出其中最核心的名词或短语。"
-            "请只关注有助于理解舆情的 term（例如人物、组织、游戏、动物、金额）。"
-            "无需了解这些标签将被用在什么场景，只需完成分类任务。\n"
-            f"对每个 term 尽量给出 3-5 个标签，标签必须来自以下集合：{labels}。\n"
-            "返回 JSON，格式如下：\n"
+            "你是一个关键词分类器，只需找到文本中最重要的名词或短语。"
+            "请只输出少量行级结果，每行格式为：`术语 | 标签1, 标签2, 标签3`。"
+            f"标签只能来自：{labels}。没有合适标签时可使用 other。\n"
+            "示例：\n"
+            "原神 | game_title, monetization\n"
+            "米哈游 | organization, content_creator\n"
+            "如果你更擅长 JSON，也可以返回如下结构，程序依然可以解析：\n"
             "{\n"
             '  "annotations": [\n'
             '    {\n'
@@ -112,7 +115,7 @@ class KeywordLabelingClient:
             "    }\n"
             "  ]\n"
             "}\n"
-            f"总 term 数量上限 {max_terms}，置信度范围 0-1，保留两位小数。"
+            f"最多 {max_terms} 个术语，每行不要添加解释或额外文本。"
         )
 
     @staticmethod
@@ -120,18 +123,84 @@ class KeywordLabelingClient:
         prompt = f"待分析文本：```\n{snippet}\n```"
         if topic:
             prompt += f"\n\n主题：{topic}"
-        prompt += "\n请只输出 JSON，不要添加额外解释。"
+        prompt += "\n请使用 `术语 | 标签1, 标签2` 的行级格式（或前文提供的 JSON 格式）输出，不要添加解释。"
         return prompt
 
     def _parse_annotations(self, content: Optional[str]) -> List[Dict[str, Any]]:
         if not content:
             return []
+
+        json_annotations = self._parse_json_block(content)
+        if json_annotations:
+            return json_annotations
+
+        fallback_annotations = self._parse_simple_lines(content)
+        if fallback_annotations:
+            return fallback_annotations
+
+        logger.warning("关键词标签器返回的内容无法解析为JSON，也无法匹配行级格式")
+        return []
+
+    def _parse_json_block(self, content: str) -> List[Dict[str, Any]]:
         try:
             payload = json.loads(content)
         except json.JSONDecodeError:
-            logger.warning("关键词标签器返回的内容无法解析为JSON")
             return []
         annotations = payload.get("annotations") or payload.get("keywords") or []
+        return self._normalize_annotations(annotations)
+
+    def _parse_simple_lines(self, content: str) -> List[Dict[str, Any]]:
+        annotations: List[Dict[str, Any]] = []
+        for raw_line in content.splitlines():
+            line = raw_line.strip()
+            if not line:
+                continue
+            line = line.lstrip("-•* ")
+            line = re.sub(r"^\d+[\.\)]\s*", "", line)
+            if not line:
+                continue
+            term, labels_chunk = self._split_term_and_labels(line)
+            if not term:
+                continue
+            labels = self._parse_label_tokens(labels_chunk)
+            annotations.append({"term": term, "labels": labels})
+        return self._normalize_annotations(annotations)
+
+    @staticmethod
+    def _split_term_and_labels(line: str) -> tuple[str, str]:
+        separators = ["|", "：", ":", "=>", "->", "—", "——", " - "]
+        for sep in separators:
+            if sep in line:
+                left, right = line.split(sep, 1)
+                return left.strip(), right.strip()
+        return line.strip(), ""
+
+    @staticmethod
+    def _parse_label_tokens(chunk: str) -> List[Dict[str, Any]]:
+        if not chunk:
+            return [{"label": "other", "score": 0.5}]
+        tokens = re.split(r"[，,、/]+|\s{2,}", chunk)
+        labels = []
+        for token in tokens:
+            text = token.strip()
+            if not text:
+                continue
+            match = re.match(r"(?P<label>[^(]+)(?:\((?P<score>[\d.]+)\))?", text)
+            if not match:
+                continue
+            label_name = match.group("label").strip()
+            if not label_name:
+                continue
+            raw_score = match.group("score")
+            try:
+                score = float(raw_score) if raw_score else 0.6
+            except ValueError:
+                score = 0.6
+            labels.append({"label": label_name, "score": max(0.0, min(1.0, score))})
+        return labels or [{"label": "other", "score": 0.5}]
+
+    @staticmethod
+    def _normalize_annotations(annotations: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         cleaned: List[Dict[str, Any]] = []
         for entry in annotations:
             term = entry.get("term") or entry.get("keyword")
@@ -140,6 +209,9 @@ class KeywordLabelingClient:
             labels = entry.get("labels") or entry.get("categories") or []
             normalized = []
             for label in labels:
+                if isinstance(label, str):
+                    normalized.append({"label": label, "score": 0.6})
+                    continue
                 name = label.get("name") or label.get("label")
                 if not name:
                     continue
