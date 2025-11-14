@@ -33,6 +33,14 @@ LABEL_SCHEMA = [
     "sentiment",
     "numeric_expression",
     "temporal_reference",
+    "technology",
+    "financial_metric",
+    "esports",
+    "hardware",
+    "release_milestone",
+    "character",
+    "issue_or_bug",
+    "community",
     "other",
 ]
 
@@ -89,8 +97,9 @@ class KeywordLabelingClient:
         labels = ", ".join(LABEL_SCHEMA)
         return (
             "你是一个关键词分类模型，负责读取短文本并找出其中最核心的名词或短语。"
-            "请只关注有助于理解舆情的 term（例如人物、组织、游戏、动物、金额）。\n"
-            f"对每个 term 给出 1-3 个标签，标签必须来自以下集合：{labels}。\n"
+            "请只关注有助于理解舆情的 term（例如人物、组织、游戏、动物、金额）。"
+            "无需了解这些标签将被用在什么场景，只需完成分类任务。\n"
+            f"对每个 term 尽量给出 3-5 个标签，标签必须来自以下集合：{labels}。\n"
             "返回 JSON，格式如下：\n"
             "{\n"
             '  "annotations": [\n'
@@ -156,4 +165,3 @@ def get_keyword_labeler() -> Optional[KeywordLabelingClient]:
     except Exception as exc:  # pragma: no cover - environment specific
         logger.warning(f"关键词标签器初始化失败: {exc}")
         return None
-

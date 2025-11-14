@@ -188,6 +188,11 @@ class DeepSearchAgent:
         # 生成结构并更新状态
         self.state = report_structure_node.mutate_state(state=self.state)
         self.state.query = query
+        origin_context = self.context_builder.ensure_origin_context(
+            query,
+            existing_context=getattr(self.state, "structured_context", None),
+        )
+        self.state.update_structured_context(origin_context)
         
         _message = f"报告结构已生成，共 {len(self.state.paragraphs)} 个段落:"
         for i, paragraph in enumerate(self.state.paragraphs, 1):
@@ -395,6 +400,7 @@ class DeepSearchAgent:
             query=search_query,
             paragraph_title=paragraph.title,
             stage=stage,
+            origin_query=self.state.query,
             existing_context=getattr(self.state, "structured_context", None),
         )
         self.state.update_structured_context(context)

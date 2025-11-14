@@ -148,6 +148,94 @@ DEFAULT_PROTOTYPES: Dict[str, List[str]] = {
         "声量",
         "热度",
     ],
+    "technology": [
+        "技术",
+        "科技",
+        "engine",
+        "unity",
+        "unreal",
+        "算法",
+        "云",
+        "server",
+        "AI",
+        "模型",
+        "渲染",
+        "工具链",
+    ],
+    "financial_metric": [
+        "营收",
+        "收入",
+        "profit",
+        "利润",
+        "亏损",
+        "gmv",
+        "估值",
+        "现金流",
+        "dau",
+        "mau",
+    ],
+    "esports": [
+        "战队",
+        "联赛",
+        "赛事",
+        "冠军",
+        "选手",
+        "杯赛",
+        "锦标赛",
+        "赛季",
+    ],
+    "hardware": [
+        "主机",
+        "硬件",
+        "显卡",
+        "设备",
+        "手柄",
+        "耳机",
+        "cpu",
+        "gpu",
+        "终端",
+    ],
+    "release_milestone": [
+        "上线",
+        "发布",
+        "开测",
+        "公测",
+        "内测",
+        "预约",
+        "beta",
+        "上市",
+        "roadmap",
+    ],
+    "character": [
+        "角色",
+        "英雄",
+        "npc",
+        "boss",
+        "角色名",
+        "cv",
+        "皮肤",
+    ],
+    "issue_or_bug": [
+        "bug",
+        "问题",
+        "崩溃",
+        "报错",
+        "故障",
+        "卡顿",
+        "延迟",
+        "漏洞",
+    ],
+    "community": [
+        "玩家",
+        "粉丝",
+        "社区",
+        "社群",
+        "论坛",
+        "discord",
+        "群",
+        "讨论",
+        "口碑",
+    ],
 }
 
 STOPWORDS = {
@@ -325,6 +413,10 @@ class StructuredContextBuilder:
             "metadata": {
                 "agent": self.agent_name,
                 "created_at": datetime.utcnow().isoformat(),
+                "origin_event_id": None,
+                "origin_query": None,
+                "origin_labels": [],
+                "origin_dominant_labels": [],
             },
         }
 
@@ -335,12 +427,16 @@ class StructuredContextBuilder:
         query: str,
         paragraph_title: str,
         stage: str,
+        origin_query: Optional[str] = None,
         existing_context: Optional[Dict[str, Any]] = None,
     ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
-        if not search_results:
-            return search_results, existing_context or self.empty_context()
-
         context = existing_context or self.empty_context()
+        if origin_query:
+            context = self._ensure_origin_node(origin_query, context)
+
+        if not search_results:
+            return search_results, context
+
         relations_index = {
             tuple(sorted((rel["source_event"], rel["target_event"])))
             for rel in context.get("relations", [])
@@ -358,6 +454,7 @@ class StructuredContextBuilder:
             context["events"][event["event_id"]] = event
             self._update_token_statistics(context, event)
             self._update_relations(context, event, relations_index)
+            self._update_origin_relation(context, event, relations_index)
             decorated_results.append(self._decorate_result(result, event))
 
         context["timeline"] = sorted(
@@ -374,7 +471,56 @@ class StructuredContextBuilder:
         )
         return decorated_results, context
 
+    def ensure_origin_context(
+        self,
+        origin_query: str,
+        existing_context: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Ensure the structured context已经包含原点节点。
+        """
+        context = existing_context or self.empty_context()
+        return self._ensure_origin_node(origin_query, context)
+
     # Internal helpers --------------------------------------------------------------------
+
+    def _ensure_origin_node(
+        self, origin_query: Optional[str], context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        if not origin_query:
+            return context
+        origin_query = origin_query.strip()
+        if not origin_query:
+            return context
+
+        metadata = context.setdefault("metadata", {})
+        events = context.setdefault("events", {})
+        current_origin_id = metadata.get("origin_event_id")
+
+        if current_origin_id and current_origin_id in events:
+            if origin_query == metadata.get("origin_query"):
+                return context
+            events.pop(current_origin_id, None)
+            context["relations"] = [
+                rel
+                for rel in context.get("relations", [])
+                if current_origin_id
+                not in (rel.get("source_event"), rel.get("target_event"))
+            ]
+
+        origin_event = self._build_origin_event(origin_query)
+        events[origin_event["event_id"]] = origin_event
+        metadata.update(
+            {
+                "origin_event_id": origin_event["event_id"],
+                "origin_query": origin_query,
+                "origin_labels": origin_event.get("label_distribution", []),
+                "origin_dominant_labels": origin_event.get("dominant_labels", []),
+                "origin_updated_at": datetime.utcnow().isoformat(),
+            }
+        )
+        self._update_token_statistics(context, origin_event)
+        return context
 
     def _build_event(
         self,
@@ -405,11 +551,13 @@ class StructuredContextBuilder:
         ]
         event_id = self._event_id(source_url, timestamp, ordinal)
         summary = (result.get("content") or result.get("title") or "")[:400]
+        weight = self._estimate_weight(tokens, label_distribution)
         return {
             "event_id": event_id,
             "timestamp": timestamp,
             "source": source_url,
-            "weight": self._estimate_weight(tokens, label_distribution),
+            "weight": weight,
+            "intrinsic_weight": weight,
             "summary": summary,
             "query": query,
             "paragraph": paragraph_title,
@@ -418,6 +566,34 @@ class StructuredContextBuilder:
             "label_distribution": label_distribution,
             "top_labels": label_distribution[:3],
             "dominant_labels": dominant,
+        }
+
+    def _build_origin_event(self, origin_query: str) -> Dict[str, Any]:
+        timestamp = datetime.utcnow().isoformat()
+        source_url = f"{self.agent_name.lower()}://origin"
+        tokens = self._token_annotations(origin_query, source_url, timestamp)
+        label_distribution = self._aggregate_labels(tokens)
+        dominant = [
+            lbl["label"] for lbl in label_distribution[:3] if lbl["score"] >= 0.15
+        ]
+        event_id = f"origin-{hashlib.sha1(origin_query.encode('utf-8')).hexdigest()[:12]}"
+        weight = max(1.0, self._estimate_weight(tokens, label_distribution))
+        return {
+            "event_id": event_id,
+            "timestamp": timestamp,
+            "source": source_url,
+            "weight": weight,
+            "intrinsic_weight": weight,
+            "summary": origin_query[:400],
+            "query": origin_query,
+            "paragraph": "origin",
+            "stage": "origin",
+            "tokens": tokens,
+            "label_distribution": label_distribution,
+            "top_labels": label_distribution[:3],
+            "dominant_labels": dominant,
+            "origin_similarity": 1.0,
+            "origin_shared_labels": dominant,
         }
 
     def _token_annotations(
@@ -628,6 +804,49 @@ class StructuredContextBuilder:
             context.setdefault("relations", []).append(relation)
             relation_index.add(pair)
 
+    def _update_origin_relation(
+        self,
+        context: Dict[str, Any],
+        event: Dict[str, Any],
+        relation_index: set,
+    ) -> None:
+        metadata = context.get("metadata", {})
+        origin_id = metadata.get("origin_event_id")
+        if not origin_id or origin_id == event["event_id"]:
+            return
+        origin_event = context.get("events", {}).get(origin_id)
+        if not origin_event:
+            return
+
+        similarity = self._label_similarity(
+            event.get("label_distribution"),
+            origin_event.get("label_distribution"),
+        )
+        shared = sorted(
+            set(event.get("dominant_labels", [])).intersection(
+                origin_event.get("dominant_labels", [])
+            )
+        )
+
+        pair = tuple(sorted((origin_id, event["event_id"])))
+        if pair not in relation_index:
+            relation_index.add(pair)
+            context.setdefault("relations", []).insert(
+                0,
+                {
+                    "source_event": origin_id,
+                    "target_event": event["event_id"],
+                    "shared_labels": shared,
+                    "weight": round(similarity, 4),
+                    "type": "origin_link",
+                },
+            )
+
+        event["origin_similarity"] = similarity
+        event["origin_shared_labels"] = shared
+        intrinsic = event.get("intrinsic_weight", event.get("weight", 0.0))
+        event["weight"] = round(max(intrinsic, similarity * 10), 3)
+
     def _decorate_result(self, result: Dict[str, Any], event: Dict[str, Any]) -> Dict[str, Any]:
         annotated = dict(result)
         annotation = self._render_annotation(event)
@@ -635,6 +854,21 @@ class StructuredContextBuilder:
         annotated["content"] = f"{content}\n\n[structured_context]\n{annotation}".strip()
         annotated["structured_event_id"] = event["event_id"]
         return annotated
+
+    @staticmethod
+    def _label_similarity(
+        primary: Optional[List[Dict[str, Any]]],
+        secondary: Optional[List[Dict[str, Any]]],
+    ) -> float:
+        if not primary or not secondary:
+            return 0.0
+        reference = {item["label"]: item["score"] for item in secondary}
+        overlap = 0.0
+        for item in primary:
+            label = item.get("label")
+            if label in reference:
+                overlap += min(item.get("score", 0.0), reference[label])
+        return round(overlap, 4)
 
     @staticmethod
     def _render_annotation(event: Dict[str, Any]) -> str:
@@ -648,6 +882,13 @@ class StructuredContextBuilder:
             )
             token_lines.append(f"- {token['text']}: {labels}")
         token_section = "\n".join(token_lines)
+        origin_lines = ""
+        if event.get("origin_similarity") is not None:
+            shared = ",".join(event.get("origin_shared_labels", []))
+            shared_str = f"\nORIGIN_SHARED_LABELS={shared}" if shared else ""
+            origin_lines = (
+                f"\nORIGIN_SIMILARITY={event['origin_similarity']:.3f}{shared_str}"
+            )
         return (
             f"EVENT_ID={event['event_id']}\n"
             f"TIMESTAMP={event['timestamp']}\n"
@@ -656,4 +897,5 @@ class StructuredContextBuilder:
             f"WEIGHT={event.get('weight')}\n"
             f"LABELS={label_line}\n"
             f"TOKENS:\n{token_section}"
+            f"{origin_lines}"
         )
