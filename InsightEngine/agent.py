@@ -41,6 +41,7 @@ class DeepSearchAgent:
         
         # 初始化LLM客户端
         self.llm_client = self._initialize_llm()
+        self.reflection_llm = self._initialize_reflection_llm()
         
         
         # 初始化搜索工具集
@@ -75,13 +76,23 @@ class DeepSearchAgent:
             model_name=self.config.INSIGHT_ENGINE_MODEL_NAME,
             base_url=self.config.INSIGHT_ENGINE_BASE_URL,
         )
+
+    def _initialize_reflection_llm(self) -> LLMClient:
+        """为反思阶段单独初始化LLM，若未配置则重用主LLM"""
+        if self.config.KEYWORD_OPTIMIZER_API_KEY and self.config.KEYWORD_OPTIMIZER_MODEL_NAME:
+            return LLMClient(
+                api_key=self.config.KEYWORD_OPTIMIZER_API_KEY,
+                model_name=self.config.KEYWORD_OPTIMIZER_MODEL_NAME,
+                base_url=self.config.KEYWORD_OPTIMIZER_BASE_URL,
+            )
+        return self.llm_client
     
     def _initialize_nodes(self):
         """初始化处理节点"""
         self.first_search_node = FirstSearchNode(self.llm_client)
-        self.reflection_node = ReflectionNode(self.llm_client)
+        self.reflection_node = ReflectionNode(self.reflection_llm)
         self.first_summary_node = FirstSummaryNode(self.llm_client)
-        self.reflection_summary_node = ReflectionSummaryNode(self.llm_client)
+        self.reflection_summary_node = ReflectionSummaryNode(self.reflection_llm)
         self.report_formatting_node = ReportFormattingNode(self.llm_client)
     
     def _validate_date_format(self, date_str: str) -> bool:

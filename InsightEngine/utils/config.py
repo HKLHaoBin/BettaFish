@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     MAX_HIGH_CONFIDENCE_SENTIMENT_RESULTS: int = Field(0, description="高置信度情感分析最大数")
     OUTPUT_DIR: str = Field("reports", description="输出路径")
     SAVE_INTERMEDIATE_STATES: bool = Field(True, description="是否保存中间状态")
+    KEYWORD_OPTIMIZER_API_KEY: Optional[str] = Field(None, description="Keyword Optimizer API密钥")
+    KEYWORD_OPTIMIZER_BASE_URL: Optional[str] = Field(None, description="Keyword Optimizer Base URL")
+    KEYWORD_OPTIMIZER_MODEL_NAME: Optional[str] = Field(None, description="Keyword Optimizer 模型名称")
 
     class Config:
         env_file = ".env"

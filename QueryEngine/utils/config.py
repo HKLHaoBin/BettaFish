@@ -40,6 +40,9 @@ class Settings(BaseSettings):
     MAX_REFLECTIONS: int = Field(2, description="最大反思轮数")
     MAX_PARAGRAPHS: int = Field(5, description="最大段落数")
     MAX_SEARCH_RESULTS: int = Field(20, description="最大搜索结果数")
+    KEYWORD_OPTIMIZER_API_KEY: Optional[str] = Field(None, description="Keyword Optimizer API密钥，用于反思阶段")
+    KEYWORD_OPTIMIZER_BASE_URL: Optional[str] = Field(None, description="Keyword Optimizer Base URL")
+    KEYWORD_OPTIMIZER_MODEL_NAME: Optional[str] = Field(None, description="Keyword Optimizer 模型名称")
     
     # ================== 输出配置 ====================
     OUTPUT_DIR: str = Field("reports", description="输出目录")
