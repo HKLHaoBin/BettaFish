@@ -1327,6 +1327,7 @@
             forum: 'Forum Engine - 多智能体交流',
             report: 'Report Agent - 最终报告生成'
         };
+        const DEFAULT_LOG_TAIL = 500;
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -2084,6 +2085,33 @@
         // 存储最后显示的行数，避免重复加载
         let lastLineCount = {};
 
+        function getConsoleOutputUrl(app) {
+            return `/api/output/${app}?tail=${DEFAULT_LOG_TAIL}`;
+        }
+
+        function extractNewConsoleLines(app, data) {
+            const lines = Array.isArray(data.output) ? data.output : [];
+            const total = typeof data.total_lines === 'number' ? data.total_lines : lines.length;
+            const previous = lastLineCount[app] || 0;
+            let newLines = [];
+
+            if (total < previous) {
+                // 日志被重置或清空，展示当前批次
+                newLines = lines;
+            } else {
+                const delta = total - previous;
+                if (delta === 0) {
+                    newLines = [];
+                } else if (delta >= lines.length) {
+                    newLines = lines;
+                } else {
+                    newLines = lines.slice(lines.length - delta);
+                }
+            }
+
+            return { newLines, total };
+        }
+
         function getConsoleContainer() {
             return document.getElementById('consoleOutput');
         }
@@ -2200,6 +2228,7 @@
             if (!layer) return;
 
             layer.innerHTML = '';
+            lastLineCount[app] = 0;
             if (message) {
                 appendConsoleTextLine(app, message);
             }
@@ -2217,19 +2246,17 @@
                 return;
             }
             
-            fetch(`/api/output/${app}`)
+            fetch(getConsoleOutputUrl(app))
             .then(response => response.json())
             .then(data => {
-                if (data.success && data.output.length > 0) {
-                    const lastCount = lastLineCount[app] || 0;
-                    const newLines = data.output.slice(lastCount);
-                    
+                if (data.success) {
+                    const { newLines, total } = extractNewConsoleLines(app, data);
                     if (newLines.length > 0) {
                         newLines.forEach(line => {
                             appendConsoleTextLine(app, line);
                         });
-                        lastLineCount[app] = data.output.length;
                     }
+                    lastLineCount[app] = total;
                 }
             })
             .catch(error => {
@@ -2250,20 +2277,17 @@
             }
             
             if (appStatus[currentApp] === 'running' || appStatus[currentApp] === 'starting') {
-                fetch(`/api/output/${currentApp}`)
+                fetch(getConsoleOutputUrl(currentApp))
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success && data.output.length > 0) {
-                        // 只添加新的行
-                        const lastCount = lastLineCount[currentApp] || 0;
-                        const newLines = data.output.slice(lastCount);
-                        
+                    if (data.success) {
+                        const { newLines, total } = extractNewConsoleLines(currentApp, data);
                         if (newLines.length > 0) {
                             newLines.forEach(line => {
                                 appendConsoleTextLine(currentApp, line);
                             });
-                            lastLineCount[currentApp] = data.output.length;
                         }
+                        lastLineCount[currentApp] = total;
                     }
                 })
                 .catch(error => {

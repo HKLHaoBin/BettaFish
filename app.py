@@ -470,23 +470,27 @@ def write_log_to_file(app_name, line):
     except Exception as e:
         logger.error(f"Error writing log for {app_name}: {e}")
 
-def read_log_from_file(app_name, tail_lines=None):
-    """从文件读取日志"""
+def read_log_from_file(app_name, tail_lines=None, with_total=False):
+    """读取日志文件并可选返回总行数"""
     try:
         log_file_path = LOG_DIR / f"{app_name}.log"
         if not log_file_path.exists():
-            return []
+            return ([], 0) if with_total else []
         
         with open(log_file_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
             lines = [line.rstrip('\n\r') for line in lines if line.strip()]
+            total_lines = len(lines)
             
             if tail_lines:
-                return lines[-tail_lines:]
+                lines = lines[-tail_lines:]
+
+            if with_total:
+                return lines, total_lines
             return lines
     except Exception as e:
         logger.exception(f"Error reading log for {app_name}: {e}")
-        return []
+        return ([], 0) if with_total else []
 
 def read_process_output(process, app_name):
     """读取进程输出并写入文件"""
@@ -805,25 +809,38 @@ def get_output(app_name):
     """获取应用输出"""
     if app_name not in processes:
         return jsonify({'success': False, 'message': '未知应用'})
+
+    tail_lines = request.args.get('tail', default=500, type=int)
+    if tail_lines is not None:
+        tail_lines = max(1, min(tail_lines, 2000))
     
     # 特殊处理Forum Engine
     if app_name == 'forum':
         try:
-            forum_log_content = read_log_from_file('forum')
+            forum_log_content, total_lines = read_log_from_file(
+                'forum',
+                tail_lines=tail_lines,
+                with_total=True
+            )
             return jsonify({
                 'success': True,
                 'output': forum_log_content,
-                'total_lines': len(forum_log_content)
+                'total_lines': total_lines
             })
         except Exception as e:
             return jsonify({'success': False, 'message': f'读取forum日志失败: {str(e)}'})
     
-    # 从文件读取完整日志
-    output_lines = read_log_from_file(app_name)
+    # 读取指定数量的日志行，默认为最近500条
+    output_lines, total_lines = read_log_from_file(
+        app_name,
+        tail_lines=tail_lines,
+        with_total=True
+    )
     
     return jsonify({
         'success': True,
-        'output': output_lines
+        'output': output_lines,
+        'total_lines': total_lines
     })
 
 @app.route('/api/test_log/<app_name>')
