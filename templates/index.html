@@ -1226,6 +1226,111 @@
         const consoleLayers = {};
         const consoleLayerScrollPositions = {};
         let activeConsoleLayer = currentApp;
+        const logRenderers = {};
+
+        // 轻量日志虚拟渲染器：不限制总行数，使用可视窗口渲染 + 节流
+        class LogVirtualList {
+            constructor(container) {
+                this.container = container;
+                this.lines = [];
+                this.pending = [];
+                this.pool = [];
+                this.lineHeight = 18;
+                this.maxVisible = 120;
+                this.rafId = null;
+                this.attachScroll();
+            }
+
+            attachScroll() {
+                if (!this.container) return;
+                this.container.addEventListener('scroll', () => this.scheduleRender());
+            }
+
+            setLineHeight(px) {
+                if (px > 0) this.lineHeight = px;
+            }
+
+            append(text, className = 'console-line') {
+                this.pending.push({ text, className });
+                if (this.pending.length > 200) {
+                    this.flush();
+                }
+                this.scheduleRender();
+            }
+
+            clear(message = null) {
+                this.lines = [];
+                this.pending = [];
+                this.pool = [];
+                if (message) {
+                    this.lines.push({ text: message, className: 'console-line' });
+                }
+                this.scheduleRender(true);
+            }
+
+            flush() {
+                if (!this.pending.length) return;
+                this.lines.push(...this.pending);
+                this.pending = [];
+            }
+
+            scheduleRender(force = false) {
+                if (!this.container) return;
+                if (!force && this.rafId) return;
+                this.rafId = requestAnimationFrame(() => {
+                    this.rafId = null;
+                    this.render();
+                });
+            }
+
+            render() {
+                this.flush();
+                const total = this.lines.length;
+                if (!total) {
+                    this.container.innerHTML = '';
+                    return;
+                }
+
+                const lh = this.lineHeight;
+                const viewport = this.container.clientHeight || 1;
+                const visible = Math.max(Math.ceil(viewport / lh) + 20, this.maxVisible);
+
+                const start = Math.max(0, Math.floor(this.container.scrollTop / lh) - Math.floor(visible / 2));
+                const end = Math.min(total, start + visible);
+                const beforeHeight = start * lh;
+                const afterHeight = (total - end) * lh;
+
+                const needed = end - start;
+                while (this.pool.length < needed) {
+                    const node = document.createElement('div');
+                    node.className = 'console-line';
+                    this.pool.push(node);
+                }
+
+                const fragment = document.createDocumentFragment();
+                for (let idx = start; idx < end; idx++) {
+                    const line = this.lines[idx];
+                    const node = this.pool[idx - start];
+                    node.className = line.className || 'console-line';
+                    node.textContent = line.text;
+                    fragment.appendChild(node);
+                }
+
+                this.container.innerHTML = '';
+                const beforeSpacer = document.createElement('div');
+                beforeSpacer.style.height = `${beforeHeight}px`;
+                const afterSpacer = document.createElement('div');
+                afterSpacer.style.height = `${afterHeight}px`;
+                this.container.appendChild(beforeSpacer);
+                this.container.appendChild(fragment);
+                this.container.appendChild(afterSpacer);
+
+                const shouldStick = (this.container.scrollTop + this.container.clientHeight) >= (this.container.scrollHeight - lh * 2);
+                if (shouldStick) {
+                    this.container.scrollTop = this.container.scrollHeight;
+                }
+            }
+        }
 
         const CONFIG_ENDPOINT = '/api/config';
         const SYSTEM_STATUS_ENDPOINT = '/api/system/status';
@@ -2109,6 +2214,7 @@
                 placeholder.className = 'console-line';
                 placeholder.textContent = `[系统] ${appNames[app] || app} 日志就绪`;
                 layer.appendChild(placeholder);
+                logRenderers[app] = new LogVirtualList(layer);
 
                 container.appendChild(layer);
                 consoleLayers[app] = layer;
@@ -2136,6 +2242,7 @@
 
             container.appendChild(layer);
             consoleLayers[app] = layer;
+            logRenderers[app] = new LogVirtualList(layer);
             return layer;
         }
 
@@ -2169,40 +2276,28 @@
                 return;
             }
 
-            const container = getConsoleContainer();
-            if (container) {
-                container.scrollTop = container.scrollHeight;
-                consoleLayerScrollPositions[app] = container.scrollTop;
+            const renderer = logRenderers[app];
+            if (renderer && renderer.container) {
+                renderer.container.scrollTop = renderer.container.scrollHeight;
+                consoleLayerScrollPositions[app] = renderer.container.scrollTop;
             }
         }
 
         function appendConsoleTextLine(app, text, className = 'console-line') {
-            const layer = getConsoleLayer(app);
-            if (!layer) return;
-
-            const line = document.createElement('div');
-            line.className = className;
-            line.textContent = text;
-            layer.appendChild(line);
-            syncConsoleScroll(app);
+            const renderer = logRenderers[app] || (logRenderers[app] = new LogVirtualList(getConsoleLayer(app)));
+            renderer.append(text, className);
         }
 
         function appendConsoleElement(app, element) {
-            const layer = getConsoleLayer(app);
-            if (!layer || !element) return;
-
-            layer.appendChild(element);
-            syncConsoleScroll(app);
+            const renderer = logRenderers[app] || (logRenderers[app] = new LogVirtualList(getConsoleLayer(app)));
+            if (!element || !renderer.container) return;
+            renderer.container.appendChild(element);
+            renderer.scheduleRender(true);
         }
 
         function clearConsoleLayer(app, message = null) {
-            const layer = getConsoleLayer(app);
-            if (!layer) return;
-
-            layer.innerHTML = '';
-            if (message) {
-                appendConsoleTextLine(app, message);
-            }
+            const renderer = logRenderers[app] || (logRenderers[app] = new LogVirtualList(getConsoleLayer(app)));
+            renderer.clear(message);
         }
         
         // 加载控制台输出
