@@ -219,7 +219,8 @@ class BrowserLauncher:
             # 尝试获取版本信息
             try:
                 result = subprocess.run([browser_path, "--version"], 
-                                      capture_output=True, text=True, timeout=5)
+                                      capture_output=True, text=True, 
+                                      encoding='utf-8', errors='replace', timeout=5)
                 version = result.stdout.strip() if result.stdout else "Unknown Version"
             except:
                 version = "Unknown Version"

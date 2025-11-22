@@ -74,6 +74,7 @@ loguru>=0.7.0
 pydantic==2.5.2
 pydantic-settings==2.2.1
 json-repair==0.53.0
+rich>=13.0.0
 
 # ===== 开发工具（可选） =====
 pytest>=7.4.0

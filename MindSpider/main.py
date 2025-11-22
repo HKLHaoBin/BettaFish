@@ -140,6 +140,11 @@ class MindSpider:
         """初始化数据库"""
         logger.info("初始化数据库...")
         
+        # 获取数据库连接信息用于错误提示
+        db_host = settings.DB_HOST or "localhost"
+        dialect = (settings.DB_DIALECT or "mysql").lower()
+        db_port = str(settings.DB_PORT or ("3306" if dialect == "mysql" else "5432"))
+        
         try:
             # 运行数据库初始化脚本
             init_script = self.schema_path / "init_database.py"
@@ -151,18 +156,22 @@ class MindSpider:
                 [sys.executable, str(init_script)],
                 cwd=self.schema_path,
                 capture_output=True,
-                text=True
+                text=True,
+                encoding='utf-8',
+                errors='replace'
             )
             
             if result.returncode == 0:
                 logger.info("数据库初始化成功")
                 return True
             else:
-                logger.error(f"数据库初始化失败: {result.stderr}")
+                logger.error(f"数据库初始化失败，目标地址: {db_host}:{db_port} (数据库类型: {dialect})")
+                logger.error(f"错误详情: {result.stderr}")
                 return False
                 
         except Exception as e:
-            logger.exception(f"数据库初始化异常: {e}")
+            logger.error(f"数据库初始化异常，目标地址: {db_host}:{db_port} (数据库类型: {dialect})")
+            logger.exception(f"异常详情: {e}")
             return False
     
     def check_dependencies(self) -> bool:

@@ -9,65 +9,73 @@ from pathlib import Path
 from loguru import logger
 from ctypes import util as ctypes_util
 
+try:
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.text import Text
+    RICH_AVAILABLE = True
+except ImportError:
+    RICH_AVAILABLE = False
+
 
 def _get_platform_specific_instructions():
     """
     获取针对当前平台的安装说明
 
     Returns:
-        str: 平台特定的安装说明
+        list[str]: 平台特定的安装说明（每行一个）
     """
     system = platform.system()
 
     if system == "Darwin":  # macOS
-        return (
-            "║  🍎 macOS 系统解决方案：                                       ║\n"
-            "║                                                                ║\n"
-            "║  1. 安装系统依赖：                                             ║\n"
-            "║     brew install pango gdk-pixbuf libffi                       ║\n"
-            "║                                                                ║\n"
-            "║  2. 设置环境变量（重要！）：                                   ║\n"
-            "║     Apple Silicon: export DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH ║\n"
-            "║     Intel Mac:   export DYLD_LIBRARY_PATH=/usr/local/lib:$DYLD_LIBRARY_PATH     ║\n"
-            "║                                                                ║\n"
-            "║  3. 永久生效（推荐）：                                         ║\n"
-            "║     echo 'export DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH' >> ~/.zshrc ║\n"
-            "║     或 echo 'export DYLD_LIBRARY_PATH=/usr/local/lib:$DYLD_LIBRARY_PATH' >> ~/.zshrc ║\n"
-            "║     source ~/.zshrc                                            ║\n"
-        )
+        return [
+            "🍎 macOS 系统解决方案：",
+            "",
+            "1. 安装系统依赖：",
+            "   brew install pango gdk-pixbuf libffi",
+            "",
+            "2. 设置环境变量（重要！）：",
+            "   Apple Silicon: export DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH",
+            "   Intel Mac:   export DYLD_LIBRARY_PATH=/usr/local/lib:$DYLD_LIBRARY_PATH",
+            "",
+            "3. 永久生效（推荐）：",
+            "   echo 'export DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH' >> ~/.zshrc",
+            "   或 echo 'export DYLD_LIBRARY_PATH=/usr/local/lib:$DYLD_LIBRARY_PATH' >> ~/.zshrc",
+            "   source ~/.zshrc",
+        ]
     elif system == "Linux":
-        return (
-            "║  🐧 Linux 系统解决方案：                                       ║\n"
-            "║                                                                ║\n"
-            "║  Ubuntu/Debian:                                                ║\n"
-            "║    sudo apt-get install libpango-1.0-0 libpangoft2-1.0-0 \\    ║\n"
-            "║                         libgdk-pixbuf2.0-0 libffi-dev libcairo2 ║\n"
-            "║                                                                ║\n"
-            "║  CentOS/RHEL:                                                  ║\n"
-            "║    sudo yum install pango gdk-pixbuf2 libffi-devel cairo       ║\n"
-            "║                                                                ║\n"
-            "║  若仍提示缺库：export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH ║\n"
-            "║                 sudo ldconfig                                  ║\n"
-        )
+        return [
+            "🐧 Linux 系统解决方案：",
+            "",
+            "Ubuntu/Debian:",
+            "  sudo apt-get install libpango-1.0-0 libpangoft2-1.0-0 \\",
+            "                   libgdk-pixbuf2.0-0 libffi-dev libcairo2",
+            "",
+            "CentOS/RHEL:",
+            "  sudo yum install pango gdk-pixbuf2 libffi-devel cairo",
+            "",
+            "若仍提示缺库：export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH",
+            "              sudo ldconfig",
+        ]
     elif system == "Windows":
-        return (
-            "║  🪟 Windows 系统解决方案：                                     ║\n"
-            "║                                                                ║\n"
-            "║  1. 安装 GTK3 Runtime：                                        ║\n"
-            "║     https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases ║\n"
-            "║                                                                ║\n"
-            "║  2. 将 GTK 安装目录下的 bin 加入 PATH（需新开终端）：         ║\n"
-            "║     set PATH=C:\\Program Files\\GTK3-Runtime Win64\\bin;%PATH%  ║\n"
-            "║     （若自定义路径，请替换为实际安装路径）                     ║\n"
-            "║                                                                ║\n"
-            "║  3. 验证：在新终端运行                                         ║\n"
-            "║     python -m ReportEngine.utils.dependency_check              ║\n"
-            "║     看到 ✓ 提示即表示 PDF 导出可用                             ║\n"
-        )
+        return [
+            "🪟 Windows 系统解决方案：",
+            "",
+            "1. 安装 GTK3 Runtime：",
+            "   https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases",
+            "",
+            "2. 将 GTK 安装目录下的 bin 加入 PATH（需新开终端）：",
+            "   set PATH=C:\\Program Files\\GTK3-Runtime Win64\\bin;%PATH%",
+            "   （若自定义路径，请替换为实际安装路径）",
+            "",
+            "3. 验证：在新终端运行",
+            "   python -m ReportEngine.utils.dependency_check",
+            "   看到 ✓ 提示即表示 PDF 导出可用",
+        ]
     else:
-        return (
-            "║  请查看 README.md 了解您系统的安装方法                        ║\n"
-        )
+        return [
+            "请查看 README.md 了解您系统的安装方法",
+        ]
 
 
 def _ensure_windows_gtk_paths():
@@ -245,44 +253,41 @@ def check_pango_available():
         # Pango 库未安装或无法加载
         error_msg = str(e)
         platform_instructions = _get_platform_specific_instructions()
-        windows_hint = ""
+        
+        # 构建消息内容
+        content_lines = [
+            "⚠️  PDF 导出依赖缺失",
+            "",
+            "📄 PDF 导出功能将不可用（其他功能不受影响）",
+            "",
+        ]
+        
+        # Windows 特定提示
         if platform.system() == "Windows":
             path_display = added_path or "未找到默认路径"
-            # 控制长度，避免破坏提示框宽度
-            if len(path_display) > 38:
-                path_display = path_display[:35] + "..."
-            windows_hint = f"║  已尝试自动添加 GTK 路径: {path_display:<38}║\n"
-            arch_note = "║  🔍 若已安装仍报错：确认 Python/GTK 位数一致，重开终端        ║\n"
-        else:
-            arch_note = ""
-
-        missing_note = ""
+            content_lines.append(f"已尝试自动添加 GTK 路径: {path_display}")
+            content_lines.append("🔍 若已安装仍报错：确认 Python/GTK 位数一致，重开终端")
+            content_lines.append("")
+        
+        # 缺失依赖提示
         if missing_native:
             missing_str = ", ".join(missing_native)
-            missing_note = f"║  未识别到的依赖: {missing_str:<46}║\n"
-
-        if 'gobject' in error_msg.lower() or 'pango' in error_msg.lower() or 'gdk' in error_msg.lower():
-            return False, (
-                "╔════════════════════════════════════════════════════════════════╗\n"
-                "║  ⚠️  PDF 导出依赖缺失                                          ║\n"
-                "║                                                                ║\n"
-                "║  📄 PDF 导出功能将不可用（其他功能不受影响）                  ║\n"
-                "║                                                                ║\n"
-                f"{windows_hint}"
-                f"{arch_note}"
-                f"{missing_note}"
-                f"{platform_instructions}"
-                "║                                                                ║\n"
-                "║  📖 完整文档：根目录 README.md ‘源码启动’的第二步            ║\n"
-                "╚════════════════════════════════════════════════════════════════╝"
-            )
-        return False, f"⚠ PDF 依赖加载失败: {error_msg}；缺失/未识别: {', '.join(missing_native) if missing_native else '未知'}"
+            content_lines.append(f"未识别到的依赖: {missing_str}")
+            content_lines.append("")
+        
+        # 平台特定说明
+        content_lines.extend(platform_instructions)
+        content_lines.extend([
+            "",
+            "📖 完整文档：根目录 README.md '源码启动'的第二步",
+        ])
+        
+        # 返回纯文本消息（rich 格式化在调用处处理）
+        content = "\n".join(content_lines)
+        return False, content
     except ImportError as e:
         # weasyprint 未安装
-        return False, (
-            "⚠ WeasyPrint 未安装\n"
-            "解决方法: pip install weasyprint"
-        )
+        return False, "⚠ WeasyPrint 未安装\n解决方法: pip install weasyprint"
     except Exception as e:
         # 其他未知错误
         return False, f"⚠ PDF 依赖检测失败: {e}"
@@ -297,7 +302,19 @@ def log_dependency_status():
     if is_available:
         logger.success(message)
     else:
-        logger.warning(message)
+        # 使用 rich 显示警告（如果可用）
+        if RICH_AVAILABLE:
+            console = Console()
+            content = message
+            panel = Panel(
+                content,
+                title="[bold yellow]PDF 导出依赖缺失[/bold yellow]",
+                border_style="yellow",
+                padding=(1, 2),
+            )
+            console.print(panel)
+        else:
+            logger.warning(message)
         logger.info("💡 提示：PDF 导出功能需要 Pango 库支持，但不影响系统其他功能的正常使用")
         logger.info("📚 安装说明请参考：根目录下的 README.md 文件")
 

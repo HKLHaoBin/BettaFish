@@ -98,20 +98,29 @@ async def _create_views_if_needed(engine_dialect: str):
 
 
 async def main() -> None:
-    database_url = _build_database_url()
-    engine = create_async_engine(database_url, pool_pre_ping=True, pool_recycle=1800)
+    # 获取数据库连接信息用于错误提示
+    dialect = (settings.DB_DIALECT or "mysql").lower()
+    db_host = settings.DB_HOST or "localhost"
+    db_port = str(settings.DB_PORT or ("3306" if dialect == "mysql" else "5432"))
+    
+    try:
+        database_url = _build_database_url()
+        engine = create_async_engine(database_url, pool_pre_ping=True, pool_recycle=1800)
 
-    # 由于 models_bigdata 和 models_sa 现在共享同一个 Base，所有表都在同一个 metadata 中
-    # 只需创建一次，SQLAlchemy 会自动处理表之间的依赖关系
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        # 由于 models_bigdata 和 models_sa 现在共享同一个 Base，所有表都在同一个 metadata 中
+        # 只需创建一次，SQLAlchemy 会自动处理表之间的依赖关系
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
 
-    # 保持原有视图创建和释放逻辑
-    dialect_name = engine.url.get_backend_name()
-    await _create_views_if_needed(dialect_name)
+        # 保持原有视图创建和释放逻辑
+        dialect_name = engine.url.get_backend_name()
+        await _create_views_if_needed(dialect_name)
 
-    await engine.dispose()
-    logger.info("[init_database_sa] 数据表与视图创建完成")
+        await engine.dispose()
+        logger.info("[init_database_sa] 数据表与视图创建完成")
+    except Exception as e:
+        logger.error(f"数据库连接失败，目标地址: {db_host}:{db_port} (数据库类型: {dialect})")
+        raise
 
 
 if __name__ == "__main__":
