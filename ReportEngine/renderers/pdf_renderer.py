@@ -19,6 +19,13 @@ from ReportEngine.utils.dependency_check import (
     check_pango_available,
 )
 
+try:
+    from rich.console import Console
+    from rich.panel import Panel
+    RICH_AVAILABLE = True
+except ImportError:
+    RICH_AVAILABLE = False
+
 # 在导入WeasyPrint之前，尝试补充常见的macOS Homebrew动态库路径，
 # 避免因未设置DYLD_LIBRARY_PATH而找不到pango/cairo等依赖。
 if sys.platform == 'darwin':
@@ -55,11 +62,32 @@ except (ImportError, OSError) as e:
             "PDF 导出依赖缺失（系统库未安装或环境变量未设置），"
             "PDF 导出功能将不可用。其他功能不受影响。"
         )
-        logger.warning(msg)
+        # 使用 rich 显示警告（如果可用）
+        if RICH_AVAILABLE and dep_message:
+            console = Console()
+            panel = Panel(
+                dep_message,
+                title="[bold yellow]PDF 导出依赖缺失[/bold yellow]",
+                border_style="yellow",
+                padding=(1, 2),
+            )
+            console.print(panel)
+        else:
+            logger.warning(msg)
         PDF_DEP_STATUS = msg
     else:
         msg = dep_message or "WeasyPrint未安装，PDF导出功能将不可用"
-        logger.warning(msg)
+        if RICH_AVAILABLE and dep_message:
+            console = Console()
+            panel = Panel(
+                dep_message,
+                title="[bold yellow]WeasyPrint 未安装[/bold yellow]",
+                border_style="yellow",
+                padding=(1, 2),
+            )
+            console.print(panel)
+        else:
+            logger.warning(msg)
         PDF_DEP_STATUS = msg
 except Exception as e:
     WEASYPRINT_AVAILABLE = False
