@@ -17,6 +17,9 @@ class Search:
     title: str = ""                    # 搜索结果标题
     content: str = ""                  # 搜索返回的内容
     score: Optional[float] = None      # 相关度评分
+    paragraph_title: str = ""          # 段落标题，便于展示归属
+    search_tool: str = ""              # 使用的搜索工具
+    has_result: bool = True            # 是否有返回结果
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     
     def to_dict(self) -> Dict[str, Any]:
@@ -27,6 +30,9 @@ class Search:
             "title": self.title,
             "content": self.content,
             "score": self.score,
+            "paragraph_title": self.paragraph_title,
+            "search_tool": self.search_tool,
+            "has_result": self.has_result,
             "timestamp": self.timestamp
         }
     
@@ -39,6 +45,9 @@ class Search:
             title=data.get("title", ""),
             content=data.get("content", ""),
             score=data.get("score"),
+            paragraph_title=data.get("paragraph_title", ""),
+            search_tool=data.get("search_tool", ""),
+            has_result=data.get("has_result", True),
             timestamp=data.get("timestamp", datetime.now().isoformat())
         )
 
@@ -55,17 +64,42 @@ class Research:
         """添加搜索记录"""
         self.search_history.append(search)
     
-    def add_search_results(self, query: str, results: List[Dict[str, Any]]):
+    def add_search_results(self, query: str, results: List[Dict[str, Any]], search_tool: str = "", paragraph_title: str = ""):
         """批量添加搜索结果"""
-        for result in results:
-            search = Search(
-                query=query,
-                url=result.get("url", ""),
-                title=result.get("title", ""),
-                content=result.get("content", ""),
-                score=result.get("score")
+        if not results:
+            # 记录一次“无结果”搜索，方便前端显示搜索轨迹
+            self.add_search(
+                Search(
+                    query=query or "",
+                    title="未找到结果",
+                    content="本次搜索未返回结果或调用失败",
+                    url="",
+                    score=None,
+                    paragraph_title=paragraph_title,
+                    search_tool=search_tool,
+                    has_result=False,
+                )
             )
-            self.add_search(search)
+            return
+
+        for result in results:
+            url = result.get("url") or ""
+            title = result.get("title") or ""
+            content = result.get("content") or result.get("raw_content") or ""
+            if not isinstance(content, str):
+                content = str(content)
+            self.add_search(
+                Search(
+                    query=query or "",
+                    url=url,
+                    title=title,
+                    content=content,
+                    score=result.get("score"),
+                    paragraph_title=paragraph_title or result.get("paragraph_title", ""),
+                    search_tool=search_tool or result.get("search_tool", ""),
+                    has_result=True,
+                )
+            )
     
     def get_search_count(self) -> int:
         """获取搜索次数"""

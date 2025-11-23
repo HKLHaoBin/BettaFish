@@ -39,6 +39,10 @@ from .state import ReportState
 from .utils.config import settings, Settings
 
 
+class StageOutputFormatError(ValueError):
+    """阶段性输出结构不符合预期时抛出的受控异常。"""
+
+
 class FileCountBaseline:
     """
     文件数量基准管理器。
@@ -177,6 +181,7 @@ class ReportAgent:
     """
     _CONTENT_SPARSE_MIN_ATTEMPTS = 3
     _CONTENT_SPARSE_WARNING_TEXT = "本章LLM生成的内容字数可能过低，必要时可以尝试重新运行程序。"
+    _STRUCTURAL_RETRY_ATTEMPTS = 2
     
     def __init__(self, config: Optional[Settings] = None):
         """
@@ -421,6 +426,11 @@ class ReportAgent:
 
         try:
             template_result = self._select_template(query, reports, forum_logs, custom_template)
+            template_result = self._ensure_mapping(
+                template_result,
+                "模板选择结果",
+                expected_keys=["template_name", "template_content"],
+            )
             self.state.metadata.template_used = template_result.get('template_name', '')
             emit('stage', {
                 'stage': 'template_selected',
@@ -436,13 +446,17 @@ class ReportAgent:
             template_text = template_result.get('template_content', '')
             template_overview = self._build_template_overview(template_text, sections)
             # 基于模板骨架+三引擎内容设计全局标题、目录与视觉主题
-            layout_design = self.document_layout_node.run(
-                sections,
-                template_text,
-                normalized_reports,
-                forum_logs,
-                query,
-                template_overview,
+            layout_design = self._run_stage_with_retry(
+                "文档设计",
+                lambda: self.document_layout_node.run(
+                    sections,
+                    template_text,
+                    normalized_reports,
+                    forum_logs,
+                    query,
+                    template_overview,
+                ),
+                expected_keys=["title", "hero", "toc", "tocPlan"],
             )
             emit('stage', {
                 'stage': 'layout_designed',
@@ -451,13 +465,18 @@ class ReportAgent:
             })
             emit('progress', {'progress': 15, 'message': '文档标题/目录设计完成'})
             # 使用刚生成的设计稿对全书进行篇幅规划，约束各章字数与重点
-            word_plan = self.word_budget_node.run(
-                sections,
-                layout_design,
-                normalized_reports,
-                forum_logs,
-                query,
-                template_overview,
+            word_plan = self._run_stage_with_retry(
+                "章节篇幅规划",
+                lambda: self.word_budget_node.run(
+                    sections,
+                    layout_design,
+                    normalized_reports,
+                    forum_logs,
+                    query,
+                    template_overview,
+                ),
+                expected_keys=["chapters", "totalWords", "globalGuidelines"],
+                postprocess=self._normalize_word_plan,
             )
             emit('stage', {
                 'stage': 'word_plan_ready',
@@ -870,6 +889,134 @@ class ReportAgent:
             "model-studio/error-code",
         ]
         return any(keyword in normalized for keyword in keywords)
+
+    def _run_stage_with_retry(
+        self,
+        stage_name: str,
+        fn: Callable[[], Any],
+        expected_keys: Optional[List[str]] = None,
+        postprocess: Optional[Callable[[Dict[str, Any], str], Dict[str, Any]]] = None,
+    ) -> Dict[str, Any]:
+        """
+        运行单个LLM阶段并在结构异常时有限次重试。
+
+        该方法只针对结构类错误做本地修复/重试，避免整个Agent重启。
+        """
+        last_error: Optional[Exception] = None
+        for attempt in range(1, self._STRUCTURAL_RETRY_ATTEMPTS + 1):
+            try:
+                raw_result = fn()
+                result = self._ensure_mapping(raw_result, stage_name, expected_keys)
+                if postprocess:
+                    result = postprocess(result, stage_name)
+                return result
+            except StageOutputFormatError as exc:
+                last_error = exc
+                logger.warning(
+                    "{stage} 输出结构异常（第 {attempt}/{total} 次），将尝试修复或重试: {error}",
+                    stage=stage_name,
+                    attempt=attempt,
+                    total=self._STRUCTURAL_RETRY_ATTEMPTS,
+                    error=exc,
+                )
+                if attempt >= self._STRUCTURAL_RETRY_ATTEMPTS:
+                    break
+        raise last_error  # type: ignore[misc]
+
+    def _ensure_mapping(
+        self,
+        value: Any,
+        context: str,
+        expected_keys: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        """
+        确保阶段输出为dict；若返回列表则尝试提取最佳匹配元素。
+        """
+        if isinstance(value, dict):
+            return value
+
+        if isinstance(value, list):
+            candidates = [item for item in value if isinstance(item, dict)]
+            if candidates:
+                best = candidates[0]
+                if expected_keys:
+                    candidates.sort(
+                        key=lambda item: sum(1 for key in expected_keys if key in item),
+                        reverse=True,
+                    )
+                    best = candidates[0]
+                logger.warning(
+                    "{context} 返回列表，已自动提取包含最多预期键的元素继续执行",
+                    context=context,
+                )
+                return best
+            raise StageOutputFormatError(f"{context} 返回列表但缺少可用的对象元素")
+
+        if value is None:
+            raise StageOutputFormatError(f"{context} 返回空结果")
+
+        raise StageOutputFormatError(
+            f"{context} 返回类型 {type(value).__name__}，期望字典"
+        )
+
+    def _normalize_word_plan(self, word_plan: Dict[str, Any], stage_name: str) -> Dict[str, Any]:
+        """
+        清洗篇幅规划结果，确保 chapters/globalGuidelines/totalWords 类型安全。
+        """
+        raw_chapters = word_plan.get("chapters", [])
+        if isinstance(raw_chapters, dict):
+            chapters_iterable = raw_chapters.values()
+        elif isinstance(raw_chapters, list):
+            chapters_iterable = raw_chapters
+        else:
+            chapters_iterable = []
+
+        normalized: List[Dict[str, Any]] = []
+        for idx, entry in enumerate(chapters_iterable):
+            if isinstance(entry, dict):
+                normalized.append(entry)
+                continue
+            if isinstance(entry, list):
+                dict_candidate = next((item for item in entry if isinstance(item, dict)), None)
+                if dict_candidate:
+                    logger.warning(
+                        "{stage} 第 {idx} 个章节条目为列表，已提取首个对象用于后续流程",
+                        stage=stage_name,
+                        idx=idx + 1,
+                    )
+                    normalized.append(dict_candidate)
+                    continue
+            logger.warning(
+                "{stage} 跳过无法解析的章节条目#{idx}（类型: {type_name}）",
+                stage=stage_name,
+                idx=idx + 1,
+                type_name=type(entry).__name__,
+            )
+
+        if not normalized:
+            raise StageOutputFormatError(f"{stage_name} 缺少有效的章节规划，无法继续")
+
+        word_plan["chapters"] = normalized
+
+        guidelines = word_plan.get("globalGuidelines")
+        if not isinstance(guidelines, list):
+            if guidelines is None or guidelines == "":
+                word_plan["globalGuidelines"] = []
+            else:
+                logger.warning(
+                    "{stage} globalGuidelines 类型异常，已转换为列表封装",
+                    stage=stage_name,
+                )
+                word_plan["globalGuidelines"] = [guidelines]
+
+        if not isinstance(word_plan.get("totalWords"), (int, float)):
+            logger.warning(
+                "{stage} totalWords 类型异常，使用默认值 10000",
+                stage=stage_name,
+            )
+            word_plan["totalWords"] = 10000
+
+        return word_plan
 
     def _finalize_sparse_chapter(self, chapter: Optional[Dict[str, Any]]) -> Dict[str, Any]:
         """

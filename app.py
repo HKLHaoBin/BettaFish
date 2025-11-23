@@ -377,34 +377,42 @@ def parse_forum_log_line(line):
     """解析forum.log行内容，提取对话信息"""
     import re
     
-    # 匹配格式: [时间] [来源] 内容
-    pattern = r'\[(\d{2}:\d{2}:\d{2})\]\s*\[([A-Z]+)\]\s*(.*)'
+    # 匹配格式: [时间] [来源] 内容（来源允许大小写及空格）
+    pattern = r'\[(\d{2}:\d{2}:\d{2})\]\s*\[([^\]]+)\]\s*(.*)'
     match = re.match(pattern, line)
     
-    if match:
-        timestamp, source, content = match.groups()
-        
-        # 过滤掉系统消息和空内容
-        if source == 'SYSTEM' or not content.strip():
-            return None
-        
-        # 只处理三个Engine的消息
-        if source not in ['QUERY', 'INSIGHT', 'MEDIA']:
-            return None
-        
-        # 根据来源确定消息类型和发送者
-        message_type = 'agent'
-        sender = f'{source} Engine'
-        
-        return {
-            'type': message_type,
-            'sender': sender,
-            'content': content.strip(),
-            'timestamp': timestamp,
-            'source': source
-        }
+    if not match:
+        return None
+
+    timestamp, raw_source, content = match.groups()
+    source = raw_source.strip().upper()
+
+    # 过滤掉系统消息和空内容
+    if source == 'SYSTEM' or not content.strip():
+        return None
     
-    return None
+    # 支持三个Agent和主持人
+    if source not in ['QUERY', 'INSIGHT', 'MEDIA', 'HOST']:
+        return None
+    
+    # 解码日志中的转义换行，保留多行格式
+    cleaned_content = content.replace('\\n', '\n').replace('\\r', '').strip()
+    
+    # 根据来源确定消息类型和发送者
+    if source == 'HOST':
+        message_type = 'host'
+        sender = 'Forum Host'
+    else:
+        message_type = 'agent'
+        sender = f'{source.title()} Engine'
+    
+    return {
+        'type': message_type,
+        'sender': sender,
+        'content': cleaned_content,
+        'timestamp': timestamp,
+        'source': source
+    }
 
 # Forum日志监听器
 # 存储每个客户端的历史日志发送位置

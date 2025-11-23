@@ -584,6 +584,9 @@ def generate_report():
 
         # 获取请求参数
         data = request.get_json() or {}
+        if not isinstance(data, dict):
+            logger.warning("generate_report 接收到非对象JSON负载，已忽略原始内容")
+            data = {}
         query = data.get('query', '智能舆情分析报告')
         custom_template = data.get('custom_template', '')
 
@@ -1285,7 +1288,13 @@ def export_pdf_from_ir():
                 'system_message': pango_message
             }), 503
 
-        data = request.get_json()
+        data = request.get_json() or {}
+        if not isinstance(data, dict):
+            logger.warning("export_pdf_from_ir 请求体不是JSON对象")
+            return jsonify({
+                'success': False,
+                'error': '请求体必须是JSON对象'
+            }), 400
 
         if not data or 'document_ir' not in data:
             return jsonify({
