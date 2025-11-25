@@ -675,6 +675,7 @@ def stop_streamlit_app(app_name):
         # 等待进程结束
         try:
             process.wait(timeout=5)
+            _log_shutdown_step(f"{app_name} 退出完成，returncode={process.returncode}")
         except subprocess.TimeoutExpired:
             _log_shutdown_step(f"{app_name} 终止超时，尝试强制结束 (pid={pid})")
             process.kill()
