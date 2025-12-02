@@ -167,6 +167,11 @@ class MediaCrawlerDB:
 
         all_queries, params = [], []
         for table, formula in hotness_formulas.items():
+            columns = self._get_table_columns(table)
+            if not columns:
+                logger.warning(f"跳过表 {table}: 无法获取列信息")
+                continue
+
             time_filter_sql, time_filter_param = "", None
             if table == 'weibo_note': time_filter_sql, time_filter_param = "`create_date_time` >= %s", start_time.strftime('%Y-%m-%d %H:%M:%S')
             elif table in ['kuaishou_video', 'xhs_note', 'douyin_aweme']: time_col = 'time' if table == 'xhs_note' else 'create_time'; time_filter_sql, time_filter_param = f"`{time_col}` >= %s", str(int(start_time.timestamp() * 1000))
@@ -174,17 +179,26 @@ class MediaCrawlerDB:
             else: time_filter_sql, time_filter_param = "`create_time` >= %s", str(int(start_time.timestamp()))
 
             content_type = 'note' if table in ['weibo_note', 'xhs_note'] else 'content' if table == 'zhihu_content' else 'video'
-            query_template = "SELECT '{platform}' as p, '{type}' as t, {title} as title, {author} as author, {url} as url, {ts} as ts, {formula} as hotness_score, source_keyword, '{tbl}' as tbl FROM `{tbl}` WHERE {time_filter}"
+            query_template = "SELECT '{platform}' as p, '{type}' as t, {title} as title, {author} as author, {url} as url, {ts} as ts, {formula} as hotness_score, {source_kw} as source_keyword, '{tbl}' as tbl FROM `{tbl}` WHERE {time_filter}"
             
-            field_subs = {'platform': table.split('_')[0], 'type': content_type, 'title': 'title', 'author': 'nickname', 'url': 'video_url', 'ts': 'create_time', 'formula': formula, 'tbl': table, 'time_filter': time_filter_sql}
+            field_subs = {'platform': table.split('_')[0], 'type': content_type, 'title': 'title', 'author': 'nickname', 'url': 'video_url', 'ts': 'create_time', 'formula': formula, 'tbl': table, 'time_filter': time_filter_sql, 'source_kw': 'source_keyword' if 'source_keyword' in columns else 'NULL'}
             if table == 'weibo_note': field_subs.update({'title': 'content', 'url': 'note_url', 'ts': 'create_date_time'})
             elif table == 'xhs_note': field_subs.update({'ts': 'time', 'url': 'note_url'})
             elif table == 'zhihu_content': field_subs.update({'author': 'user_nickname', 'url': 'content_url', 'ts': 'created_time'})
             elif table == 'douyin_aweme': field_subs.update({'url': 'aweme_url'})
 
+            # 如果时间字段在当前表不存在，直接跳过以避免 SQL 报错
+            if field_subs['ts'].strip('`') not in columns:
+                logger.warning(f"跳过表 {table}: 缺少时间字段 {field_subs['ts']}")
+                continue
+
             all_queries.append(query_template.format(**field_subs))
             params.append(time_filter_param)
         
+        if not all_queries:
+            logger.warning("热点内容查询被跳过: 所有候选表缺少必要字段")
+            return DBResponse("search_hot_content", params_for_log, results=[], results_count=0)
+
         final_query = f"({' ) UNION ALL ( '.join(all_queries)}) ORDER BY hotness_score DESC LIMIT %s"
         raw_results = self._execute_query(final_query, tuple(params) + (limit,))
 
@@ -215,9 +229,14 @@ class MediaCrawlerDB:
         search_configs = { 'bilibili_video': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'video'}, 'bilibili_video_comment': {'fields': ['content'], 'type': 'comment'}, 'douyin_aweme': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'video'}, 'douyin_aweme_comment': {'fields': ['content'], 'type': 'comment'}, 'kuaishou_video': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'video'}, 'kuaishou_video_comment': {'fields': ['content'], 'type': 'comment'}, 'weibo_note': {'fields': ['content', 'source_keyword'], 'type': 'note'}, 'weibo_note_comment': {'fields': ['content'], 'type': 'comment'}, 'xhs_note': {'fields': ['title', 'desc', 'tag_list', 'source_keyword'], 'type': 'note'}, 'xhs_note_comment': {'fields': ['content'], 'type': 'comment'}, 'zhihu_content': {'fields': ['title', 'desc', 'content_text', 'source_keyword'], 'type': 'content'}, 'zhihu_comment': {'fields': ['content'], 'type': 'comment'}, 'tieba_note': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'note'}, 'tieba_comment': {'fields': ['content'], 'type': 'comment'}, 'daily_news': {'fields': ['title'], 'type': 'news'}, }
         
         for table, config in search_configs.items():
+            columns = self._get_table_columns(table)
+            valid_fields = [f for f in config['fields'] if f in columns]
+            if not valid_fields:
+                logger.warning(f"跳过表 {table}: 无可用字段 {config['fields']}")
+                continue
             param_dict = {}
             where_clauses = []
-            for idx, field in enumerate(config['fields']):
+            for idx, field in enumerate(valid_fields):
                 pname = f"term_{idx}"
                 where_clauses.append(f'{self._wrap_query_field_with_dialect(field)} LIKE :{pname}')
                 param_dict[pname] = search_term
@@ -272,11 +291,19 @@ class MediaCrawlerDB:
         for table, config in search_configs.items():
             param_dict = {}
             where_clauses = []
-            for idx, field in enumerate(config['fields']):
+            columns = self._get_table_columns(table)
+            valid_fields = [f for f in config['fields'] if f in columns]
+            if not valid_fields:
+                logger.warning(f"跳过表 {table}: 无可用字段 {config['fields']}")
+                continue
+            for idx, field in enumerate(valid_fields):
                 pname = f"term_{idx}"
                 where_clauses.append(f'{self._wrap_query_field_with_dialect(field)} LIKE :{pname}')
                 param_dict[pname] = search_term
             param_dict['limit'] = limit_per_table
+            if config['time_col'] not in columns:
+                logger.warning(f"跳过表 {table}: 缺少时间字段 {config['time_col']}")
+                continue
             where_clause = ' OR '.join(where_clauses)
             query = f'SELECT * FROM {self._wrap_query_field_with_dialect(table)} WHERE {where_clause} ORDER BY id DESC LIMIT :limit'
             raw_results = self._execute_query(query, param_dict)
@@ -315,15 +342,26 @@ class MediaCrawlerDB:
         all_queries = []
         for table in comment_tables:
             cols = self._get_table_columns(table)
-            author_col = 'user_nickname' if 'user_nickname' in cols else 'nickname'
+            if 'content' not in cols:
+                logger.warning(f"跳过评论表 {table}: 缺少 content 字段")
+                continue
+            author_col = 'user_nickname' if 'user_nickname' in cols else 'nickname' if 'nickname' in cols else None
             like_col = 'comment_like_count' if 'comment_like_count' in cols else 'like_count' if 'like_count' in cols else None
             time_col = 'publish_time' if 'publish_time' in cols else 'create_date_time' if 'create_date_time' in cols else 'create_time'
+            if time_col not in cols:
+                logger.warning(f"跳过评论表 {table}: 缺少时间字段")
+                continue
+            author_select = f"`{author_col}`" if author_col else "''"
             like_select = f"`{like_col}` as likes" if like_col else "'0' as likes"
             
-            query = (f"SELECT '{table.split('_')[0]}' as platform, `content`, `{author_col}` as author, "
+            query = (f"SELECT '{table.split('_')[0]}' as platform, `content`, {author_select} as author, "
                      f"`{time_col}` as ts, {like_select}, '{table}' as source_table "
                      f"FROM `{table}` WHERE `content` LIKE %s")
             all_queries.append(query)
+
+        if not all_queries:
+            logger.warning("评论查询被跳过: 所有表缺少必要字段")
+            return DBResponse("get_comments_for_topic", params_for_log, results=[], results_count=0)
 
         final_query = f"({' ) UNION ALL ( '.join(all_queries)}) ORDER BY ts DESC LIMIT %s"
         params = (search_term,) * len(comment_tables) + (limit,)
@@ -375,12 +413,20 @@ class MediaCrawlerDB:
 
         for config in platform_configs:
             table = config['table']
-            topic_clause = " OR ".join([f"`{field}` LIKE %s" for field in config['fields']])
+            columns = self._get_table_columns(table)
+            valid_fields = [f for f in config['fields'] if f in columns]
+            if not valid_fields:
+                logger.warning(f"跳过表 {table}: 无可用字段 {config['fields']}")
+                continue
+            topic_clause = " OR ".join([f"`{field}` LIKE %s" for field in valid_fields])
             query = f"SELECT * FROM `{table}` WHERE {topic_clause}"
-            params = [search_term] * len(config['fields'])
+            params = [search_term] * len(valid_fields)
 
             if start_dt and end_dt and 'time_col' in config:
                 time_col, time_type = config['time_col'], config['time_type']
+                if time_col not in columns:
+                    logger.warning(f"跳过表 {table}: 缺少时间字段 {time_col}")
+                    continue
                 if time_type == 'sec': t_params = (int(start_dt.timestamp()), int(end_dt.timestamp()))
                 elif time_type == 'ms': t_params = (int(start_dt.timestamp() * 1000), int(end_dt.timestamp() * 1000))
                 elif time_type in ['str', 'date_str']: t_params = (start_dt.strftime('%Y-%m-%d'), end_dt.strftime('%Y-%m-%d'))

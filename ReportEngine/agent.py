@@ -33,10 +33,12 @@ from .nodes import (
     ChapterContentError,
     DocumentLayoutNode,
     WordBudgetNode,
+    FastChapterGenerationNode,
 )
 from .renderers import HTMLRenderer
 from .state import ReportState
 from .utils.config import settings, Settings
+from .utils.model_discriminator import ModelCapabilityDiscriminator
 
 
 class StageOutputFormatError(ValueError):
