@@ -263,7 +263,12 @@ class DeepSearchAgent:
             logger.info("  - 未找到搜索结果")
         
         # 更新状态中的搜索历史
-        paragraph.research.add_search_results(search_query, search_results)
+        paragraph.research.add_search_results(
+            search_query,
+            search_results,
+            search_tool=search_tool,
+            paragraph_title=paragraph.title,
+        )
         
         # 生成初始总结
         logger.info("  - 生成初始总结...")
@@ -341,7 +346,12 @@ class DeepSearchAgent:
                 logger.info("    未找到反思搜索结果")
             
             # 更新搜索历史
-            paragraph.research.add_search_results(search_query, search_results)
+            paragraph.research.add_search_results(
+                search_query,
+                search_results,
+                search_tool=search_tool,
+                paragraph_title=paragraph.title,
+            )
             
             # 生成反思总结
             reflection_summary_input = {

@@ -1,6 +1,8 @@
 """
-模板选择节点
-根据查询内容和可用模板选择最合适的报告模板
+模板选择节点。
+
+综合用户查询、三引擎报告、论坛日志与本地模板库，
+调用LLM挑选最合适的报告骨架。
 """
 
 import os
@@ -10,25 +12,37 @@ from loguru import logger
 
 from .base_node import BaseNode
 from ..prompts import SYSTEM_PROMPT_TEMPLATE_SELECTION
+from ..utils.json_parser import RobustJSONParser, JSONParseError
 
 
 class TemplateSelectionNode(BaseNode):
-    """模板选择处理节点"""
+    """
+    模板选择处理节点。
+
+    负责准备模板候选列表、构建提示词、解析LLM返回结果，
+    并在失败时回退到内置模板。
+    """
     
     def __init__(self, llm_client, template_dir: str = "ReportEngine/report_template"):
         """
         初始化模板选择节点
-        
+
         Args:
             llm_client: LLM客户端
             template_dir: 模板目录路径
         """
         super().__init__(llm_client, "TemplateSelectionNode")
         self.template_dir = template_dir
+        # 初始化鲁棒JSON解析器，启用所有修复策略
+        self.json_parser = RobustJSONParser(
+            enable_json_repair=True,
+            enable_llm_repair=False,
+            max_repair_attempts=3,
+        )
         
     def run(self, input_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
         """
-        执行模板选择
+        执行模板选择。
         
         Args:
             input_data: 包含查询和报告内容的字典
@@ -37,7 +51,7 @@ class TemplateSelectionNode(BaseNode):
                 - forum_logs: 论坛日志内容
                 
         Returns:
-            选择的模板信息
+            选择的模板信息，包含名称、内容与选择理由
         """
         logger.info("开始模板选择...")
         
@@ -67,7 +81,21 @@ class TemplateSelectionNode(BaseNode):
     
     def _llm_template_selection(self, query: str, reports: List[Any], forum_logs: str, 
                               available_templates: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
-        """使用LLM进行模板选择"""
+        """
+        使用LLM进行模板选择。
+
+        构造模板列表与报告摘要 → 调用LLM → 解析JSON →
+        验证模板是否存在并返回标准结构。
+
+        参数:
+            query: 用户输入的主题词。
+            reports: 多个分析引擎的报告内容。
+            forum_logs: 论坛日志，可能为空。
+            available_templates: 本地可用模板清单。
+
+        返回:
+            dict | None: 若LLM成功返回合法结果则包含模板信息，否则为None。
+        """
         logger.info("尝试使用LLM进行模板选择...")
         
         # 构建模板列表
@@ -116,20 +144,22 @@ class TemplateSelectionNode(BaseNode):
         
         # 调用LLM
         response = self.llm_client.stream_invoke_to_string(SYSTEM_PROMPT_TEMPLATE_SELECTION, user_message)
-        
+
         # 检查响应是否为空
         if not response or not response.strip():
             logger.error("LLM返回空响应")
             return None
-        
+
         logger.info(f"LLM原始响应: {response}")
-        
-        # 尝试解析JSON响应
+
+        # 尝试解析JSON响应，使用鲁棒解析器
         try:
-            # 清理响应文本
-            cleaned_response = self._clean_llm_response(response)
-            result = json.loads(cleaned_response)
-            
+            result = self.json_parser.parse(
+                response,
+                context_name="模板选择",
+                expected_keys=["template_name", "selection_reason"],
+            )
+
             # 验证选择的模板是否存在
             selected_template_name = result.get('template_name', '')
             for template in available_templates:
@@ -140,30 +170,29 @@ class TemplateSelectionNode(BaseNode):
                         'template_content': template['content'],
                         'selection_reason': result.get('selection_reason', 'LLM智能选择')
                     }
-            
+
             logger.error(f"LLM选择的模板不存在: {selected_template_name}")
             return None
-            
-        except json.JSONDecodeError as e:
+
+        except JSONParseError as e:
             logger.error(f"JSON解析失败: {str(e)}")
             # 尝试从文本响应中提取模板信息
             return self._extract_template_from_text(response, available_templates)
     
-    def _clean_llm_response(self, response: str) -> str:
-        """清理LLM响应"""
-        # 移除可能的markdown代码块标记
-        if '```json' in response:
-            response = response.split('```json')[1].split('```')[0]
-        elif '```' in response:
-            response = response.split('```')[1].split('```')[0]
-        
-        # 移除前后空白
-        response = response.strip()
-        
-        return response
-    
+
     def _extract_template_from_text(self, response: str, available_templates: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
-        """从文本响应中提取模板信息"""
+        """
+        从文本响应中提取模板信息。
+
+        当LLM未输出合法JSON时，尝试匹配模板名称关键字做降级。
+
+        参数:
+            response: 非结构化的LLM文本。
+            available_templates: 可选模板列表。
+
+        返回:
+            dict | None: 匹配成功时返回模板详情，否则为None。
+        """
         logger.info("尝试从文本响应中提取模板信息")
         
         # 查找响应中是否包含模板名称
@@ -186,7 +215,14 @@ class TemplateSelectionNode(BaseNode):
         return None
     
     def _get_available_templates(self) -> List[Dict[str, Any]]:
-        """获取可用的模板列表"""
+        """
+        获取可用的模板列表。
+
+        枚举模板目录下的 `.md` 文件并读取内容与描述字段。
+
+        返回:
+            list[dict]: 每项包含 name/path/content/description。
+        """
         templates = []
         
         if not os.path.exists(self.template_dir):
@@ -216,7 +252,7 @@ class TemplateSelectionNode(BaseNode):
         return templates
     
     def _extract_template_description(self, template_name: str) -> str:
-        """根据模板名称生成描述"""
+        """根据模板名称生成描述，方便LLM理解模板定位。"""
         if '企业品牌' in template_name:
             return "适用于企业品牌声誉和形象分析"
         elif '市场竞争' in template_name:
@@ -235,7 +271,12 @@ class TemplateSelectionNode(BaseNode):
 
     
     def _get_fallback_template(self) -> Dict[str, Any]:
-        """获取备用默认模板（空模板，让LLM自行发挥）"""
+        """
+        获取备用默认模板（空模板，让LLM自行发挥）。
+
+        返回:
+            dict: 结构体字段与LLM返回一致，方便直接替换。
+        """
         logger.info("未找到合适模板，使用空模板让LLM自行发挥")
         
         return {
