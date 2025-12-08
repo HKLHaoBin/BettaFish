@@ -44,6 +44,59 @@
             position: relative;
         }
 
+        .page-actions {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+        }
+
+        .page-action-button {
+            border: 2px solid #000000;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 10px 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 #000000;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.2s ease, color 0.2s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .page-action-button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 #000000;
+            background-color: #f5f5f5;
+        }
+
+        .page-action-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 2px 2px 0 #777777;
+        }
+
+        .page-action-button.refresh {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .page-action-button.shutdown {
+            background-color: #000000;
+            color: #ffffff;
+            border-color: #000000;
+            box-shadow: none;
+        }
+
+        .page-action-button.shutdown:hover {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            transform: none;
+            box-shadow: none;
+        }
+
         /* 搜索框区域 */
         .search-section {
             border-bottom: 2px solid #000000;
@@ -684,6 +737,15 @@
             display: flex;
             flex-direction: column;
             margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .config-field.hidden {
+            display: none;
+            opacity: 0;
+            height: 0;
+            margin-bottom: 0;
+            overflow: hidden;
         }
 
         .config-field-label {
@@ -1075,12 +1137,20 @@
             flex-direction: column;
         }
 
+        .confirm-dialog.danger {
+            border-color: #b42318;
+        }
+
         .confirm-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 14px 16px;
             border-bottom: 2px solid #000000;
+        }
+
+        .confirm-dialog.danger .confirm-header {
+            border-color: #b42318;
         }
 
         .confirm-title {
@@ -1120,6 +1190,32 @@
 
         .confirm-dialog.danger .confirm-header {
             border-color: #b42318;
+            padding: 16px;
+            border-bottom: 2px solid #000000;
+        }
+
+        .confirm-dialog.danger .confirm-body {
+            border-color: #b42318;
+        }
+
+        .confirm-text {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .confirm-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .confirm-pill {
+            padding: 4px 10px;
+            border: 2px solid #000000;
+            background-color: #f5f5f0;
+            font-size: 12px;
+            font-weight: bold;
         }
 
         .confirm-dialog .confirm-button.danger {
@@ -2200,6 +2296,11 @@
             classic: { label: '黑 + 绿' },
             neutral: { label: '灰 + 白' }
         };
+        const APP_PORTS = {
+            insight: 8501,
+            media: 8502,
+            query: 8503
+        };
 
         const configFieldGroups = [
             {
@@ -2273,8 +2374,13 @@
                 title: '外部检索工具',
                 subtitle: '联动搜索引擎、网站抓取等在线服务，填好密钥并选择Bocha接口',
                 fields: [
+                    {
+                        key: 'SEARCH_TOOL_TYPE',
+                        label: '选择检索工具',
+                        type: 'select',
+                        options: ['BochaAPI', 'AnspireAPI']
+                    },
                     { key: 'TAVILY_API_KEY', label: 'Tavily API Key', type: 'password' },
-                    { key: 'BOCHA_WEB_SEARCH_API_KEY', label: 'Bocha API Key', type: 'password' },
                     { 
                         key: 'BOCHA_BASE_URL',
                         label: 'Bocha API 地址',
@@ -2283,7 +2389,9 @@
                             { label: 'ai-search', value: 'https://api.bocha.cn/v1/ai-search' },
                             { label: 'web-search', value: 'https://api.bocha.cn/v1/web-search' }
                         ]
-                    }
+                    },
+                    { key: 'BOCHA_WEB_SEARCH_API_KEY', label: 'Bocha API Key', type: 'password', condition: { key: 'SEARCH_TOOL_TYPE', value: 'BochaAPI' } },
+                    { key: 'ANSPIRE_API_KEY', label: 'Anspire API Key', type: 'password', condition: { key: 'SEARCH_TOOL_TYPE', value: 'AnspireAPI' } }
                 ]
             }
         ];
@@ -2295,13 +2403,6 @@
             query: 'Query Engine',
             forum: 'Forum Engine',
             report: 'Report Engine'
-        };
-
-        // 应用端口（用于搜索联动与关机提示）
-        const APP_PORTS = {
-            insight: 8501,
-            media: 8502,
-            query: 8503
         };
 
         // 页面头部显示的完整Agent介绍
@@ -2685,6 +2786,17 @@
                     const normalizedValue = rawValue !== undefined && rawValue !== null ? String(rawValue) : '';
                     const safeValue = escapeHtml(normalizedValue || '');
 
+                    // 检查条件是否满足
+                    let isVisible = true;
+                    let hiddenClass = '';
+                    if (field.condition) {
+                        const conditionKey = field.condition.key;
+                        const conditionValue = field.condition.value;
+                        const currentValue = values[conditionKey];
+                        isVisible = currentValue === conditionValue;
+                        hiddenClass = isVisible ? '' : 'hidden';
+                    }
+
                     let control;
 
                     if (field.type === 'select' && field.options) {
@@ -2763,7 +2875,7 @@
                     }
 
                     return `
-                        <label class="config-field">
+                        <label class="config-field ${hiddenClass}" data-condition-key="${field.condition ? field.condition.key : ''}" data-condition-value="${field.condition ? field.condition.value : ''}">
                             <span class="config-field-label">${field.label}</span>
                             ${control}
                         </label>
@@ -2784,6 +2896,9 @@
             container.innerHTML = sections;
             // 不再需要每次调用 attachConfigPasswordToggles
             // 事件委托已在页面初始化时设置
+            
+            // 为所有 select 下拉框绑定事件，监听值变化并动态显示/隐藏条件字段
+            attachConfigConditionalLogic();
         }
 
         function attachConfigPasswordToggles() {
@@ -2833,6 +2948,51 @@
 
             // 标记已绑定，防止重复
             container.dataset.passwordToggleAttached = 'true';
+        }
+
+        // 【新增】条件字段动态显示逻辑
+        function attachConfigConditionalLogic() {
+            const container = document.getElementById('configFormContainer');
+            if (!container) {
+                return;
+            }
+
+            // 防止重复绑定
+            if (container.dataset.conditionalLogicAttached === 'true') {
+                return;
+            }
+
+            // 监听所有 select 下拉框的变化
+            container.addEventListener('change', (event) => {
+                const select = event.target.closest('select.config-field-input');
+                if (!select) {
+                    return;
+                }
+
+                const triggerKey = select.dataset.configKey;
+                const triggerValue = select.value;
+
+                // 更新所有依赖于这个字段的条件字段的显示状态
+                const conditionalFields = container.querySelectorAll('.config-field[data-condition-key]');
+                conditionalFields.forEach(field => {
+                    const conditionKey = field.dataset.conditionKey;
+                    const conditionValue = field.dataset.conditionValue;
+
+                    // 检查这个条件字段是否依赖于当前改变的字段
+                    if (conditionKey === triggerKey) {
+                        if (triggerValue === conditionValue) {
+                            // 显示字段
+                            field.classList.remove('hidden');
+                        } else {
+                            // 隐藏字段
+                            field.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+
+            // 标记已绑定，防止重复
+            container.dataset.conditionalLogicAttached = 'true';
         }
 
         function collectConfigUpdates() {
@@ -3236,6 +3396,9 @@
                 modal.setAttribute('aria-hidden', 'false');
             }
         }
+        function getRunningAgents() {
+            return Object.keys(appStatus).filter(app => appStatus[app] === 'running');
+        }
 
         function hideShutdownConfirm() {
             const modal = document.getElementById('shutdownConfirmModal');
@@ -3248,10 +3411,13 @@
         function showShutdownConfirm(runningAgents = []) {
             const modal = document.getElementById('shutdownConfirmModal');
             const list = document.getElementById('shutdownRunningList');
+            const portList = document.getElementById('shutdownPortList');
             const strongText = document.getElementById('shutdownStrongText');
 
             if (strongText) {
-                strongText.textContent = '确定要关闭系统吗？';
+                strongText.textContent = runningAgents.length > 0
+                    ? '部分 Agent 正在运行，确定要关闭吗？'
+                    : '确定要关闭系统吗？';
             }
 
             if (list) {
@@ -3259,7 +3425,6 @@
                 list.style.display = 'none';
             }
 
-            const portList = document.getElementById('shutdownPortList');
             if (portList) {
                 const targets = Object.entries(APP_PORTS).map(([key, port]) => {
                     const status = appStatus[key] || 'unknown';
@@ -3320,6 +3485,38 @@
             if (!systemStarted) {
                 showMessage('系统尚未启动，无法重启', 'error');
                 setConfigStatus('系统尚未启动，请先启动系统', 'error');
+        async function handleSafeRefresh() {
+            if (pageRefreshInProgress) {
+                return;
+            }
+
+            pageRefreshInProgress = true;
+            const refreshButton = document.getElementById('pageRefreshButton');
+            const originalText = refreshButton ? refreshButton.textContent : '';
+            if (refreshButton) {
+                refreshButton.disabled = true;
+                refreshButton.textContent = '刷新中...';
+            }
+
+            try {
+                await fetchSystemStatus();
+                await checkStatus();
+                refreshConsoleOutput();
+                showMessage('已刷新最新状态与日志', 'success');
+            } catch (error) {
+                console.error('刷新页面数据失败', error);
+                showMessage(`刷新失败: ${error.message}`, 'error');
+            } finally {
+                pageRefreshInProgress = false;
+                if (refreshButton) {
+                    refreshButton.disabled = false;
+                    refreshButton.textContent = originalText || '安全刷新';
+                }
+            }
+        }
+
+        async function handleShutdownRequest() {
+            if (shutdownInProgress) {
                 return;
             }
 
@@ -3335,6 +3532,69 @@
             }
 
             restartSystem({ skipAgentWarning: true });
+                showMessage('系统正在启动/重启，请稍后再关闭', 'error');
+                return;
+            }
+
+            const runningAgents = getRunningAgents();
+            if (runningAgents.length > 0) {
+                showShutdownConfirm(runningAgents);
+                return;
+            }
+
+            shutdownSystem({ skipAgentWarning: true });
+        }
+
+        async function shutdownSystem(options = {}) {
+            const { skipAgentWarning = false } = options;
+
+            if (shutdownInProgress) {
+                return;
+            }
+
+            if (!skipAgentWarning) {
+                const runningAgents = getRunningAgents();
+                if (runningAgents.length > 0) {
+                    showShutdownConfirm(runningAgents);
+                    return;
+                }
+            }
+
+            shutdownInProgress = true;
+            const button = document.getElementById('shutdownButton');
+            const originalText = button ? button.textContent : '';
+            if (button) {
+                button.disabled = true;
+                button.textContent = '关闭中...';
+            }
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 4000);
+                const response = await fetch(SYSTEM_SHUTDOWN_ENDPOINT, { method: 'POST', signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                const message = '系统正在停止，请稍候...';
+                if (!response.ok) {
+                    throw new Error(`服务返回 ${response.status}`);
+                }
+
+                setConfigStatus(message, 'success');
+                showMessage(message, 'success');
+            } catch (error) {
+                const text = error.name === 'AbortError'
+                    ? '停止指令已发送，请稍候退出'
+                    : `停止失败: ${error.message}`;
+                showMessage(text, error.name === 'AbortError' ? 'success' : 'error');
+
+                if (error.name !== 'AbortError') {
+                    shutdownInProgress = false;
+                    if (button) {
+                        button.disabled = false;
+                        button.textContent = originalText || '关闭系统';
+                    }
+                }
+            }
         }
 
         async function startSystem() {
@@ -6506,7 +6766,7 @@ function getConsoleContainer() {
                 statusContent.innerHTML = statusHTML;
                 statusContent.className = `report-status ${statusClass}`;
             }
-        }
+        }};
     </script>
 </body>
 </html>

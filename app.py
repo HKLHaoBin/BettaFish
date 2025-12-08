@@ -113,6 +113,9 @@ CONFIG_KEYS = [
     'TAVILY_API_KEY',
     'BOCHA_WEB_SEARCH_API_KEY',
     'BOCHA_BASE_URL'
+    'SEARCH_TOOL_TYPE',
+    'BOCHA_WEB_SEARCH_API_KEY',
+    'ANSPIRE_API_KEY'
 ]
 
 
@@ -256,6 +259,7 @@ def _prepare_system_start():
         return True, None
 
 def _mark_shutdown_requested():
+    """标记关机已请求；若已有关机流程则返回 False。"""
     with system_state_lock:
         if system_state.get('shutdown_in_progress'):
             return False
@@ -508,12 +512,12 @@ STREAMLIT_SCRIPTS = {
 }
 
 def _log_shutdown_step(message: str):
-    """统一的关机阶段日志，便于追踪清理进度。"""
+    """统一记录关机步骤，便于排查。"""
     logger.info(f"[Shutdown] {message}")
 
 
 def _describe_running_children():
-    """返回存活子进程的描述列表。"""
+    """列出当前存活的子进程。"""
     running = []
     for name, info in processes.items():
         proc = info.get('process')
@@ -521,7 +525,6 @@ def _describe_running_children():
             port_desc = f", port={info.get('port')}" if info.get('port') else ""
             running.append(f"{name}(pid={proc.pid}{port_desc})")
     return running
-
 
 # 输出队列
 output_queues = {
@@ -819,7 +822,7 @@ def cleanup_processes():
 def cleanup_processes_concurrent(timeout: float = 6.0):
     """并发清理所有子进程，超时后强制杀掉残留进程。"""
     _log_shutdown_step(f"开始并发清理子进程（超时 {timeout}s）")
-    _log_shutdown_step("仅终止由当前控制台启动并记录的子进程，不做端口扫描或外部进程kill")
+    _log_shutdown_step("仅终止当前控制台启动并记录的子进程，不做端口扫描")
     running_before = _describe_running_children()
     if running_before:
         _log_shutdown_step("当前存活子进程: " + ", ".join(running_before))
@@ -867,17 +870,17 @@ def cleanup_processes_concurrent(timeout: float = 6.0):
                 processes[app_name]['status'] = 'stopped'
 
     processes['forum']['status'] = 'stopped'
-    _log_shutdown_step("并发清理流程结束，标记系统未启动")
+    _log_shutdown_step("并发清理结束，标记系统未启动")
     _set_system_state(started=False, starting=False)
 
 def _schedule_server_shutdown(delay_seconds: float = 0.1):
-    """在清理完成后尽快关闭SocketIO/进程，避免阻塞当前请求响应。"""
+    """在清理完成后尽快退出，避免阻塞当前请求。"""
     def _shutdown():
         time.sleep(delay_seconds)
         try:
             socketio.stop()
-        except Exception as exc:  # pragma: no cover - 关机兜底
-            logger.warning(f"SocketIO 停止时出现异常，继续退出: {exc}")
+        except Exception as exc:  # pragma: no cover
+            logger.warning(f"SocketIO 停止时异常，继续退出: {exc}")
         _log_shutdown_step("SocketIO 停止指令已发送，即将退出主进程")
         os._exit(0)
 
