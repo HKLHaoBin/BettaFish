@@ -66,6 +66,14 @@ class Settings(BaseSettings):
     JSON_ERROR_LOG_DIR: str = Field(
         "logs/json_repair_failures", description="无法修复的JSON块落盘目录"
     )
+    
+    # GraphRAG 配置
+    GRAPHRAG_ENABLED: bool = Field(
+        default=False, description="是否启用GraphRAG知识图谱功能"
+    )
+    GRAPHRAG_MAX_QUERIES: int = Field(
+        default=3, description="GraphRAG每章节查询次数上限"
+    )
 
     class Config:
         """Pydantic配置：允许从.env读取并兼容大小写"""

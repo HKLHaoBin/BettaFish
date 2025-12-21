@@ -13,6 +13,7 @@ import threading
 import time
 from collections import deque, defaultdict
 from datetime import datetime
+from pathlib import Path
 from queue import Queue, Empty
 from flask import Blueprint, request, jsonify, Response, send_file, stream_with_context
 from typing import Dict, Any, List, Optional
@@ -229,6 +230,19 @@ def _format_sse(event: Dict[str, Any]) -> str:
     return f"id: {event_id}\nevent: {event_type}\ndata: {payload}\n\n"
 
 
+def _safe_filename_segment(value: str, fallback: str = "report") -> str:
+    """
+    生成可用于文件名的安全片段，保留字母数字与常见分隔符。
+
+    参数:
+        value: 原始字符串。
+        fallback: 兜底文本，当value为空或清洗后为空时使用。
+    """
+    sanitized = "".join(c for c in str(value) if c.isalnum() or c in (" ", "-", "_")).strip()
+    sanitized = sanitized.replace(" ", "_")
+    return sanitized or fallback
+
+
 def initialize_report_engine():
     """
     初始化Report Engine。
@@ -291,6 +305,9 @@ class ReportTask:
         self.state_file_relative_path = ""
         self.ir_file_path = ""
         self.ir_file_relative_path = ""
+        self.markdown_file_path = ""
+        self.markdown_file_relative_path = ""
+        self.markdown_file_name = ""
         # ====== 流式事件缓存与并发保护 ======
         # 使用deque保存最近的事件，结合锁保证多线程下的安全访问
         self.event_history: deque = deque(maxlen=1000)
@@ -343,7 +360,10 @@ class ReportTask:
             'state_file_ready': bool(self.state_file_path),
             'state_file_path': self.state_file_relative_path or self.state_file_path,
             'ir_file_ready': bool(self.ir_file_path),
-            'ir_file_path': self.ir_file_relative_path or self.ir_file_path
+            'ir_file_path': self.ir_file_relative_path or self.ir_file_path,
+            'markdown_file_ready': bool(self.markdown_file_path),
+            'markdown_file_name': self.markdown_file_name,
+            'markdown_file_path': self.markdown_file_relative_path or self.markdown_file_path
         }
 
     def publish_event(self, event_type: str, payload: Dict[str, Any]) -> None:
@@ -469,7 +489,8 @@ def run_report_generation(task: ReportTask, query: str, custom_template: str = "
                     forum_logs=content['forum_logs'],
                     custom_template=custom_template,
                     save_report=True,
-                    stream_handler=stream_handler
+                    stream_handler=stream_handler,
+                    report_id=task.task_id
                 )
                 break
             except ChapterJsonParseError as err:
@@ -1196,6 +1217,73 @@ def clear_log():
         return jsonify({
             'success': False,
             'error': f'清空日志失败: {str(e)}'
+        }), 500
+
+
+@report_bp.route('/export/md/<task_id>', methods=['GET'])
+def export_markdown(task_id: str):
+    """
+    导出报告为 Markdown 格式。
+
+    基于已保存的 Document IR 调用 MarkdownRenderer，生成文件并返回下载。
+    """
+    try:
+        task = tasks_registry.get(task_id)
+        if not task:
+            return jsonify({
+                'success': False,
+                'error': '任务不存在'
+            }), 404
+
+        if task.status != 'completed':
+            return jsonify({
+                'success': False,
+                'error': f'任务未完成，当前状态: {task.status}'
+            }), 400
+
+        if not task.ir_file_path or not os.path.exists(task.ir_file_path):
+            return jsonify({
+                'success': False,
+                'error': 'IR文件不存在，无法生成Markdown'
+            }), 404
+
+        with open(task.ir_file_path, 'r', encoding='utf-8') as f:
+            document_ir = json.load(f)
+
+        from .renderers import MarkdownRenderer
+        renderer = MarkdownRenderer()
+        # 传入 ir_file_path，修复后的图表会自动保存到 IR 文件
+        markdown_text = renderer.render(document_ir, ir_file_path=task.ir_file_path)
+
+        metadata = document_ir.get('metadata') if isinstance(document_ir, dict) else {}
+        topic = (metadata or {}).get('topic') or (metadata or {}).get('title') or (metadata or {}).get('query') or task.query
+        safe_topic = _safe_filename_segment(topic or 'report')
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"report_{safe_topic}_{timestamp}.md"
+
+        output_dir = Path(settings.OUTPUT_DIR)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        md_path = output_dir / filename
+        md_path.write_text(markdown_text, encoding='utf-8')
+
+        task.markdown_file_path = str(md_path.resolve())
+        task.markdown_file_relative_path = os.path.relpath(task.markdown_file_path, os.getcwd())
+        task.markdown_file_name = filename
+
+        logger.info(f"导出Markdown完成: {md_path}")
+
+        return send_file(
+            task.markdown_file_path,
+            mimetype='text/markdown',
+            as_attachment=True,
+            download_name=filename
+        )
+
+    except Exception as e:
+        logger.exception(f"导出Markdown失败: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': f'导出Markdown失败: {str(e)}'
         }), 500
 
 

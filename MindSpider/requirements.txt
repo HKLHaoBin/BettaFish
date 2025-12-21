@@ -6,6 +6,7 @@
 # ===============================
 pymysql==1.1.0
 aiomysql==0.2.0
+asyncmy==0.2.10
 aiosqlite==0.21.0
 asyncpg
 sqlalchemy
@@ -15,8 +16,10 @@ psycopg[binary]
 # HTTP请求和网络
 # ===============================
 httpx==0.28.1
+socksio==1.0.0
 requests==2.32.3
 aiofiles~=23.2.1
+cryptography==46.0.3
 
 # ===============================
 # 话题提取模块依赖

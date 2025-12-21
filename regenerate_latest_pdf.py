@@ -88,7 +88,7 @@ def load_document_ir(file_path):
         logger.error(f"加载报告失败: {e}")
         return None
 
-def generate_pdf_with_vector_charts(document_ir, output_path):
+def generate_pdf_with_vector_charts(document_ir, output_path, ir_file_path=None):
     """
     使用 PDFRenderer 将 Document IR 渲染为包含 SVG 矢量图表的 PDF。
 
@@ -97,6 +97,7 @@ def generate_pdf_with_vector_charts(document_ir, output_path):
     参数:
         document_ir: 完整的 Document IR
         output_path: 目标 PDF 路径
+        ir_file_path: 可选，IR 文件路径，提供时修复后会自动保存
 
     返回:
         Path | None: 成功时返回生成的 PDF 路径，失败返回 None。
@@ -109,11 +110,12 @@ def generate_pdf_with_vector_charts(document_ir, output_path):
         # 创建PDF渲染器
         renderer = PDFRenderer()
 
-        # 渲染PDF
+        # 渲染PDF，传入 ir_file_path 用于修复后保存
         result_path = renderer.render_to_pdf(
             document_ir,
             output_path,
-            optimize_layout=True
+            optimize_layout=True,
+            ir_file_path=str(ir_file_path) if ir_file_path else None
         )
 
         logger.info("=" * 60)
@@ -171,8 +173,8 @@ def main():
     logger.info(f"输出路径: {output_path}")
     logger.info("")
 
-    # 4. 生成PDF
-    result = generate_pdf_with_vector_charts(document_ir, output_path)
+    # 4. 生成PDF，传入 IR 文件路径用于修复后保存
+    result = generate_pdf_with_vector_charts(document_ir, output_path, ir_file_path=latest_report)
 
     if result:
         logger.info("")

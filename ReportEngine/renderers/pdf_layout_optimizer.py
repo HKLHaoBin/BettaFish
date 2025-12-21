@@ -800,9 +800,42 @@ class PDFLayoutOptimizer:
     display: none !important;
 }}
 
-/* PDF中隐藏hero actions（深蓝色的三个按钮） */
+/* PDF中显示hero actions（建议/行动条目） */
 .hero-actions {{
-    display: none !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-top: 14px !important;
+    padding: 0 !important;
+}}
+
+.hero-actions .ghost-btn {{
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    background: none !important;
+    background-color: #f3f4f6 !important;
+    background-image: none !important;
+    border: none !important;
+    border-width: 0 !important;
+    border-style: none !important;
+    border-radius: 999px !important;
+    padding: 5px 10px !important;
+    font-size: {max(cfg.page.font_size_base - 2, 11)}px !important;
+    color: #222 !important;
+    width: auto !important;
+    height: auto !important;
+    white-space: normal !important;
+    line-height: 1.5 !important;
+    text-align: left !important;
+    box-shadow: none !important;
+    cursor: default !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    outline: none !important;
+    word-break: break-word !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
 }}
 
 /* 页面基础样式 */
@@ -915,16 +948,17 @@ p {{
     height: auto;
     display: flex;
     flex-direction: column;
+    align-items: stretch !important;
     gap: 8px;
 }}
 
 .kpi-card .kpi-value {{
     font-size: {body_kpi_value}px !important;
     line-height: 1.25;
-    word-break: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
-    max-width: 100%;
+    white-space: nowrap;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
     display: flex;
     flex-wrap: nowrap;
     align-items: baseline;
@@ -1158,8 +1192,8 @@ td {{
 
 .hero-kpi .value {{
     font-size: {overview_kpi_value}px !important;
-    word-break: break-word;
-    overflow-wrap: break-word;
+    white-space: nowrap;
+    width: 100%;
     max-width: 100%;
     line-height: 1.1;
     display: block;
@@ -1242,25 +1276,42 @@ td {{
     justify-content: flex-start;
 }}
 
-/* Hero actions按钮 - PDF中仍隐藏，保留缩进样式 */
+/* Hero actions按钮 - PDF中显示为线框标签样式 */
 .hero-actions {{
-    margin-top: 12px;
-    display: flex;
+    margin-top: 14px;
+    display: flex !important;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
     max-width: 100%;
-    overflow: hidden;
+    overflow: visible;
+    padding: 0;
 }}
 
-.hero-actions button {{
+.hero-actions button,
+.hero-actions .ghost-btn {{
     font-size: {max(cfg.page.font_size_base - 2, 11)}px !important;
     padding: 5px 10px !important;
-    max-width: 200px;
+    max-width: 100%;
     word-break: break-word;
     white-space: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow: visible;
     box-sizing: border-box;
+    background: none !important;
+    background-color: #f3f4f6 !important;
+    background-image: none !important;
+    border: none !important;
+    border-width: 0 !important;
+    border-style: none !important;
+    border-radius: 999px !important;
+    color: #222 !important;
+    line-height: 1.5;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: flex-start;
+    outline: none !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    box-shadow: none !important;
 }}
 
 /* 防止标题孤行 */

@@ -33,6 +33,8 @@ ALLOWED_BLOCK_TYPES: List[str] = [
     "paragraph",
     "list",
     "table",
+    "swotTable",
+    "pestTable",
     "blockquote",
     "engineQuote",
     "hr",
@@ -166,6 +168,137 @@ table_block: Dict[str, Any] = {
         "zebra": {"type": "boolean"},
     },
     "required": ["type", "rows"],
+    "additionalProperties": True,
+}
+
+swot_item_schema: Dict[str, Any] = {
+    "title": "SwotItem",
+    "oneOf": [
+        {"type": "string"},
+        {
+            "type": "object",
+            "properties": {
+                "title": {"type": "string"},
+                "label": {"type": "string"},
+                "text": {"type": "string"},
+                "detail": {"type": "string"},
+                "description": {"type": "string"},
+                "evidence": {"type": "string"},
+                "impact": {
+                    "type": "string",
+                    "enum": ["低", "中低", "中", "中高", "高", "极高"],
+                    "description": "影响评级，只允许填写：低/中低/中/中高/高/极高",
+                },
+                # "score": {
+                #     "type": "number",
+                #     "minimum": 0,
+                #     "maximum": 10,
+                #     "description": "评分，只允许0-10的数字",
+                # },
+                "priority": {"type": ["string", "number"]},
+            },
+            "required": [],
+            "additionalProperties": True,
+        },
+    ],
+}
+
+swot_block: Dict[str, Any] = {
+    "title": "SwotTableBlock",
+    "type": "object",
+    "properties": {
+        "type": {"const": "swotTable"},
+        "title": {"type": "string"},
+        "summary": {"type": "string"},
+        "strengths": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/swotItem"},
+        },
+        "weaknesses": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/swotItem"},
+        },
+        "opportunities": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/swotItem"},
+        },
+        "threats": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/swotItem"},
+        },
+    },
+    "required": ["type"],
+    "anyOf": [
+        {"required": ["strengths"]},
+        {"required": ["weaknesses"]},
+        {"required": ["opportunities"]},
+        {"required": ["threats"]},
+    ],
+    "additionalProperties": True,
+}
+
+pest_item_schema: Dict[str, Any] = {
+    "title": "PestItem",
+    "oneOf": [
+        {"type": "string"},
+        {
+            "type": "object",
+            "properties": {
+                "title": {"type": "string"},
+                "label": {"type": "string"},
+                "text": {"type": "string"},
+                "detail": {"type": "string"},
+                "description": {"type": "string"},
+                "source": {"type": "string"},
+                "evidence": {"type": "string"},
+                "trend": {
+                    "type": "string",
+                    "enum": ["正面利好", "负面影响", "中性", "不确定", "持续观察"],
+                    "description": "趋势/影响评估，只允许填写：正面利好/负面影响/中性/不确定/持续观察",
+                },
+                "impact": {"type": ["string", "number"]},
+            },
+            "required": [],
+            "additionalProperties": True,
+        },
+    ],
+}
+
+pest_block: Dict[str, Any] = {
+    "title": "PestTableBlock",
+    "type": "object",
+    "properties": {
+        "type": {"const": "pestTable"},
+        "title": {"type": "string"},
+        "summary": {"type": "string"},
+        "political": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/pestItem"},
+            "description": "政治因素：政策法规、政府态度、政治稳定性等",
+        },
+        "economic": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/pestItem"},
+            "description": "经济因素：经济周期、利率汇率、消费水平等",
+        },
+        "social": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/pestItem"},
+            "description": "社会因素：人口结构、文化趋势、生活方式等",
+        },
+        "technological": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/pestItem"},
+            "description": "技术因素：技术创新、研发投入、技术普及等",
+        },
+    },
+    "required": ["type"],
+    "anyOf": [
+        {"required": ["political"]},
+        {"required": ["economic"]},
+        {"required": ["social"]},
+        {"required": ["technological"]},
+    ],
     "additionalProperties": True,
 }
 
@@ -361,6 +494,8 @@ block_variants: List[Dict[str, Any]] = [
     kpi_block,
     widget_block,
     toc_block,
+    swot_block,
+    pest_block,
 ]
 
 CHAPTER_JSON_SCHEMA: Dict[str, Any] = {
@@ -388,6 +523,8 @@ CHAPTER_JSON_SCHEMA: Dict[str, Any] = {
     "definitions": {
         "inlineMark": inline_mark_schema,
         "inlineRun": inline_run_schema,
+        "swotItem": swot_item_schema,
+        "pestItem": pest_item_schema,
         "block": {"oneOf": block_variants},
     },
 }

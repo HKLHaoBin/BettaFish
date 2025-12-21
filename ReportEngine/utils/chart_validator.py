@@ -444,11 +444,15 @@ class ChartRepairer:
         if validation_result is None:
             validation_result = self.validator.validate(widget_block)
 
+        # 跟踪当前最新的验证结果和数据
+        current_validation = validation_result
+        current_block = widget_block
+
         # 2. 尝试本地修复（即使验证通过也尝试，因为可能有警告）
         logger.info(f"尝试本地修复图表")
         local_result = self.repair_locally(widget_block, validation_result)
 
-        # 3. 验证修复结果
+        # 3. 验证本地修复结果
         if local_result.has_changes():
             repaired_validation = self.validator.validate(local_result.repaired_block)
             if repaired_validation.is_valid:
@@ -458,22 +462,27 @@ class ChartRepairer:
                 )
             else:
                 logger.warning(f"本地修复后仍然无效: {repaired_validation.errors}")
+                # 更新当前状态为本地修复后的结果，供API修复使用
+                current_validation = repaired_validation
+                current_block = local_result.repaired_block
 
-        # 4. 如果本地修复失败且有严重错误，尝试API修复
-        if validation_result.has_critical_errors() and len(self.llm_repair_fns) > 0:
-            logger.info("本地修复失败，尝试API修复")
-            api_result = self.repair_with_api(widget_block, validation_result)
+        # 4. 如果当前仍有严重错误，尝试API修复
+        # 注意：使用 current_validation 而非原始 validation_result
+        if current_validation.has_critical_errors() and len(self.llm_repair_fns) > 0:
+            logger.info("本地修复失败或不足，尝试API修复")
+            # 传入本地已修复的数据（如果有），避免浪费本地修复的工作
+            api_result = self.repair_with_api(current_block, current_validation)
 
             if api_result.success:
                 # 验证修复结果
-                repaired_validation = self.validator.validate(api_result.repaired_block)
-                if repaired_validation.is_valid:
+                api_repaired_validation = self.validator.validate(api_result.repaired_block)
+                if api_repaired_validation.is_valid:
                     logger.info(f"API修复成功: {api_result.changes}")
                     return _cache_and_return(api_result)
                 else:
-                    logger.warning(f"API修复后仍然无效: {repaired_validation.errors}")
+                    logger.warning(f"API修复后仍然无效: {api_repaired_validation.errors}")
 
-        # 5. 如果验证通过，返回原始或修复后的数据
+        # 5. 如果原始验证通过，返回原始或修复后的数据
         if validation_result.is_valid:
             if local_result.has_changes():
                 return _cache_and_return(
@@ -482,9 +491,11 @@ class ChartRepairer:
             else:
                 return _cache_and_return(RepairResult(True, widget_block, 'none', []))
 
-        # 6. 所有修复都失败，返回原始数据
+        # 6. 所有修复都失败，返回原始数据（或本地部分修复的数据）
         logger.warning("所有修复尝试失败，保持原始数据")
-        return _cache_and_return(RepairResult(False, widget_block, 'none', []))
+        # 如果本地有部分修复，返回本地修复后的数据（虽然验证仍失败，但可能比原始数据好）
+        final_block = local_result.repaired_block if local_result.has_changes() else widget_block
+        return _cache_and_return(RepairResult(False, final_block, 'none', []))
 
     def repair_locally(
         self,
@@ -664,27 +675,41 @@ class ChartRepairer:
         策略：按顺序尝试不同的Engine，直到修复成功
         """
         if not self.llm_repair_fns:
+            logger.debug("没有可用的LLM修复函数，跳过API修复")
             return RepairResult(False, None, 'api', [])
+
+        widget_id = widget_block.get('widgetId', 'unknown')
+        logger.info(f"图表 {widget_id} 开始API修复，共 {len(self.llm_repair_fns)} 个Engine可用")
 
         for idx, repair_fn in enumerate(self.llm_repair_fns):
             try:
-                logger.info(f"尝试使用Engine {idx + 1}修复图表")
+                logger.info(f"尝试使用Engine {idx + 1}/{len(self.llm_repair_fns)} 修复图表 {widget_id}")
                 repaired = repair_fn(widget_block, validation_result.errors)
 
                 if repaired and isinstance(repaired, dict):
                     # 验证修复结果
                     repaired_validation = self.validator.validate(repaired)
                     if repaired_validation.is_valid:
+                        logger.info(f"图表 {widget_id} 使用Engine {idx + 1} 修复成功")
                         return RepairResult(
                             True,
                             repaired,
                             'api',
                             [f"使用Engine {idx + 1}修复成功"]
                         )
+                    else:
+                        logger.warning(
+                            f"图表 {widget_id} Engine {idx + 1} 返回的数据验证失败: "
+                            f"{repaired_validation.errors}"
+                        )
+                else:
+                    logger.warning(f"图表 {widget_id} Engine {idx + 1} 返回空或无效响应")
             except Exception as e:
-                logger.error(f"Engine {idx + 1}修复失败: {e}")
+                # 使用 exception 记录完整堆栈
+                logger.exception(f"图表 {widget_id} Engine {idx + 1} 修复过程中发生异常: {e}")
                 continue
 
+        logger.warning(f"图表 {widget_id} 所有 {len(self.llm_repair_fns)} 个Engine均修复失败")
         return RepairResult(False, None, 'api', [])
 
 

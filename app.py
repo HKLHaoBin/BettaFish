@@ -13,6 +13,7 @@ os.environ['PYTHONUNBUFFERED'] = '1'  # 禁用Python输出缓冲，确保日志�
 import subprocess
 import time
 import threading
+import json
 from datetime import datetime
 from queue import Queue
 from flask import Flask, render_template, request, jsonify, Response
@@ -23,6 +24,11 @@ from loguru import logger
 import importlib
 from pathlib import Path
 from MindSpider.main import MindSpider
+from utils.knowledge_logger import (
+    append_knowledge_log,
+    compact_records as _compact_records,
+    init_knowledge_log,
+)
 
 # 导入ReportEngine
 try:
@@ -115,7 +121,9 @@ CONFIG_KEYS = [
     'BOCHA_BASE_URL'
     'SEARCH_TOOL_TYPE',
     'BOCHA_WEB_SEARCH_API_KEY',
-    'ANSPIRE_API_KEY'
+    'ANSPIRE_API_KEY',
+    'GRAPHRAG_ENABLED',
+    'GRAPHRAG_MAX_QUERIES'
 ]
 
 
@@ -362,6 +370,9 @@ def init_forum_log():
 
 # 初始化forum.log
 init_forum_log()
+
+# 初始化 knowledge_query.log
+init_knowledge_log()
 
 # 启动ForumEngine智能监控
 def start_forum_engine():
@@ -1366,6 +1377,283 @@ def shutdown_system():
     except Exception as exc:  # pragma: no cover - 兜底捕获
         logger.exception("系统关闭过程中出现异常")
         return jsonify({'success': False, 'message': f'系统关闭异常: {exc}'}), 500
+
+# ==================== GraphRAG API 端点 ====================
+# 前端控制台与 /graph-viewer 调用，均依赖 ReportEngine 在章节目录落盘的 graphrag.json。
+# 若 GRAPHRAG_ENABLED 关闭，这些接口仅返回“未找到图谱”提示。
+
+@app.route('/api/graph/<report_id>')
+def get_graph_data(report_id):
+    """
+    获取指定报告的知识图谱数据。
+    
+    返回格式适合前端 Vis.js 渲染：
+    - nodes: [{id, label, group, title, properties}]
+    - edges: [{from, to, label}]
+    """
+    try:
+        from ReportEngine.graphrag import GraphStorage, Graph
+        
+        # 从默认存储位置查找图谱文件
+        storage = GraphStorage()
+        graph_path = storage.find_graph_by_report_id(report_id)
+        
+        if not graph_path or not graph_path.exists():
+            return jsonify({
+                'success': False,
+                'message': f'未找到报告 {report_id} 的知识图谱数据'
+            }), 404
+        
+        graph = storage.load(graph_path)
+        
+        # 检查图谱是否成功加载（文件可能损坏或格式错误）
+        if graph is None:
+            return jsonify({
+                'success': False,
+                'message': f'图谱文件损坏或格式错误: {report_id}'
+            }), 500
+        
+        # 转换为 Vis.js 格式
+        vis_nodes = []
+        vis_edges = []
+        
+        for node_id, node in graph.nodes.items():
+            vis_nodes.append({
+                'id': node_id,
+                'label': node.label or node_id,
+                'group': node.type,
+                'title': _format_node_tooltip(node),
+                'properties': node.properties
+            })
+        
+        for edge in graph.edges:
+            vis_edges.append({
+                'from': edge.source,
+                'to': edge.target,
+                'label': edge.relation,
+                'arrows': 'to'
+            })
+        
+        return jsonify({
+            'success': True,
+            'graph': {
+                'nodes': vis_nodes,
+                'edges': vis_edges,
+                'stats': graph.get_stats()
+            }
+        })
+        
+    except Exception as e:
+        logger.exception(f"获取图谱数据失败: {e}")
+        return jsonify({
+            'success': False,
+            'message': f'获取图谱数据失败: {str(e)}'
+        }), 500
+
+
+@app.route('/api/graph/latest')
+def get_latest_graph():
+    """获取最近一次生成的知识图谱数据。"""
+    try:
+        from ReportEngine.graphrag import GraphStorage
+        
+        storage = GraphStorage()
+        latest_path = storage.find_latest_graph()
+        
+        if not latest_path or not latest_path.exists():
+            return jsonify({
+                'success': False,
+                'message': '暂无可用的知识图谱数据'
+            }), 404
+        
+        graph = storage.load(latest_path)
+        report_id = latest_path.parent.name if latest_path.parent else 'unknown'
+        
+        # 检查图谱是否成功加载（文件可能损坏或格式错误）
+        if graph is None:
+            return jsonify({
+                'success': False,
+                'message': '图谱文件损坏或格式错误'
+            }), 500
+        
+        # 转换为 Vis.js 格式
+        vis_nodes = []
+        vis_edges = []
+        
+        for node_id, node in graph.nodes.items():
+            vis_nodes.append({
+                'id': node_id,
+                'label': node.label or node_id,
+                'group': node.type,
+                'title': _format_node_tooltip(node),
+                'properties': node.properties
+            })
+        
+        for edge in graph.edges:
+            vis_edges.append({
+                'from': edge.source,
+                'to': edge.target,
+                'label': edge.relation,
+                'arrows': 'to'
+            })
+        
+        return jsonify({
+            'success': True,
+            'report_id': report_id,
+            'graph': {
+                'nodes': vis_nodes,
+                'edges': vis_edges,
+                'stats': graph.get_stats()
+            }
+        })
+        
+    except Exception as e:
+        logger.exception(f"获取最新图谱失败: {e}")
+        return jsonify({
+            'success': False,
+            'message': f'获取最新图谱失败: {str(e)}'
+        }), 500
+
+
+@app.route('/graph-viewer')
+@app.route('/graph-viewer/')
+@app.route('/graph-viewer/<report_id>')
+def graph_viewer(report_id=None):
+    """
+    知识图谱可视化页面。
+    
+    提供交互式图谱展示，支持：
+    - 全屏模式
+    - 缩放、拖拽
+    - 节点详情查看
+    - 筛选和搜索
+    """
+    return render_template('graph_viewer.html', report_id=report_id)
+
+
+@app.route('/api/graph/query', methods=['POST'])
+def query_graph():
+    """
+    查询知识图谱。
+    
+    请求体:
+    {
+        "report_id": "xxx",  // 可选，默认使用最新图谱
+        "keywords": ["关键词1", "关键词2"],
+        "node_types": ["section", "source"],
+        "depth": 2
+    }
+    """
+    try:
+        from ReportEngine.graphrag import GraphStorage, QueryEngine, QueryParams
+        
+        data = request.get_json() or {}
+        report_id = data.get('report_id')
+
+        # 记录查询日志（关键词、过滤条件等）
+        append_knowledge_log(
+            'GRAPH_QUERY',
+            {
+                'report_id': report_id,
+                'keywords': data.get('keywords', []),
+                'node_types': data.get('node_types'),
+                'depth': data.get('depth', 1),
+                'engine_filter': data.get('engine_filter')
+            }
+        )
+        
+        storage = GraphStorage()
+        
+        if report_id:
+            graph_path = storage.find_graph_by_report_id(report_id)
+        else:
+            # 未指定报告ID时默认取最近一次生成的图谱，便于快速试用
+            graph_path = storage.find_latest_graph()
+        
+        if not graph_path or not graph_path.exists():
+            return jsonify({
+                'success': False,
+                'message': '未找到可用的知识图谱'
+            }), 404
+        
+        graph = storage.load(graph_path)
+        
+        # 检查图谱是否成功加载（文件可能损坏或格式错误）
+        if graph is None:
+            return jsonify({
+                'success': False,
+                'message': '图谱文件损坏或格式错误'
+            }), 500
+        
+        query_engine = QueryEngine(graph)
+        
+        params = QueryParams(
+            keywords=data.get('keywords', []),
+            node_types=data.get('node_types'),
+            engine_filter=data.get('engine_filter'),
+            depth=data.get('depth', 1)
+        )
+        
+        result = query_engine.query(params)
+        try:
+            append_knowledge_log(
+                'GRAPH_QUERY_RESULT',
+                {
+                    'report_id': report_id or 'latest',
+                    'counts': {
+                        'matched_sections': len(result.matched_sections),
+                        'matched_queries': len(result.matched_queries),
+                        'matched_sources': len(result.matched_sources),
+                        'total_nodes': result.total_nodes,
+                    },
+                    'query_params': result.query_params,
+                    'matched_sections': _compact_records(result.matched_sections),
+                    'matched_queries': _compact_records(result.matched_queries),
+                    'matched_sources': _compact_records(result.matched_sources),
+                }
+            )
+        except Exception as log_exc:  # pragma: no cover - 日志失败不阻塞主流程
+            logger.warning(f"Knowledge Query: 结果写日志失败: {log_exc}")
+        
+        return jsonify({
+            'success': True,
+            'result': {
+                'matched_sections': result.matched_sections,
+                'matched_queries': result.matched_queries,
+                'matched_sources': result.matched_sources,
+                'total_nodes': result.total_nodes,
+                'query_params': result.query_params,
+                'summary': result.get_summary()
+            }
+        })
+        
+    except Exception as e:
+        logger.exception(f"图谱查询失败: {e}")
+        return jsonify({
+            'success': False,
+            'message': f'图谱查询失败: {str(e)}'
+        }), 500
+
+
+def _format_node_tooltip(node) -> str:
+    """格式化节点悬停提示文本。"""
+    lines = [f"<b>{node.label or node.id}</b>"]
+    lines.append(f"类型: {node.type}")
+    
+    props = node.properties or {}
+    if 'summary' in props:
+        lines.append(f"摘要: {props['summary'][:100]}...")
+    if 'content' in props:
+        lines.append(f"内容: {props['content'][:80]}...")
+    if 'url' in props:
+        lines.append(f"链接: {props['url']}")
+    if 'query' in props:
+        lines.append(f"查询: {props['query']}")
+    
+    return "<br>".join(lines)
+
+
+# ==================== GraphRAG API 端点结束 ====================
 
 @socketio.on('connect')
 def handle_connect():

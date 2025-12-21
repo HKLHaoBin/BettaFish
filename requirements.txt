@@ -70,7 +70,7 @@ wordcloud==1.9.3
 # ===== PDF生成 =====
 weasyprint>=60.0  # PDF导出，支持Python 3.9-3.13
 
-# ===== 机器学习（可选，用于情感分析，不安装也没事写了容错程序） =====
+# ===== 机器学习 =====
 torch>=2.0.0 # CPU版本
 transformers>=4.30.0
 sentence-transformers>=2.2.2

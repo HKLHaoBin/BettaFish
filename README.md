@@ -5,10 +5,8 @@
 <a href="https://trendshift.io/repositories/15286" target="_blank"><img src="https://trendshift.io/api/badge/repositories/15286" alt="666ghj%2FBettaFish | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
 <a href="https://aihubmix.com/?aff=8Ds9" target="_blank"><img src="./static/image/logo_aihubmix.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a>&ensp;
-<a href="https://lioncc.ai/" target="_blank"><img src="./static/image/logo_loincc.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a>&ensp;
-<a href="https://share.302.ai/P66Qe3" target="_blank"><img src="./static/image/logo_302ai.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a>
-
-<a href="https://open.anspire.cn/?share_code=3E1FUOUH" target="_blank"><img src="./static/image/logo_anspire.png" alt="666ghj%2FBettaFish | Trendshift" height="50"/></a>
+<a href="https://open.anspire.cn/?share_code=3E1FUOUH" target="_blank"><img src="./static/image/logo_anspire.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a>&ensp;
+<a href="https://www.thordata.com/?ls=github&lk=BettaFish" target="_blank"><img src="./static/image/logo_thordata.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a>
 
 [![GitHub Stars](https://img.shields.io/github/stars/666ghj/BettaFish?style=flat-square)](https://github.com/666ghj/BettaFish/stargazers)
 [![GitHub Watchers](https://img.shields.io/github/watchers/666ghj/BettaFish?style=flat-square)](https://github.com/666ghj/BettaFish/watchers)
@@ -56,7 +54,7 @@
 >
 > 附一个比较活跃的L站项目讨论帖：https://linux.do/t/topic/1009280
 >
-> 查看L站佬友做的测评 [开源项目(微舆)与manus|minimax|ChatGPT对比](https://linux.do/t/topic/1148040)
+> 查看L站佬友做的测评 [开源项目(微舆)与manus|minimax|ChatGPT|Perplexity对比](https://linux.do/t/topic/1148040)
 
 <div align="center">
 <img src="static/image/system_schematic.png" alt="banner" width="800">
@@ -69,23 +67,14 @@
 LLM模型API赞助：<a href="https://aihubmix.com/?aff=8Ds9" target="_blank"><img src="./static/image/logo_aihubmix.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a>
 
 <details>
-<summary>有赞助LLM算力福利！编程拼车codecodex.ai；编程算力VibeCodingAPI.ai：</a><span style="margin-left: 10px"><a href="https://codecodex.ai/" target="_blank"><img src="./static/image/logo_loincc.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a></summary>
-
-1. 所罗门博客LionCC.ai已更新《BettaFish 微舆系统 - LionCC API 部署配置完全指南》正在二开优化一键部署和云服务器调用方案。
-2. VibeCodingapi.ai狮子算力平台已经适配《BettaFish 微舆系统》所有LLM模型含claude code和openai codex和gemini cli编程开发三巨头算力。额度价格，只要一比一（100元等于100美刀额度）
-3. Codecodex.ai狮子编程拼车系统，已实现无IP门槛绕过claude code和openai codex封锁，按官方部署教程后切换BASE_URL调用地址和Token key调用密钥即可使用最强编程模型。
-
-所罗门LionCC赞助BettaFish 微舆福利：打开codecodex.ai狮子编程频道扫码加入微信社群，注册VibeCodingapi.ai狮子算力，统一送20刀API额度（仅限前一千名）
-</details>
-
-<details>
-<summary>按用量付费的企业级AI资源平台，提供市场上全面的AI模型和API，以及多种在线AI应用：</a><span style="margin-left: 10px"><a href="https://share.302.ai/P66Qe3" target="_blank"><img src="./static/image/logo_302ai.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a></summary>
-<img src="static/image/banner_302ai_ch.jpg" alt="banner">302.AI是一个按用量付费的企业级AI资源平台，提供市场上最新、最全面的AI模型和API，以及多种开箱即用的在线AI应用。
-</details>
-
-<details>
 <summary>AI联网搜索、文件解析及网页内容抓取等智能体核心能力提供商：</a><span style="margin-left: 10px"><a href="https://open.anspire.cn/?share_code=3E1FUOUH" target="_blank"><img src="./static/image/logo_anspire.png" alt="666ghj%2FBettaFish | Trendshift" height="50"/></a></summary>
 安思派开放平台(Anspire Open)是面向智能体时代的领先的基础设施提供商。我们为开发者提供构建强大智能体所需的核心能力栈，现已上线AI联网搜索【多版本，极具竞争力的价格】、文件解析【限免】及网页内容抓取【限免】、云端浏览器自动化（Anspire Browser Agent）【内测】、多轮改写等服务，持续为智能体连接并操作复杂的数字世界提供坚实基础。可无缝集成至Dify、Coze、元器等主流智能体平台。通过透明点数计费体系与模块化设计，为企业提供高效、低成本的定制化支持，加速智能化升级进程。
+</details>
+
+<details>
+<summary>免费领取1GB免费试用，企业级全球代理IP与Scraper API解决方案提供商，立即注册：</a><span style="margin-left: 10px"><a href="https://www.thordata.com/?ls=github&lk=BettaFish" target="_blank"><img src="./static/image/logo_thordata.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a></summary>
+<img src="static/image/banner_thordata.png" height="250" alt="banner">
+Thordata通过高可靠性的代理网络和自动化抓取解决方案，帮助企业轻松获取网络公开数据，并承诺99.9%的正常运行时间与99.7%的成功率。
 </details>
 
 ## 🏗️ 系统架构
@@ -177,6 +166,11 @@ BettaFish/
 │   ├── ir/                                 # 报告中间表示（IR）契约与校验
 │   │   ├── schema.py                       # 块/标记Schema常量定义
 │   │   └── validator.py                    # 章节JSON结构校验器
+│   ├── graphrag/                           # GraphRAG 知识图谱构建与检索
+│   │   ├── graph_builder.py                # state+forum日志→知识图谱
+│   │   ├── graph_storage.py                # Graph对象管理与graphrag.json落盘
+│   │   ├── query_engine.py                 # 关键词/类型/深度检索入口
+│   │   └── ...                             # forum/state解析、提示词等
 │   ├── nodes/                              # 全流程推理节点
 │   │   ├── base_node.py                    # 节点基类+日志/状态钩子
 │   │   ├── template_selection_node.py      # 模板候选收集与LLM筛选
@@ -284,6 +278,8 @@ BettaFish/
 ├── docker-compose.yml                      # Docker多服务编排配置
 ├── Dockerfile                              # Docker镜像构建文件
 ├── requirements.txt                        # Python依赖包清单
+├── regenerate_latest_html.py               # 使用最新章节重装订并渲染HTML
+├── regenerate_latest_md.py                 # 使用最新章节重装订并渲染Markdown
 ├── regenerate_latest_pdf.py                # PDF重新生成工具脚本
 ├── report_engine_only.py                   # Report Engine命令行版本
 ├── README.md                               # 中文说明文档
@@ -506,7 +502,7 @@ python main.py --deep-sentiment --keywords-file ./keywords.txt
 
 #### 6.4 命令行报告生成工具
 
-该工具会跳过三个分析引擎的运行阶段，直接读取它们的最新日志文件，并在无需 Web 界面的情况下生成综合报告（同时省略文件增量校验步骤）。通常用于对报告生成结果不满意、需要快速重试的场景，或在调试 Report Engine 时启用。
+该工具会跳过三个分析引擎的运行阶段，直接读取它们的最新日志文件，并在无需 Web 界面的情况下生成综合报告（同时省略文件增量校验步骤），默认会在 PDF 之后自动生成 Markdown（可用参数关闭）。通常用于对报告生成结果不满意、需要快速重试的场景，或在调试 Report Engine 时启用。
 
 ```bash
 # 基本使用（自动从文件名提取主题）
@@ -518,8 +514,14 @@ python report_engine_only.py --query "土木工程行业分析"
 # 跳过PDF生成（即使系统支持）
 python report_engine_only.py --skip-pdf
 
+# 跳过Markdown生成
+python report_engine_only.py --skip-markdown
+
 # 显示详细日志
 python report_engine_only.py --verbose
+
+# 按需开启 GraphRAG 并调整查询次数（未传参则遵循 .env，默认关闭）
+python report_engine_only.py --graphrag-enabled true --graphrag-max-queries 3
 
 # 查看帮助信息
 python report_engine_only.py --help
@@ -534,13 +536,20 @@ python report_engine_only.py --help
 5. **自动保存文件**：
    - HTML报告保存到 `final_reports/` 目录
    - PDF报告（如果有依赖）保存到 `final_reports/pdf/` 目录
-   - 文件命名格式：`final_report_{主题}_{时间戳}.html/pdf`
+   - Markdown报告（可用 `--skip-markdown` 关闭）保存到 `final_reports/md/` 目录
+   - 文件命名格式：`final_report_{主题}_{时间戳}.html/pdf/md`
+6. **GraphRAG 可选启用**：命令行参数优先于 `.env`，若两者均未配置则保持关闭状态
 
 **注意事项：**
 
 - 确保三个引擎目录中至少有一个包含`.md`报告文件
 - 命令行工具与Web界面相互独立，不会相互影响
 - PDF生成需要安装系统依赖，详见上文"安装 PDF 导出所需系统依赖"部分
+
+**快速重渲染最新结果：**
+
+- `regenerate_latest_html.py` / `regenerate_latest_md.py`：从 `CHAPTER_OUTPUT_DIR` 中最新一次运行的章节 JSON 重装订 Document IR，并直接渲染 HTML 或 Markdown。
+- `regenerate_latest_pdf.py`：读取 `final_reports/ir` 里最新的 IR，使用 SVG 矢量图表重新导出 PDF。
 
 ## ⚙️ 高级配置（已过时，已经统一为项目根目录.env文件管理，其他子agent自动继承根目录配置）
 
@@ -590,10 +599,10 @@ SENTIMENT_CONFIG = {
 >from openai import OpenAI
 >
 >client = OpenAI(api_key="your_api_key", 
->                base_url="https://api.siliconflow.cn/v1")
+>                base_url="https://aihubmix.com/v1")
 >
 >response = client.chat.completions.create(
->    model="Qwen/Qwen2.5-72B-Instruct",
+>    model="gpt-4o-mini",
 >    messages=[
 >        {'role': 'user', 
 >         'content': "推理模型会给市场带来哪些新的机会"}

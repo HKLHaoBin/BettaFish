@@ -108,7 +108,8 @@ class DocumentLayoutNode(BaseNode):
             result = self.json_parser.parse(
                 raw,
                 context_name="文档设计",
-                expected_keys=["title", "toc", "hero"],
+                # 目录字段已更名为 tocPlan，这里跟随最新Schema校验
+                expected_keys=["title", "tocPlan", "hero"],
             )
             # 验证关键字段的类型
             if not isinstance(result.get("title"), str):

@@ -5,10 +5,8 @@
 <a href="https://trendshift.io/repositories/15286" target="_blank"><img src="https://trendshift.io/api/badge/repositories/15286" alt="666ghj%2FBettaFish | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
 <a href="https://aihubmix.com/?aff=8Ds9" target="_blank"><img src="./static/image/logo_aihubmix.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a>&ensp;
-<a href="https://lioncc.ai/" target="_blank"><img src="./static/image/logo_loincc.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a>&ensp;
-<a href="https://share.302.ai/P66Qe3" target="_blank"><img src="./static/image/logo_302ai.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a>
-
-<a href="https://open.anspire.cn/?share_code=3E1FUOUH" target="_blank"><img src="./static/image/logo_anspire.png" alt="666ghj%2FBettaFish | Trendshift" height="50"/></a>
+<a href="https://open.anspire.cn/?share_code=3E1FUOUH" target="_blank"><img src="./static/image/logo_anspire.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a>&ensp;
+<a href="https://www.thordata.com/?ls=github&lk=BettaFish" target="_blank"><img src="./static/image/logo_thordata.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a>
 
 [![GitHub Stars](https://img.shields.io/github/stars/666ghj/BettaFish?style=flat-square)](https://github.com/666ghj/BettaFish/stargazers)
 [![GitHub Watchers](https://img.shields.io/github/watchers/666ghj/BettaFish?style=flat-square)](https://github.com/666ghj/BettaFish/watchers)
@@ -68,24 +66,14 @@ Say goodbye to traditional data dashboards. In "WeiYu", everything starts with a
 LLM Model API Sponsor: <a href="https://aihubmix.com/?aff=8Ds9" target="_blank"><img src="./static/image/logo_aihubmix.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a>
 
 <details>
-<summary>Solomon Blog LionCC.ai; Programming Carpool codecodex.ai; Programming Computing Power VibeCodingAPI.ai: <span style="margin-left: 10px"><a href="https://codecodex.ai/" target="_blank"><img src="./static/image/logo_loincc.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a></span></summary>
-
-1. Solomon Blog LionCC.ai has updated the "BettaFish WeiYu System - LionCC API Deployment Configuration Complete Guide" and is optimizing one-click deployment and cloud server invocation solutions.
-2. VibeCodingapi.ai Lion Computing Platform has adapted to all LLM models of "BettaFish WeiYu System", including Claude Code, OpenAI Codex, and Gemini CLI programming development computing power. The quota price is 1:1 (100 yuan equals 100 USD quota).
-3. Codecodex.ai Lion Programming Carpool System has achieved IP-free access to bypass Claude Code and OpenAI Codex restrictions. After following the official deployment tutorial, simply switch the BASE_URL invocation address and Token key invocation key to use the most powerful programming models.
-
-Solomon LionCC BettaFish WeiYu Benefits: Open codecodex.ai Lion Programming Channel, scan the QR code to join the WeChat community, register for VibeCodingapi.ai Lion Computing, and receive 20 USD API quota (limited to the first 1,000 users).
-</details>
-
-<details>
-<summary>Pay-as-you-go enterprise-grade AI resource platform offering a comprehensive set of AI models and APIs, plus multiple ready-to-use online AI apps: <span style="margin-left: 10px"><a href="https://share.302.ai/P66Qe3" target="_blank"><img src="./static/image/logo_302ai.png" alt="302.ai" height="40"/></a></span></summary>
-<img src="static/image/banner_302ai.jpg" alt="banner">
-302.AI is a pay-as-you-go enterprise AI resource hub that offers the latest and most comprehensive AI models and APIs on the market, along with a variety of ready-to-use online AI applications.
-</details>
-
-<details>
 <summary>Provider of core agent capabilities including AI web search, file parsing, and web content scraping: <span style="margin-left: 10px"><a href="https://open.anspire.cn/?share_code=3E1FUOUH" target="_blank"><img src="./static/image/logo_anspire.png" alt="666ghj%2FBettaFish | Trendshift" height="50"/></a></span></summary>
 Anspire Open is a leading infrastructure provider for the agent era. We offer developers the core capability stack needed to build powerful agents. Currently available services include AI web search (multiple versions, highly competitive pricing), file parsing (limited-time free), web content scraping (limited-time free), cloud browser automation (Anspire Browser Agent, in beta), multi-turn rewriting, and more. We continue to provide a solid foundation for agents to connect and operate in complex digital worlds. Seamlessly integrates with mainstream agent platforms such as Dify, Coze, and Yuanqi. Through a transparent credit-based billing system and modular design, we provide enterprises with efficient, low-cost customized support to accelerate intelligent transformation.
+</details>
+
+<details>
+<summary>Claim 1GB free trial, enterprise-grade global proxy IP and Scraper API solution provider, register now: <span style="margin-left: 10px"><a href="https://www.thordata.com/?ls=github&lk=BettaFish" target="_blank"><img src="./static/image/logo_thordata.png" alt="666ghj%2FBettaFish | Trendshift" height="40"/></a></span></summary>
+<img src="static/image/banner_thordata.png" height="250" alt="banner">
+Thordata helps enterprises easily access publicly available web data through highly reliable proxy networks and automated scraping solutions, with a commitment to 99.9% uptime and 99.7% success rate.
 </details>
 
 ## 🏗️ System Architecture
@@ -177,6 +165,11 @@ BettaFish/
 │   ├── ir/                                 # Report Intermediate Representation (IR) contract & validation
 │   │   ├── schema.py                       # Block/mark schema constant definitions
 │   │   └── validator.py                    # Chapter JSON structure validator
+│   ├── graphrag/                           # GraphRAG graph building and search
+│   │   ├── graph_builder.py                # Build graph from state JSON + forum logs
+│   │   ├── graph_storage.py                # Graph object manager and graphrag.json I/O
+│   │   ├── query_engine.py                 # Keyword/type/depth query entry
+│   │   └── ...                             # Forum/state parsers, prompts, etc.
 │   ├── nodes/                              # Full workflow reasoning nodes
 │   │   ├── base_node.py                    # Node base class + logging/state hooks
 │   │   ├── template_selection_node.py      # Template candidate collection and LLM selection
@@ -284,6 +277,8 @@ BettaFish/
 ├── docker-compose.yml                      # Docker multi-service orchestration config
 ├── Dockerfile                              # Docker image build file
 ├── requirements.txt                        # Python dependency list
+├── regenerate_latest_html.py               # Rebind latest chapters and render HTML
+├── regenerate_latest_md.py                 # Rebind latest chapters and render Markdown
 ├── regenerate_latest_pdf.py                # PDF regeneration utility script
 ├── report_engine_only.py                   # Report Engine CLI version
 ├── README.md                               # Chinese documentation
@@ -500,7 +495,7 @@ python main.py --deep-sentiment --keywords-file ./keywords.txt
 
 #### 6.4 Command-line Report Generation Tool
 
-This tool bypasses the execution phase of all three analysis engines, directly loads their most recent log files, and generates a consolidated report without requiring the Web interface (while also skipping incremental file-validation steps). It is typically used when rapid retries are needed due to unsatisfactory report outputs, or when debugging the Report Engine.
+This tool bypasses the execution phase of all three analysis engines, directly loads their most recent log files, and generates a consolidated report without requiring the Web interface (while also skipping incremental file-validation steps). It will also generate a Markdown copy after the PDF by default (toggle via CLI flag). It is typically used when rapid retries are needed due to unsatisfactory report outputs, or when debugging the Report Engine.
 
 ```bash
 # Basic usage (automatically extract topic from filename)
@@ -512,8 +507,14 @@ python report_engine_only.py --query "Civil Engineering Industry Analysis"
 # Skip PDF generation (even if system supports it)
 python report_engine_only.py --skip-pdf
 
+# Skip Markdown generation
+python report_engine_only.py --skip-markdown
+
 # Show verbose logging
 python report_engine_only.py --verbose
+
+# Turn on GraphRAG via CLI and adjust query cap (falls back to .env, default off)
+python report_engine_only.py --graphrag-enabled true --graphrag-max-queries 3
 
 # Show help information
 python report_engine_only.py --help
@@ -528,13 +529,20 @@ python report_engine_only.py --help
 5. **Automatic File Saving**:
    - HTML reports saved to `final_reports/` directory
    - PDF reports (if dependencies available) saved to `final_reports/pdf/` directory
-   - File naming format: `final_report_{topic}_{timestamp}.html/pdf`
+   - Markdown reports (disable with `--skip-markdown`) saved to `final_reports/md/` directory
+   - File naming format: `final_report_{topic}_{timestamp}.html/pdf/md`
+6. **Optional GraphRAG**: CLI flags override `.env`; if neither is set the feature stays off
 
 **Notes:**
 
 - Ensure at least one of the three engine directories contains `.md` report files
 - The command-line tool is independent of the Web interface and does not interfere with each other
 - PDF generation requires system dependencies, see "Install PDF Export System Dependencies" section above
+
+**Quickly re-render the latest outputs:**
+
+- `regenerate_latest_html.py` / `regenerate_latest_md.py`: Re-stitch the latest chapter JSON from `CHAPTER_OUTPUT_DIR` into a Document IR and render to HTML or Markdown directly.
+- `regenerate_latest_pdf.py`: Read the newest IR under `final_reports/ir` and re-export a PDF with SVG vector charts.
 
 ## ⚙️ Advanced Configuration (Deprecated: Configuration has been unified to the `.env` file in the project root directory, and other sub-agents automatically inherit the root directory configuration)
 
@@ -583,16 +591,14 @@ The system supports any LLM provider that follows the OpenAI request format. You
 >```python
 >from openai import OpenAI
 >
->client = OpenAI(api_key="your_api_key",
->                base_url="https://api.siliconflow.cn/v1")
+>client = OpenAI(api_key="your_api_key", 
+>                base_url="https://aihubmix.com/v1")
 >
 >response = client.chat.completions.create(
->    model="Qwen/Qwen2.5-72B-Instruct",
+>    model="gpt-4o-mini",
 >    messages=[
->        {
->            'role': 'user',
->            'content': "What new opportunities will reasoning models bring to the market?"
->        }
+>        {'role': 'user', 
+>         'content': "What new opportunities will reasoning models bring to the market?"}
 >    ],
 >)
 >

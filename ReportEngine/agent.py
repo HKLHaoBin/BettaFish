@@ -31,6 +31,7 @@ from .nodes import (
     ChapterGenerationNode,
     ChapterJsonParseError,
     ChapterContentError,
+    ChapterValidationError,
     DocumentLayoutNode,
     WordBudgetNode,
     FastChapterGenerationNode,
@@ -39,6 +40,22 @@ from .renderers import HTMLRenderer
 from .state import ReportState
 from .utils.config import settings, Settings
 from .utils.model_discriminator import ModelCapabilityDiscriminator
+
+# GraphRAG 模块导入
+from .graphrag import (
+    StateParser,
+    ForumParser,
+    GraphBuilder,
+    GraphStorage,
+    Graph,
+    QueryEngine,
+)
+from .nodes import GraphRAGQueryNode
+from .graphrag.prompts import (
+    SYSTEM_PROMPT_CHAPTER_GRAPH_ENHANCEMENT,
+    format_graph_results_for_prompt
+)
+from utils.knowledge_logger import init_knowledge_log
 
 
 class StageOutputFormatError(ValueError):
@@ -226,6 +243,9 @@ class ReportAgent:
         # 状态
         self.state = ReportState()
         
+        # GraphRAG 状态数据（每次 load_input_files 时重置）
+        self._loaded_states = {}
+        
         # 确保输出目录存在
         os.makedirs(self.config.OUTPUT_DIR, exist_ok=True)
         os.makedirs(self.config.DOCUMENT_IR_OUTPUT_DIR, exist_ok=True)
@@ -410,9 +430,17 @@ class ReportAgent:
             error_log_dir=self.config.JSON_ERROR_LOG_DIR,
         )
         self.model_discriminator = ModelCapabilityDiscriminator(self.config.REPORT_ENGINE_MODEL_NAME or "")
-    def generate_report(self, query: str, reports: List[Any], forum_logs: str = "",
-                        custom_template: str = "", save_report: bool = True,
-                        stream_handler: Optional[Callable[[str, Dict[str, Any]], None]] = None) -> str:
+
+    def generate_report(
+        self,
+        query: str,
+        reports: List[Any],
+        forum_logs: str = "",
+        custom_template: str = "",
+        save_report: bool = True,
+        stream_handler: Optional[Callable[[str, Dict[str, Any]], None]] = None,
+        report_id: Optional[str] = None
+    ) -> str:
         """
         生成综合报告（章节JSON → IR → HTML）。
 
@@ -430,6 +458,7 @@ class ReportAgent:
             custom_template: 用户指定的Markdown模板，如为空则交由模板节点自动挑选。
             save_report: 是否在生成后自动将HTML、IR与状态写入磁盘。
             stream_handler: 可选的流式事件回调，接收阶段标签与payload，用于UI实时展示。
+            report_id: 外部透传的任务ID，用于与前端/SSE保持一致并复用同一个目录。
 
         返回:
             dict: 包含 `html_content` 以及HTML/IR/状态文件路径的字典；若 `save_report=False` 则仅返回HTML字符串。
@@ -438,11 +467,22 @@ class ReportAgent:
             Exception: 任一子节点或渲染阶段失败时抛出，外层调用方负责兜底。
         """
         start_time = datetime.now()
-        report_id = f"report-{uuid4().hex[:8]}"
+        report_id_value = (report_id or "").strip()
+        if report_id_value:
+            # 仅保留易读且安全的字符，确保可直接作为目录名复用
+            report_id_value = "".join(
+                c if c.isalnum() or c in ("-", "_") else "_" for c in report_id_value
+            ) or f"report-{uuid4().hex[:8]}"
+        else:
+            report_id_value = f"report-{uuid4().hex[:8]}"
+
+        report_id = report_id_value
         self.state.task_id = report_id
         self.state.query = query
         self.state.metadata.query = query
         self.state.mark_processing()
+        # 新一轮任务开始时重置知识查询日志，避免跨任务残留
+        init_knowledge_log(force_reset=True)
 
         normalized_reports = self._normalize_reports(reports)
 
@@ -491,7 +531,8 @@ class ReportAgent:
                     query,
                     template_overview,
                 ),
-                expected_keys=["title", "hero", "toc", "tocPlan"],
+                # toc 字段已被 tocPlan 取代，这里按最新Schema挑选/校验
+                expected_keys=["title", "hero", "tocPlan", "tocTitle"],
             )
             emit('stage', {
                 'stage': 'layout_designed',
@@ -568,8 +609,51 @@ class ReportAgent:
             self._persist_planning_artifacts(run_dir, layout_design, word_plan, template_overview)
             emit('stage', {'stage': 'storage_ready', 'run_dir': str(run_dir)})
 
+            # ==================== GraphRAG 初始化 ====================
+            # 根据配置开关决定是否启用图谱构建/查询（需 .env 设置 GRAPHRAG_ENABLED=True）
+            graphrag_enabled = getattr(self.config, 'GRAPHRAG_ENABLED', False)
+            knowledge_graph = None
+            graphrag_query_node = None
+
+            if graphrag_enabled:
+                logger.info("GraphRAG 已启用，开始构建知识图谱...")
+                emit('stage', {'stage': 'graphrag_building', 'message': '正在构建知识图谱'})
+
+                try:
+                    # 将 state_*.json + forum.log 转为结构化图谱，并立即落盘 graphrag.json
+                    knowledge_graph = self._build_knowledge_graph(
+                        query, normalized_reports, forum_logs, run_dir
+                    )
+                    if knowledge_graph:
+                        graphrag_query_node = GraphRAGQueryNode(self.llm_client)
+                        graph_stats = knowledge_graph.get_stats()
+                        emit('stage', {
+                            'stage': 'graphrag_built',
+                            'node_count': graph_stats.get('total_nodes', 0),
+                            'edge_count': graph_stats.get('total_edges', 0)
+                        })
+                        logger.info(f"知识图谱构建完成: {graph_stats}")
+                    else:
+                        logger.warning("知识图谱构建失败，将使用原始流程")
+                        graphrag_enabled = False
+                except Exception as graph_error:
+                    logger.exception(f"GraphRAG 构建异常: {graph_error}")
+                    graphrag_enabled = False
+                    emit('stage', {'stage': 'graphrag_error', 'error': str(graph_error)})
+            # ==================== GraphRAG 初始化结束 ====================
+
             is_strong_model = self.model_discriminator.is_strong_model()
             logger.info(f"模型能力判定: {'强模型' if is_strong_model else '弱模型'} (MODEL={self.config.REPORT_ENGINE_MODEL_NAME})")
+            if graphrag_enabled and is_strong_model:
+                logger.info("GraphRAG 已启用，跳过强模型连续生成通道以保留图谱增强")
+                is_strong_model = False
+
+            def fast_track_chunk_callback(delta: str, meta: Dict[str, Any]):
+                emit('chapter_chunk', {
+                    'chapterId': meta.get('chapterId'),
+                    'title': meta.get('title'),
+                    'delta': delta
+                })
 
             if is_strong_model:
                 # === 高速自适应通道 (Fast Track) ===
@@ -578,7 +662,7 @@ class ReportAgent:
                         sections,
                         generation_context,
                         run_dir,
-                        stream_handler=chunk_callback # 复用回调
+                        stream_handler=fast_track_chunk_callback
                     )
                     emit('progress', {'progress': 90, 'message': '强模型连续生成完成'})
                 except Exception as e:
@@ -594,6 +678,7 @@ class ReportAgent:
                 )
                 total_chapters = len(sections)  # 总章节数
                 completed_chapters = 0  # 已完成章节数
+
                 for section in sections:
                     logger.info(f"生成章节: {section.title}")
                     emit('chapter_status', {
@@ -605,8 +690,6 @@ class ReportAgent:
                     def chunk_callback(delta: str, meta: Dict[str, Any], section_ref: TemplateSection = section):
                         """
                         章节内容流式回调。
-
-
 
                         Args:
                             delta: LLM最新输出的增量文本。
@@ -624,20 +707,104 @@ class ReportAgent:
                     best_sparse_candidate: Dict[str, Any] | None = None
                     best_sparse_score = -1
                     fallback_used = False
+
+                    # ==================== GraphRAG 查询 ====================
+                    graph_results = None
+                    chapter_context = generation_context.copy()
+
+                    if graphrag_enabled and knowledge_graph and graphrag_query_node:
+                        try:
+                            max_queries = getattr(self.config, 'GRAPHRAG_MAX_QUERIES', 3)
+                            chapter_meta = chapter_targets.get(section.chapter_id, {}) if isinstance(chapter_targets, dict) else {}
+                            emphasis_value = chapter_meta.get('emphasis') or chapter_meta.get('emphasisPoints') or ''
+                            if isinstance(emphasis_value, list):
+                                emphasis_value = '；'.join(str(item) for item in emphasis_value if item)
+                            role_text = getattr(section, 'description', None) or chapter_meta.get('rationale') or ''
+                            if not isinstance(role_text, str):
+                                role_text = self._stringify(role_text)
+
+                            section_info = {
+                                'title': section.title,
+                                'id': section.chapter_id,
+                                'role': role_text,
+                                'target_words': chapter_meta.get('targetWords', 500),
+                                'emphasis': emphasis_value
+                            }
+
+                            # 先让 GraphRAG 节点多轮查询，再把结果附加到章节上下文
+                            graph_results = graphrag_query_node.run(
+                                section_info,
+                                {
+                                    'query': query,
+                                    'template_name': template_result.get('template_name'),
+                                    'chapters': word_plan.get('chapters', [])
+                                },
+                                knowledge_graph,
+                                max_queries=max_queries
+                            )
+
+                            if graph_results and graph_results.get('total_nodes', 0) > 0:
+                                # 将图谱结果注入生成上下文，后续章节 LLM 自动使用增强提示词
+                                chapter_context['graph_results'] = graph_results
+                                chapter_context['graph_enhancement_prompt'] = format_graph_results_for_prompt(graph_results)
+                                logger.info(f"章节 {section.title} GraphRAG 查询完成: {graph_results.get('total_nodes', 0)} 节点")
+                        except Exception as graph_query_error:
+                            logger.warning(f"GraphRAG 查询失败 ({section.title}): {graph_query_error}")
+                    # ==================== GraphRAG 查询结束 ====================
+
                     while attempt <= chapter_max_attempts:
                         try:
                             chapter_payload = self.chapter_generation_node.run(
                                 section,
-                                generation_context,
+                                chapter_context,  # 使用包含图谱结果的上下文
                                 run_dir,
                                 stream_callback=chunk_callback
                             )
                             break
-                        except (ChapterJsonParseError, ChapterContentError) as structured_error:
-                            error_kind = (
-                                "content_sparse" if isinstance(structured_error, ChapterContentError) else "json_parse"
+                        except (AttributeError, TypeError, KeyError, IndexError, ValueError, json.JSONDecodeError) as structure_error:
+                            # 捕获因 JSON 结构异常导致的运行时错误，包装为可重试异常
+                            # 包括：
+                            # - AttributeError: 如 list.get() 调用失败
+                            # - TypeError: 类型不匹配
+                            # - KeyError: 字典键缺失
+                            # - IndexError: 列表索引越界
+                            # - ValueError: 值错误（如 LLM 返回空内容、缺少必要字段）
+                            # - json.JSONDecodeError: JSON 解析失败（未被内部捕获的情况）
+                            error_type = type(structure_error).__name__
+                            logger.warning(
+                                "章节 {title} 生成过程中发生 {error_type}（第 {attempt}/{total} 次尝试），将尝试重新生成: {error}",
+                                title=section.title,
+                                error_type=error_type,
+                                attempt=attempt,
+                                total=chapter_max_attempts,
+                                error=structure_error,
                             )
-                            readable_label = "内容密度异常" if error_kind == "content_sparse" else "JSON解析失败"
+                            emit('chapter_status', {
+                                'chapterId': section.chapter_id,
+                                'title': section.title,
+                                'status': 'retrying' if attempt < chapter_max_attempts else 'error',
+                                'attempt': attempt,
+                                'error': str(structure_error),
+                                'reason': 'structure_error',
+                                'error_type': error_type
+                            })
+                            if attempt >= chapter_max_attempts:
+                                # 达到最大重试次数，包装为 ChapterJsonParseError 抛出
+                                raise ChapterJsonParseError(
+                                    f"{section.title} 章节因 {error_type} 在 {chapter_max_attempts} 次尝试后仍无法生成: {structure_error}"
+                                ) from structure_error
+                            attempt += 1
+                            continue
+                        except (ChapterJsonParseError, ChapterContentError, ChapterValidationError) as structured_error:
+                            if isinstance(structured_error, ChapterContentError):
+                                error_kind = "content_sparse"
+                                readable_label = "内容密度异常"
+                            elif isinstance(structured_error, ChapterValidationError):
+                                error_kind = "validation"
+                                readable_label = "结构校验失败"
+                            else:
+                                error_kind = "json_parse"
+                                readable_label = "JSON解析失败"
                             if isinstance(structured_error, ChapterContentError):
                                 candidate = getattr(structured_error, "chapter_payload", None)
                                 candidate_score = getattr(structured_error, "body_characters", 0) or 0
@@ -646,10 +813,10 @@ class ReportAgent:
                                         best_sparse_candidate = deepcopy(candidate)
                                         best_sparse_score = candidate_score
                             will_fallback = (
-                                    isinstance(structured_error, ChapterContentError)
-                                    and attempt >= chapter_max_attempts
-                                    and attempt >= self._CONTENT_SPARSE_MIN_ATTEMPTS
-                                    and best_sparse_candidate is not None
+                                isinstance(structured_error, ChapterContentError)
+                                and attempt >= chapter_max_attempts
+                                and attempt >= self._CONTENT_SPARSE_MIN_ATTEMPTS
+                                and best_sparse_candidate is not None
                             )
                             logger.warning(
                                 "章节 {title} {label}（第 {attempt}/{total} 次尝试）: {error}",
@@ -668,6 +835,10 @@ class ReportAgent:
                                 'error': str(structured_error),
                                 'reason': error_kind,
                             }
+                            if isinstance(structured_error, ChapterValidationError):
+                                validation_errors = getattr(structured_error, "errors", None)
+                                if validation_errors:
+                                    status_payload['errors'] = validation_errors
                             if will_fallback:
                                 status_payload['warning'] = 'content_sparse_fallback_pending'
                             emit('chapter_status', status_payload)
@@ -817,6 +988,60 @@ class ReportAgent:
             self.state.metadata.template_used = fallback_template['template_name']
             return fallback_template
     
+    def _build_knowledge_graph(
+        self,
+        query: str,
+        reports: Dict[str, str],
+        forum_logs: str,
+        run_dir: Path
+    ) -> Optional[Graph]:
+        """
+        构建知识图谱。
+
+        从已加载的 State JSON 和论坛日志中提取结构化数据，
+        构建知识图谱供后续章节生成时查询。
+
+        参数:
+            query: 用户查询主题。
+            reports: 归一化后的报告映射。
+            forum_logs: 论坛日志内容。
+            run_dir: 运行目录，用于保存图谱。
+
+        返回:
+            Graph: 构建好的知识图谱；失败返回 None。
+        """
+        try:
+            # 直接使用 load_input_files 中加载的 State JSON
+            # 注意：_loaded_states 在每次 load_input_files 调用时会被重置，
+            # 确保不会有跨任务的数据泄漏
+            states = {
+                engine: state
+                for engine, state in self._loaded_states.items()
+                if engine in ['insight', 'media', 'query']
+            }
+            
+            # 解析论坛日志
+            forum_entries = []
+            if forum_logs:
+                forum_parser = ForumParser()
+                forum_entries = forum_parser.parse(forum_logs)
+                logger.info(f"解析论坛日志: {len(forum_entries)} 条记录")
+            
+            # 构建图谱
+            builder = GraphBuilder()
+            graph = builder.build(query, states, forum_entries)
+            
+            # 保存图谱
+            storage = GraphStorage()
+            graph_path = storage.save(graph, self.state.task_id, run_dir)
+            logger.info(f"知识图谱已保存: {graph_path}")
+            
+            return graph
+            
+        except Exception as e:
+            logger.exception(f"构建知识图谱失败: {e}")
+            return None
+
     def _slice_template(self, template_markdown: str) -> List[TemplateSection]:
         """
         将模板切成章节列表，若为空则提供fallback。
@@ -1484,20 +1709,26 @@ class ReportAgent:
     def load_input_files(self, file_paths: Dict[str, str]) -> Dict[str, Any]:
         """
         加载输入文件内容
-        
+
         Args:
             file_paths: 文件路径字典
-            
+
         Returns:
-            加载的内容字典，包含 `reports` 列表与 `forum_logs` 字符串
+            加载的内容字典，包含 `reports` 列表、`forum_logs` 字符串和 `states` 字典
         """
         content = {
             'reports': [],
-            'forum_logs': ''
+            'forum_logs': '',
+            'states': {}  # 新增：用于 GraphRAG 的 State JSON
         }
         
+        # 重要：清空上一次任务的状态数据，防止污染当前任务的知识图谱
+        self._loaded_states = {}
+
         # 加载报告文件
         engines = ['query', 'media', 'insight']
+        state_parser = StateParser()
+        
         for engine in engines:
             if engine in file_paths:
                 try:
@@ -1505,10 +1736,22 @@ class ReportAgent:
                         report_content = f.read()
                     content['reports'].append(report_content)
                     logger.info(f"已加载 {engine} 报告: {len(report_content)} 字符")
+                    
+                    # 新增：尝试查找并加载对应的 State JSON（用于 GraphRAG）
+                    if self.config.GRAPHRAG_ENABLED:
+                        state_path = state_parser.find_state_json(file_paths[engine])
+                        if state_path:
+                            parsed_state = state_parser.parse_from_file(engine, state_path)
+                            if parsed_state:
+                                content['states'][engine] = parsed_state
+                                # 同时保存到实例属性，供 _build_knowledge_graph 使用
+                                self._loaded_states[engine] = parsed_state
+                                logger.info(f"已加载 {engine} State JSON: {len(parsed_state.sections)} 个段落")
+                            
                 except Exception as e:
                     logger.exception(f"加载 {engine} 报告失败: {str(e)}")
                     content['reports'].append("")
-        
+
         # 加载论坛日志
         if 'forum' in file_paths:
             try:
@@ -1517,7 +1760,7 @@ class ReportAgent:
                 logger.info(f"已加载论坛日志: {len(content['forum_logs'])} 字符")
             except Exception as e:
                 logger.exception(f"加载论坛日志失败: {str(e)}")
-        
+
         return content
 
 

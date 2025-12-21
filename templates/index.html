@@ -8,6 +8,7 @@
     <!-- PDF导出依赖 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -295,7 +296,7 @@
         .upload-button input[type="file"] {
             position: absolute;
             left: 0;
-            top: 52px; /* 运行时再用JS同步为app-switcher的真实高度 */
+            top: 0; /* 覆盖整个按钮，确保点击按钮即可触发文件选择 */
             width: 100%;
             height: 100%;
             opacity: 0;
@@ -1499,11 +1500,13 @@
 
         .report-controls {
             display: flex;
-            gap: 10px;
+            align-items: center;
+            gap: 12px;
             margin-bottom: 20px;
             padding: 15px;
             border-bottom: 2px solid #000000;
             background-color: #f8f9fa;
+            flex-wrap: nowrap;
         }
 
         .report-button {
@@ -1514,6 +1517,7 @@
             font-size: 14px;
             font-weight: bold;
             transition: all 0.3s ease;
+            min-height: 44px;
         }
 
         .report-button:hover {
@@ -1532,6 +1536,43 @@
 
         .report-button.primary:hover {
             background-color: #333333;
+        }
+
+        .report-download-group {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+
+        .report-download-group .report-button {
+            padding: 10px 14px;
+            min-width: 118px;
+        }
+
+        #downloadPdfButton,
+        #downloadMdButton {
+            padding: 10px 10px;
+            min-width: 96px;
+        }
+
+        @media (max-width: 768px) {
+            .report-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .report-download-group {
+                width: 100%;
+                margin-left: 0;
+                justify-content: flex-start;
+            }
+
+            #downloadPdfButton,
+            #downloadMdButton {
+                min-width: 90px;
+            }
         }
 
         .report-status {
@@ -1681,6 +1722,235 @@
             font-family: 'Courier New', monospace;
             font-size: 12px;
             white-space: pre-wrap;
+        }
+
+        /* 知识图谱面板（与左侧内容同宽） */
+        .graph-panel {
+            width: 100%;
+            border: 2px solid #000000;
+            background-color: #ffffff;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .graph-panel.collapsed .graph-panel-body {
+            display: none;
+        }
+
+        .graph-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            border-bottom: 2px solid #000000;
+            background-color: #f8f9fa;
+            gap: 10px;
+        }
+
+        .graph-panel-title {
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .graph-panel-subtitle {
+            font-size: 12px;
+            color: #555;
+            margin-top: 4px;
+            line-height: 1.3;
+        }
+
+        .graph-panel-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* 隐藏刷新/折叠按钮，仅保留全屏入口 */
+        #graphRefreshBtn,
+        #graphCollapseBtn {
+            display: none;
+        }
+
+        .graph-panel-button {
+            border: 1px solid #000000;
+            background-color: #ffffff;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .graph-panel-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .graph-panel-button:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        #graphFullBtn {
+            min-width: 96px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .graph-status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border: 1px solid #000000;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .graph-status-chip.graph-idle { background-color: #fff7ed; color: #b45309; }
+        .graph-status-chip.graph-loading { background-color: #fef3c7; color: #92400e; }
+        .graph-status-chip.graph-pending { background-color: #fef3c7; color: #92400e; }
+        .graph-status-chip.graph-ready { background-color: #e8f5e9; color: #2f855a; }
+        .graph-status-chip.graph-error { background-color: #fef2f2; color: #b91c1c; }
+
+        .chip-spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        .graph-panel-body {
+            padding: 10px 12px 14px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .graph-panel-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .graph-toolbar-left {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .graph-stats {
+            display: flex;
+            gap: 10px;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .graph-stats .stat-label {
+            font-weight: bold;
+            margin-right: 4px;
+        }
+
+        .graph-filter-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .graph-filter-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 8px;
+            border: 1px solid #000000;
+            background-color: #ffffff;
+            cursor: pointer;
+            font-size: 12px;
+            user-select: none;
+        }
+
+        .graph-filter-item input {
+            accent-color: #000000;
+        }
+
+        .graph-filter-count {
+            color: #666666;
+            font-size: 11px;
+        }
+
+        .graph-search {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .graph-search input {
+            padding: 8px 10px;
+            border: 1px solid #000000;
+            min-width: 200px;
+        }
+
+        .graph-search-status {
+            min-width: 48px;
+            text-align: center;
+            font-size: 12px;
+            color: #333333;
+        }
+
+        .graph-panel-canvas {
+            position: relative;
+            height: 360px;
+            width: 100%;
+            border: 1px dashed #000000;
+            background-color: #ffffff;
+        }
+
+        .graph-panel-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-align: center;
+            padding: 10px;
+            font-size: 13px;
+            color: #555;
+            background-color: #ffffff;
+            z-index: 2;
+        }
+
+        .graph-panel-placeholder.error {
+            color: #b42318;
+        }
+
+        .graph-panel-detail {
+            border: 1px solid #e5e5e5;
+            padding: 8px;
+            background-color: #fafafa;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .graph-panel-detail .detail-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .graph-panel-detail .detail-meta {
+            color: #555;
+            margin-bottom: 6px;
         }
     </style>
 
@@ -1900,6 +2170,21 @@
         let lastUserQuery = ''; // 记录用户输入的问题，用于生成报告文件名
         let configValues = {};
         let configDirty = false;
+        let graphragEnabled = false;
+        let graphragSettingLoaded = false;
+        let graphPanelNetwork = null;
+        let graphPanelData = { nodes: [], edges: [] };
+        let graphPanelFilters = new Set(['topic', 'engine', 'section', 'search_query', 'source']);
+        let graphPanelTaskId = null;
+        let graphPanelState = 'idle';
+        let graphPanelAwaitingGeneration = false;
+        let graphPanelLoading = false;
+        let graphPanelPollingTimer = null;
+        let graphPanelPollingTaskId = null;
+        let graphSearchResults = [];
+        let graphSearchIndex = -1;
+        let graphSearchKeyword = '';
+        const GRAPH_PANEL_POLL_INTERVAL = 4000;
         let configAutoRefreshTimer = null;
         let systemStarted = false;
         let systemStarting = false;
@@ -2302,6 +2587,32 @@
             query: 8503
         };
 
+        // ---------------- GraphRAG 开关与配置同步 ----------------
+        function syncGraphragFlag(config) {
+            if (!config || !Object.prototype.hasOwnProperty.call(config, 'GRAPHRAG_ENABLED')) {
+                return;
+            }
+            graphragEnabled = String(config.GRAPHRAG_ENABLED).toLowerCase() === 'true';
+            graphragSettingLoaded = true;
+        }
+
+        // 前端懒加载配置：初次访问或强制刷新时请求 /api/config，决定是否展示图谱面板
+        async function ensureGraphragSetting(force = false) {
+            if (!force && graphragSettingLoaded) {
+                return graphragEnabled;
+            }
+            try {
+                const response = await fetch(CONFIG_ENDPOINT, { cache: 'no-store' });
+                const data = await response.json();
+                if (data && data.success && data.config) {
+                    syncGraphragFlag(data.config);
+                }
+            } catch (error) {
+                console.warn('读取GraphRAG配置失败:', error);
+            }
+            return graphragEnabled;
+        }
+
         const configFieldGroups = [
             {
                 title: '数据库连接',
@@ -2392,6 +2703,22 @@
                     },
                     { key: 'BOCHA_WEB_SEARCH_API_KEY', label: 'Bocha API Key', type: 'password', condition: { key: 'SEARCH_TOOL_TYPE', value: 'BochaAPI' } },
                     { key: 'ANSPIRE_API_KEY', label: 'Anspire API Key', type: 'password', condition: { key: 'SEARCH_TOOL_TYPE', value: 'AnspireAPI' } }
+                ]
+            },
+            {
+                title: '本地构建GraphRAG（测试）',
+                subtitle: '统一构建，以章节为单位查询，默认关闭',
+                fields: [
+                    {
+                        key: 'GRAPHRAG_ENABLED',
+                        label: '是否启用',
+                        type: 'select',
+                        options: [
+                            { value: 'False', label: '关闭' },
+                            { value: 'True', label: '开启' }
+                        ]
+                    },
+                    { key: 'GRAPHRAG_MAX_QUERIES', label: '每章节查询次数上限（推荐设置为2~4，可能会影响生成时间）', type: 'number', condition: { key: 'GRAPHRAG_ENABLED', value: 'True' } }
                 ]
             }
         ];
@@ -2750,6 +3077,7 @@
                         throw new Error(data.message || '读取配置失败');
                     }
                     configValues = data.config || {};
+                    syncGraphragFlag(configValues);
                     renderConfigForm(configValues);
                     configDirty = false;
                     if (messageOverride) {
@@ -3059,6 +3387,7 @@
                     throw new Error(data.message || '保存失败');
                 }
                 configValues = data.config || {};
+                syncGraphragFlag(configValues);
                 renderConfigForm(configValues);
                 configDirty = false;
                 if (silent) {
@@ -5604,12 +5933,74 @@ function getConsoleContainer() {
                 <!-- 控制按钮区域 -->
                 <div class="report-controls">
                     <button class="report-button primary" id="generateReportButton">生成最终报告</button>
-                    <button class="report-button" id="downloadReportButton" disabled>下载HTML</button>
-                    <button class="report-button" id="downloadPdfButton" disabled>下载PDF</button>
+                    <div class="report-download-group">
+                        <button class="report-button" id="downloadReportButton" disabled>下载HTML</button>
+                        <button class="report-button" id="downloadPdfButton" disabled>下载PDF</button>
+                        <button class="report-button" id="downloadMdButton" disabled>下载MD</button>
+                    </div>
                 </div>
                 
                 <!-- 任务进度区域 -->
                 <div id="taskProgressArea"></div>
+
+                <!-- 知识图谱面板（GraphRAG 开启时显示） -->
+                <div class="graph-panel collapsed" id="graphPanel">
+                    <div class="graph-panel-header">
+                        <div>
+                            <div class="graph-panel-title">知识图谱</div>
+                            <div class="graph-panel-subtitle">GraphRAG 节点关系可视化</div>
+                        </div>
+                        <div class="graph-panel-actions">
+                            <span class="graph-status-chip graph-idle" id="graphStatusChip">未生成</span>
+                            <button class="graph-panel-button" id="graphFullBtn" title="在新标签页查看">展示详情</button>
+                            <button class="graph-panel-button" id="graphRefreshBtn" title="刷新知识图谱">刷新</button>
+                            <button class="graph-panel-button" id="graphCollapseBtn" title="折叠/展开">收起</button>
+                        </div>
+                    </div>
+                    <div class="graph-panel-body" id="graphPanelBody">
+                        <div class="graph-panel-toolbar">
+                            <div class="graph-toolbar-left">
+                                <div class="graph-stats">
+                                    <span><span class="stat-label">节点</span><span id="graphNodeCount">0</span></span>
+                                    <span><span class="stat-label">关系</span><span id="graphEdgeCount">0</span></span>
+                                </div>
+                                <div class="graph-filter-group" id="graphFilterGroup">
+                                    <label class="graph-filter-item">
+                                        <input type="checkbox" data-type="topic" checked> 主题 <span class="graph-filter-count" data-type-count="topic">(0)</span>
+                                    </label>
+                                    <label class="graph-filter-item">
+                                        <input type="checkbox" data-type="engine" checked> 引擎 <span class="graph-filter-count" data-type-count="engine">(0)</span>
+                                    </label>
+                                    <label class="graph-filter-item">
+                                        <input type="checkbox" data-type="section" checked> 报告段落 <span class="graph-filter-count" data-type-count="section">(0)</span>
+                                    </label>
+                                    <label class="graph-filter-item">
+                                        <input type="checkbox" data-type="search_query" checked> 搜索词 <span class="graph-filter-count" data-type-count="search_query">(0)</span>
+                                    </label>
+                                    <label class="graph-filter-item">
+                                        <input type="checkbox" data-type="source" checked> 数据来源 <span class="graph-filter-count" data-type-count="source">(0)</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="graph-search">
+                                <input type="text" id="graphSearchInput" placeholder="搜索节点...">
+                                <button class="graph-panel-button" id="graphSearchBtn" title="按关键词搜索节点">搜索</button>
+                                <button class="graph-panel-button" id="graphSearchPrev" title="上一个匹配">↑</button>
+                                <button class="graph-panel-button" id="graphSearchNext" title="下一个匹配">↓</button>
+                                <span class="graph-search-status" id="graphSearchStatus">0/0</span>
+                                <button class="graph-panel-button" id="graphFitBtn">适应</button>
+                            </div>
+                        </div>
+                        <div class="graph-panel-canvas" id="graphPanelCanvas">
+                            <div class="graph-panel-placeholder" id="graphPanelPlaceholder">等待图谱生成...</div>
+                        </div>
+                        <div class="graph-panel-detail" id="graphPanelDetail" style="display: none;">
+                            <div class="detail-title" id="graphDetailTitle"></div>
+                            <div class="detail-meta" id="graphDetailMeta"></div>
+                            <div class="detail-props" id="graphDetailProps"></div>
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- 报告预览区域 -->
                 <div class="report-preview" id="reportPreview">
@@ -5621,6 +6012,7 @@ function getConsoleContainer() {
             
             reportContent.innerHTML = interfaceHTML;
             initializeReportControls();
+            initializeGraphPanel(statusData);
             resetReportStreamOutput('等待新的Report任务启动...');
             updateReportStreamStatus('idle');
             
@@ -5652,6 +6044,575 @@ function getConsoleContainer() {
             }
         }
 
+        // 入口：在报告界面渲染后初始化图谱面板，若 GraphRAG 关闭则隐藏
+        async function initializeGraphPanel(statusData) {
+            const panel = document.getElementById('graphPanel');
+            if (!panel) return;
+
+            const enabled = await ensureGraphragSetting();
+            if (!enabled) {
+                panel.style.display = 'none';
+                return;
+            }
+
+            panel.style.display = 'flex';
+            bindGraphPanelEvents();
+
+            const currentTask = statusData && statusData.current_task ? statusData.current_task : null;
+            graphPanelTaskId = currentTask?.task_id || (lastCompletedReportTask ? lastCompletedReportTask.task_id : null);
+
+            if (currentTask && currentTask.status === 'running') {
+                setGraphPanelAwaiting(graphPanelTaskId);
+                return;
+            }
+
+            refreshGraphPanel(graphPanelTaskId, true);
+        }
+
+        // 注册图谱面板按钮/筛选/搜索事件，只绑定一次
+        function bindGraphPanelEvents() {
+            const refreshBtn = document.getElementById('graphRefreshBtn');
+            const collapseBtn = document.getElementById('graphCollapseBtn');
+            const fullBtn = document.getElementById('graphFullBtn');
+            const fitBtn = document.getElementById('graphFitBtn');
+            const searchInput = document.getElementById('graphSearchInput');
+            const searchBtn = document.getElementById('graphSearchBtn');
+            const searchPrevBtn = document.getElementById('graphSearchPrev');
+            const searchNextBtn = document.getElementById('graphSearchNext');
+            const filterGroup = document.getElementById('graphFilterGroup');
+
+            if (refreshBtn && !refreshBtn.dataset.bound) {
+                refreshBtn.dataset.bound = 'true';
+                refreshBtn.addEventListener('click', () => refreshGraphPanel(graphPanelTaskId, true));
+            }
+
+            if (collapseBtn && !collapseBtn.dataset.bound) {
+                collapseBtn.dataset.bound = 'true';
+                collapseBtn.addEventListener('click', () => {
+                    const panel = document.getElementById('graphPanel');
+                    if (!panel) return;
+                    const collapsed = panel.classList.toggle('collapsed');
+                    collapseBtn.textContent = collapsed ? '展开' : '收起';
+                    if (!collapsed) {
+                        refreshGraphPanel(graphPanelTaskId, false);
+                    } else {
+                        setGraphPanelPlaceholder('已折叠，展开后可查看知识图谱');
+                    }
+                });
+            }
+
+            if (fullBtn && !fullBtn.dataset.bound) {
+                fullBtn.dataset.bound = 'true';
+                fullBtn.addEventListener('click', () => {
+                    const target = graphPanelTaskId || (lastCompletedReportTask ? lastCompletedReportTask.task_id : null);
+                    const url = target ? `/graph-viewer/${target}` : '/graph-viewer';
+                    window.open(url, '_blank');
+                    // 用户手动查看时也可尝试拉取最新数据
+                    refreshGraphPanel(target || graphPanelTaskId, true);
+                });
+            }
+
+            if (fitBtn && !fitBtn.dataset.bound) {
+                fitBtn.dataset.bound = 'true';
+                fitBtn.addEventListener('click', () => {
+                    if (graphPanelNetwork) {
+                        graphPanelNetwork.fit({ animation: { duration: 300, easing: 'easeInOutQuad' } });
+                    }
+                });
+            }
+
+            if (searchInput && !searchInput.dataset.bound) {
+                searchInput.dataset.bound = 'true';
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        runGraphSearch(searchInput.value);
+                    }
+                });
+                searchInput.addEventListener('input', () => {
+                    if (!searchInput.value) {
+                        resetGraphSearchState();
+                        clearGraphSelection();
+                    }
+                });
+            }
+
+            if (searchBtn && !searchBtn.dataset.bound) {
+                searchBtn.dataset.bound = 'true';
+                searchBtn.addEventListener('click', () => runGraphSearch(searchInput ? searchInput.value : ''));
+            }
+
+            if (searchPrevBtn && !searchPrevBtn.dataset.bound) {
+                searchPrevBtn.dataset.bound = 'true';
+                searchPrevBtn.addEventListener('click', () => stepGraphSearch(-1));
+            }
+
+            if (searchNextBtn && !searchNextBtn.dataset.bound) {
+                searchNextBtn.dataset.bound = 'true';
+                searchNextBtn.addEventListener('click', () => stepGraphSearch(1));
+            }
+
+            if (filterGroup && !filterGroup.dataset.bound) {
+                filterGroup.dataset.bound = 'true';
+                filterGroup.addEventListener('change', (event) => {
+                    const checkbox = event.target.closest('input[type="checkbox"][data-type]');
+                    if (!checkbox) return;
+                    const type = (checkbox.dataset.type || '').toLowerCase();
+                    if (checkbox.checked) {
+                        graphPanelFilters.add(type);
+                    } else {
+                        graphPanelFilters.delete(type);
+                    }
+                    renderGraphPanel(graphPanelData, false);
+                });
+            }
+        }
+
+        function setGraphPanelState(state, message = '') {
+            graphPanelState = state;
+            if (state === 'pending') {
+                graphPanelAwaitingGeneration = true;
+            } else if (state === 'ready' || state === 'error' || state === 'idle') {
+                graphPanelAwaitingGeneration = false;
+            }
+            const chip = document.getElementById('graphStatusChip');
+            if (!chip) return;
+            const stateClassMap = {
+                idle: 'graph-idle',
+                loading: 'graph-loading',
+                pending: 'graph-pending',
+                ready: 'graph-ready',
+                error: 'graph-error'
+            };
+            chip.classList.remove('graph-idle', 'graph-loading', 'graph-pending', 'graph-ready', 'graph-error');
+            chip.classList.add(stateClassMap[state] || 'graph-idle');
+            const textMap = {
+                idle: '未生成',
+                loading: '正在生成',
+                pending: '即将生成',
+                ready: '已生成',
+                error: '加载失败'
+            };
+            if (state === 'loading' || state === 'pending') {
+                chip.innerHTML = `<span class="chip-spinner" aria-hidden="true"></span><span>${textMap[state]}</span>`;
+            } else {
+                chip.textContent = textMap[state] || state;
+            }
+            const fullBtn = document.getElementById('graphFullBtn');
+            if (fullBtn) {
+                const ready = state === 'ready';
+                fullBtn.disabled = !ready;
+                fullBtn.title = ready ? '在新标签页查看' : '知识图谱生成后可查看';
+            }
+            if (message) {
+                setGraphPanelPlaceholder(message, state === 'error' ? 'error' : '');
+            }
+            if (state === 'ready' || state === 'error') {
+                stopGraphPanelPolling();
+            }
+        }
+
+        function setGraphPanelPlaceholder(message, type = '') {
+            const placeholder = document.getElementById('graphPanelPlaceholder');
+            if (!placeholder) return;
+            placeholder.textContent = message || '';
+            placeholder.classList.toggle('error', type === 'error');
+            placeholder.style.display = message ? 'flex' : 'none';
+        }
+
+        function updateGraphStats(allData, filteredNodes = null, filteredEdges = null) {
+            const nodeCountEl = document.getElementById('graphNodeCount');
+            const edgeCountEl = document.getElementById('graphEdgeCount');
+            if (nodeCountEl) nodeCountEl.textContent = (filteredNodes || allData.nodes || []).length;
+            if (edgeCountEl) edgeCountEl.textContent = (filteredEdges || allData.edges || []).length;
+
+            const typeCounts = {};
+            (allData.nodes || []).forEach(node => {
+                const key = (node.group || node.type || 'other').toLowerCase();
+                typeCounts[key] = (typeCounts[key] || 0) + 1;
+            });
+
+            document.querySelectorAll('.graph-filter-count').forEach(el => {
+                const t = el.dataset.typeCount;
+                el.textContent = `(${typeCounts[t] || 0})`;
+            });
+        }
+
+        // 将 graphrag.json 转换的节点/边渲染成 mini 版 vis.js 图谱
+        function renderGraphPanel(graph, resetPlaceholder = true) {
+            const panel = document.getElementById('graphPanel');
+            const canvasWrapper = document.getElementById('graphPanelCanvas');
+            if (!panel || !canvasWrapper) return;
+
+            graphPanelData = graph || { nodes: [], edges: [] };
+            const allowed = graphPanelFilters;
+            const nodes = (graphPanelData.nodes || []).filter(node => allowed.has((node.group || node.type || '').toLowerCase()));
+            const nodeIdSet = new Set(nodes.map(n => n.id));
+            const edges = (graphPanelData.edges || []).filter(edge => nodeIdSet.has(edge.from) && nodeIdSet.has(edge.to));
+
+            resetGraphSearchState();
+
+            updateGraphStats(graphPanelData, nodes, edges);
+
+            const placeholder = document.getElementById('graphPanelPlaceholder');
+            if (!nodes.length) {
+                setGraphPanelState('ready', '未找到匹配的节点，请调整筛选或稍后再试');
+                if (placeholder) placeholder.style.display = 'flex';
+                if (graphPanelNetwork) {
+                    graphPanelNetwork.destroy();
+                    graphPanelNetwork = null;
+                }
+                return;
+            }
+
+            if (resetPlaceholder && placeholder) {
+                placeholder.style.display = 'none';
+            }
+
+            if (!(window.vis && window.vis.Network)) {
+                updateGraphStats({ nodes: [], edges: [] });
+                setGraphPanelState('error', '图谱组件未加载，请检查网络后重试');
+                return;
+            }
+
+            const container = canvasWrapper;
+            let canvas = document.getElementById('graphPanelCanvasInner');
+            if (!canvas) {
+                canvas = document.createElement('div');
+                canvas.id = 'graphPanelCanvasInner';
+                canvas.style.height = '100%';
+                canvas.style.width = '100%';
+                container.appendChild(canvas);
+            } else {
+                canvas.innerHTML = '';
+            }
+            setGraphPanelPlaceholder('');
+
+            const colorMap = {
+                topic: '#ef4444',
+                engine: '#f59e0b',
+                section: '#10b981',
+                search_query: '#3b82f6',
+                source: '#8b5cf6'
+            };
+
+            const nodeData = new vis.DataSet(nodes.map(node => {
+                const nodeType = (node.group || node.type || '').toLowerCase();
+                return {
+                    id: node.id,
+                    label: node.label || node.id,
+                    group: node.group || node.type,
+                    title: node.title || '',
+                    properties: node.properties || {},
+                    size: 14,
+                    color: {
+                        background: colorMap[nodeType] || '#ffffff',
+                        border: '#000000',
+                        highlight: {
+                            background: colorMap[nodeType] || '#e0e0e0',
+                            border: '#000000'
+                        }
+                    }
+                };
+            }));
+
+            const edgeData = new vis.DataSet(edges.map(edge => ({
+                from: edge.from,
+                to: edge.to,
+                label: edge.label || '',
+                arrows: 'to',
+                font: { align: 'top', size: 10 },
+                color: '#555555',
+                smooth: true
+            })));
+
+            const options = {
+                height: '100%',
+                width: '100%',
+                interaction: { hover: true, dragView: true, zoomView: true },
+                nodes: {
+                    shape: 'dot',
+                    borderWidth: 1,
+                    font: { size: 12 },
+                    scaling: { min: 8, max: 20 }
+                },
+                edges: {
+                    color: '#999999',
+                    width: 1
+                },
+                physics: {
+                    stabilization: true,
+                    barnesHut: { avoidOverlap: 0.3, springLength: 90, springConstant: 0.02 }
+                }
+            };
+
+            if (graphPanelNetwork) {
+                graphPanelNetwork.destroy();
+            }
+            graphPanelNetwork = new vis.Network(canvas, { nodes: nodeData, edges: edgeData }, options);
+
+            const fitOnce = () => {
+                graphPanelNetwork.fit({ animation: { duration: 300, easing: 'easeInOutQuad' } });
+                graphPanelNetwork.off('stabilizationIterationsDone', fitOnce);
+            };
+            graphPanelNetwork.on('stabilizationIterationsDone', fitOnce);
+
+            graphPanelNetwork.on('selectNode', params => {
+                const selectedId = params.nodes[0];
+                const selectedNode = nodes.find(n => n.id === selectedId);
+                showGraphDetail(selectedNode);
+            });
+            graphPanelNetwork.on('deselectNode', hideGraphDetail);
+        }
+
+        function showGraphDetail(node) {
+            const detail = document.getElementById('graphPanelDetail');
+            const title = document.getElementById('graphDetailTitle');
+            const meta = document.getElementById('graphDetailMeta');
+            const props = document.getElementById('graphDetailProps');
+            if (!detail || !title || !meta || !props) return;
+            if (!node) {
+                hideGraphDetail();
+                return;
+            }
+            detail.style.display = 'block';
+            title.textContent = node.label || node.id;
+            meta.textContent = `类型: ${(node.group || node.type || '未知')}`;
+            const properties = node.properties || {};
+            const lines = Object.entries(properties).map(([k, v]) => `<div><strong>${k}:</strong> ${v}</div>`);
+            props.innerHTML = lines.length ? lines.join('') : '暂无更多属性';
+        }
+
+        function hideGraphDetail() {
+            const detail = document.getElementById('graphPanelDetail');
+            if (detail) {
+                detail.style.display = 'none';
+            }
+        }
+
+        function focusGraphByKeyword(keyword) {
+            runGraphSearch(keyword);
+        }
+
+        function clearGraphSelection() {
+            if (graphPanelNetwork) {
+                graphPanelNetwork.unselectAll();
+            }
+            hideGraphDetail();
+        }
+
+        function resetGraphSearchState() {
+            graphSearchResults = [];
+            graphSearchIndex = -1;
+            graphSearchKeyword = '';
+            updateGraphSearchStatus();
+        }
+
+        function updateGraphSearchStatus() {
+            const status = document.getElementById('graphSearchStatus');
+            const prevBtn = document.getElementById('graphSearchPrev');
+            const nextBtn = document.getElementById('graphSearchNext');
+            const hasResults = graphSearchResults.length > 0 && graphSearchIndex >= 0;
+            if (status) {
+                status.textContent = hasResults ? `${graphSearchIndex + 1}/${graphSearchResults.length}` : '0/0';
+                status.style.visibility = hasResults ? 'visible' : 'hidden';
+            }
+            if (prevBtn) prevBtn.disabled = !hasResults;
+            if (nextBtn) nextBtn.disabled = !hasResults;
+        }
+
+        function runGraphSearch(keyword) {
+            if (!graphPanelNetwork) return;
+            const term = (keyword || '').trim();
+            graphSearchKeyword = term;
+
+            if (!term) {
+                resetGraphSearchState();
+                clearGraphSelection();
+                return;
+            }
+
+            const lower = term.toLowerCase();
+            const nodes = (graphPanelNetwork.body && graphPanelNetwork.body.data && graphPanelNetwork.body.data.nodes && graphPanelNetwork.body.data.nodes.get)
+                ? graphPanelNetwork.body.data.nodes.get()
+                : [];
+            graphSearchResults = nodes.filter(n => (n.label || '').toLowerCase().includes(lower));
+            graphSearchResults.sort((a, b) => {
+                const aLabel = (a.label || '').toLowerCase();
+                const bLabel = (b.label || '').toLowerCase();
+                if (aLabel === bLabel) {
+                    return String(a.id).localeCompare(String(b.id), 'zh');
+                }
+                return aLabel.localeCompare(bLabel, 'zh');
+            });
+            graphSearchIndex = graphSearchResults.length ? 0 : -1;
+
+            if (!graphSearchResults.length) {
+                clearGraphSelection();
+                updateGraphSearchStatus();
+                return;
+            }
+
+            focusGraphSearchIndex(graphSearchIndex);
+        }
+
+        function focusGraphSearchIndex(index) {
+            if (!graphPanelNetwork || !graphSearchResults.length) return;
+            const total = graphSearchResults.length;
+            graphSearchIndex = ((index % total) + total) % total;
+            const target = graphSearchResults[graphSearchIndex];
+            graphPanelNetwork.selectNodes([target.id]);
+            graphPanelNetwork.focus(target.id, { scale: 1, animation: { duration: 300, easing: 'easeInOutQuad' } });
+            showGraphDetail(target);
+            updateGraphSearchStatus();
+        }
+
+        function stepGraphSearch(delta) {
+            if (!graphSearchResults.length) return;
+            const nextIndex = graphSearchIndex + delta;
+            focusGraphSearchIndex(nextIndex);
+        }
+
+        function startGraphPanelPolling(taskId) {
+            stopGraphPanelPolling();
+            graphPanelPollingTaskId = taskId || graphPanelTaskId || (lastCompletedReportTask ? lastCompletedReportTask.task_id : null);
+            if (!graphPanelPollingTaskId) {
+                return;
+            }
+            const poll = () => refreshGraphPanel(graphPanelPollingTaskId, true);
+            poll();
+            graphPanelPollingTimer = setInterval(poll, GRAPH_PANEL_POLL_INTERVAL);
+        }
+
+        function stopGraphPanelPolling() {
+            if (graphPanelPollingTimer) {
+                clearInterval(graphPanelPollingTimer);
+                graphPanelPollingTimer = null;
+            }
+            graphPanelPollingTaskId = null;
+        }
+
+        async function fetchGraphData(taskId = null) {
+            const url = taskId ? `/api/graph/${taskId}` : '/api/graph/latest';
+            try {
+                const response = await fetch(url, { cache: 'no-store' });
+                const data = await response.json();
+                if (!response.ok || !data.success || !data.graph) {
+                    return null;
+                }
+                return data;
+            } catch (error) {
+                console.warn('获取知识图谱失败:', error);
+                return null;
+            }
+        }
+
+        async function refreshGraphPanel(taskId = null, allowFallback = true) {
+            const panel = document.getElementById('graphPanel');
+            if (!panel) return;
+            const isCollapsed = panel.classList.contains('collapsed');
+            const enabled = await ensureGraphragSetting();
+            if (!enabled) {
+                panel.style.display = 'none';
+                return;
+            }
+            panel.style.display = 'flex';
+            bindGraphPanelEvents();
+
+            if (taskId) {
+                graphPanelTaskId = taskId;
+            }
+
+            if (graphPanelLoading) return;
+            graphPanelLoading = true;
+            const awaitingGeneration = graphPanelAwaitingGeneration || !!graphPanelPollingTaskId;
+            setGraphPanelState(
+                awaitingGeneration ? 'pending' : 'loading',
+                awaitingGeneration ? '知识图谱即将生成，请稍候...' : '正在加载知识图谱...'
+            );
+
+            try {
+                const targetTaskId = graphPanelTaskId || (lastCompletedReportTask ? lastCompletedReportTask.task_id : null);
+                const allowLatestFallback = allowFallback && !targetTaskId;
+                let data = null;
+                let usedFallback = false;
+
+                if (targetTaskId) {
+                    data = await fetchGraphData(targetTaskId);
+                }
+                if ((!data || !data.graph) && allowLatestFallback) {
+                    data = await fetchGraphData(null);
+                    usedFallback = !!(data && data.graph);
+                }
+
+                if (data && data.graph) {
+                    const resolvedId = data.report_id || targetTaskId || graphPanelTaskId;
+                    if (resolvedId) {
+                        graphPanelTaskId = resolvedId;
+                    }
+                    graphPanelData = data.graph;
+                    if (!isCollapsed) {
+                        renderGraphPanel(data.graph);
+                        setGraphPanelState('ready', usedFallback ? '已切换到最新可用的知识图谱' : '');
+                    } else {
+                        // 更新统计，保持状态为已生成，提示通过“展示详情”查看
+                        updateGraphStats(data.graph);
+                        setGraphPanelState('ready', usedFallback ? '已切换到最新可用的知识图谱' : '面板已收起，点击“展示详情”查看');
+                        setGraphPanelPlaceholder('面板已收起，点击“展示详情”查看');
+                    }
+                } else {
+                    graphPanelData = { nodes: [], edges: [] };
+                    resetGraphSearchState();
+                    if (graphPanelNetwork) {
+                        graphPanelNetwork.destroy();
+                        graphPanelNetwork = null;
+                    }
+                    const innerCanvas = document.getElementById('graphPanelCanvasInner');
+                    if (innerCanvas) {
+                        innerCanvas.innerHTML = '';
+                    }
+                    updateGraphStats({ nodes: [], edges: [] });
+                    if (awaitingGeneration) {
+                        setGraphPanelState('pending', '知识图谱即将生成，请稍候...');
+                        setGraphPanelPlaceholder('正在生成知识图谱...');
+                    } else {
+                        setGraphPanelState('idle', targetTaskId ? '当前任务的知识图谱尚未生成，请稍后刷新' : '暂未找到知识图谱，请生成报告后刷新');
+                        setGraphPanelPlaceholder(targetTaskId ? '等待当前任务生成新的知识图谱...' : '暂未找到知识图谱，请生成报告后刷新');
+                    }
+                }
+            } catch (error) {
+                console.warn('刷新知识图谱失败:', error);
+                updateGraphStats({ nodes: [], edges: [] });
+                setGraphPanelState('error', '加载知识图谱失败，请稍后重试');
+            } finally {
+                graphPanelLoading = false;
+            }
+        }
+
+        function setGraphPanelAwaiting(taskId) {
+            graphPanelTaskId = taskId || graphPanelTaskId;
+            ensureGraphragSetting().then(enabled => {
+                if (!enabled) return;
+                const panel = document.getElementById('graphPanel');
+                if (!panel) return;
+                panel.style.display = 'flex';
+                bindGraphPanelEvents();
+                graphPanelData = { nodes: [], edges: [] };
+                resetGraphSearchState();
+                if (graphPanelNetwork) {
+                    graphPanelNetwork.destroy();
+                    graphPanelNetwork = null;
+                }
+                const innerCanvas = document.getElementById('graphPanelCanvasInner');
+                if (innerCanvas) {
+                    innerCanvas.innerHTML = '';
+                }
+                updateGraphStats({ nodes: [], edges: [] });
+                setGraphPanelState('pending', '报告生成中，知识图谱生成后自动刷新');
+                setGraphPanelPlaceholder('正在生成知识图谱...');
+                startGraphPanelPolling(graphPanelTaskId);
+            });
+        }
+
         function initializeReportControls() {
             const generateButton = document.getElementById('generateReportButton');
             if (generateButton && !generateButton.dataset.bound) {
@@ -5672,6 +6633,7 @@ function getConsoleContainer() {
 
             const downloadButton = document.getElementById('downloadReportButton');
             const downloadPdfButton = document.getElementById('downloadPdfButton');
+            const downloadMdButton = document.getElementById('downloadMdButton');
             if (downloadButton && !downloadButton.dataset.bound) {
                 downloadButton.dataset.bound = 'true';
                 downloadButton.addEventListener('click', () => downloadReport());
@@ -5679,6 +6641,10 @@ function getConsoleContainer() {
             if (downloadPdfButton && !downloadPdfButton.dataset.bound) {
                 downloadPdfButton.dataset.bound = 'true';
                 downloadPdfButton.addEventListener('click', () => downloadPdfFromPreview());
+            }
+            if (downloadMdButton && !downloadMdButton.dataset.bound) {
+                downloadMdButton.dataset.bound = 'true';
+                downloadMdButton.addEventListener('click', () => downloadMarkdownFromIr());
             }
 
             if (reportTaskId) {
@@ -5748,19 +6714,20 @@ function getConsoleContainer() {
         function updateDownloadButtonState(task) {
             const downloadButton = document.getElementById('downloadReportButton');
             const downloadPdfButton = document.getElementById('downloadPdfButton');
-            if (!downloadButton || !downloadPdfButton) return;
+            const downloadMdButton = document.getElementById('downloadMdButton');
+            if (!downloadButton || !downloadPdfButton || !downloadMdButton) return;
 
             const htmlReady = task && task.status === 'completed' && (
                 task.report_file_ready ||
                 task.report_file_path ||
                 task.has_result // 有内容即可允许尝试下载/预览
             );
-            const pdfReady = task && task.status === 'completed' && (
+            const irReady = task && task.status === 'completed' && (
                 task.ir_file_ready ||
-                task.ir_file_path ||
-                task.report_file_ready ||
-                task.report_file_path
+                task.ir_file_path
             );
+            const pdfReady = !!irReady;
+            const mdReady = !!irReady;
 
             if (htmlReady) {
                 const userQueryText = getQueryTextForTask(task);
@@ -5772,6 +6739,9 @@ function getConsoleContainer() {
                 downloadButton.textContent = label;
                 downloadPdfButton.disabled = !pdfReady;
                 downloadPdfButton.dataset.taskId = task.task_id;
+                downloadMdButton.disabled = !mdReady;
+                downloadMdButton.dataset.taskId = task.task_id;
+                downloadMdButton.dataset.filename = task.markdown_file_name || '';
                 lastCompletedReportTask = task;
             } else if (!lastCompletedReportTask || (task && task.status !== 'completed')) {
                 downloadButton.disabled = true;
@@ -5780,6 +6750,9 @@ function getConsoleContainer() {
                 downloadButton.textContent = '下载HTML';
                 downloadPdfButton.disabled = true;
                 downloadPdfButton.dataset.taskId = '';
+                downloadMdButton.disabled = true;
+                downloadMdButton.dataset.taskId = '';
+                downloadMdButton.dataset.filename = '';
                 if (!reportTaskId) {
                     lastCompletedReportTask = null;
                 }
@@ -5841,9 +6814,9 @@ function getConsoleContainer() {
             });
         }
 
-        async function downloadPdfFromPreview() {
+        async function downloadPdfFromPreview(taskIdFromCaller = null) {
             const btn = document.getElementById('downloadPdfButton');
-            const taskId = btn?.dataset.taskId;
+            const taskId = taskIdFromCaller || btn?.dataset.taskId || lastCompletedReportTask?.task_id;
 
             if (!taskId) {
                 showMessage('无可用的报告任务，请先生成报告', 'error');
@@ -5894,6 +6867,51 @@ function getConsoleContainer() {
             }
         }
 
+        async function downloadMarkdownFromIr(taskIdFromCaller = null) {
+            const btn = document.getElementById('downloadMdButton');
+            const taskId = taskIdFromCaller || btn?.dataset.taskId || lastCompletedReportTask?.task_id;
+
+            if (!taskId) {
+                showMessage('无可用的报告任务，请先生成报告', 'error');
+                return;
+            }
+
+            if (btn) btn.disabled = true;
+            showMessage('正在生成Markdown，请稍候...', 'info');
+
+            try {
+                const response = await fetch(`/api/report/export/md/${taskId}`, { method: 'GET' });
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.error || 'Markdown导出失败');
+                }
+
+                const contentDisposition = response.headers.get('Content-Disposition') || '';
+                let filename = 'report.md';
+                const matches = /filename=\"?([^\";]+)\"?/i.exec(contentDisposition);
+                if (matches && matches[1]) {
+                    filename = matches[1];
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+
+                showMessage('Markdown 导出完成，已开始下载', 'success');
+            } catch (err) {
+                console.error('导出Markdown失败:', err);
+                showMessage('导出Markdown失败: ' + err.message, 'error');
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        }
+
         // 渲染任务状态（使用新的进度条样式）
         function renderTaskStatus(task) {
             // 状态文本的中文映射
@@ -5911,6 +6929,9 @@ function getConsoleContainer() {
                 'error': 'task-status-error',
                 'pending': 'task-status-running'
             };
+
+            const htmlReady = task.status === 'completed' && (task.report_file_ready || task.report_file_path || task.has_result);
+            const irReady = task.status === 'completed' && (task.ir_file_ready || task.ir_file_path);
             
             // 为运行状态添加加载指示器
             const loadingIndicator = task.status !== 'completed' && task.status !== 'error' 
@@ -5972,7 +6993,6 @@ function getConsoleContainer() {
                 statusHTML += `
                     <div class="task-actions">
                         <button class="report-button primary" onclick="viewReport('${task.task_id}')">重新加载</button>
-                        ${task.report_file_ready ? `<button class="report-button" onclick="downloadReport('${task.task_id}')">下载HTML</button>` : ''}
                     </div>
                 `;
             }
@@ -6031,6 +7051,7 @@ function getConsoleContainer() {
                 if (data.success) {
                     reportTaskId = data.task_id;
                     showMessage('报告生成已启动', 'success');
+                    setGraphPanelAwaiting(reportTaskId);
 
                     // 更新任务状态显示
                     updateTaskProgressStatus({
@@ -6064,6 +7085,7 @@ function getConsoleContainer() {
                     updateTaskProgressStatus(null, 'error', '启动失败: ' + data.error);
                     // 重置标志允许重新尝试
                     autoGenerateTriggered = false;
+                    stopGraphPanelPolling();
                     reportTaskId = null;
                     setGenerateButtonState(false);
                     appendReportStreamLine('任务启动失败: ' + (data.error || '未知错误'), 'error');
@@ -6076,6 +7098,7 @@ function getConsoleContainer() {
                 updateTaskProgressStatus(null, 'error', '生成报告失败: ' + error.message);
                 // 重置标志允许重新尝试
                 autoGenerateTriggered = false;
+                stopGraphPanelPolling();
                 reportTaskId = null;
                 setGenerateButtonState(false);
                 appendReportStreamLine('任务启动阶段异常: ' + error.message, 'error');
@@ -6120,6 +7143,9 @@ function getConsoleContainer() {
                     if (data.task.status === 'completed') {
                         stopProgressPolling();
                         showMessage('报告生成完成！', 'success');
+                        graphPanelTaskId = data.task.task_id;
+                        refreshGraphPanel(data.task.task_id, true);
+                        stopGraphPanelPolling();
                         
                         // 自动显示报告
                         viewReport(taskId);
@@ -6132,6 +7158,7 @@ function getConsoleContainer() {
                     } else if (data.task.status === 'error') {
                         stopProgressPolling();
                         showMessage('报告生成失败: ' + data.task.error_message, 'error');
+                        stopGraphPanelPolling();
                         
                         // 重置自动生成标志，允许重新尝试
                         autoGenerateTriggered = false;
@@ -6409,11 +7436,13 @@ function getConsoleContainer() {
             if (eventType === 'status' && task) {
                 if (task.status === 'running') {
                     resetReportLogsForNewTask(task.task_id, '收到流式状态事件，已重置日志');
+                    setGraphPanelAwaiting(task.task_id);
                 }
                 updateTaskProgressStatus(task);
                 reportTaskId = task.status === 'running' ? task.task_id : null;
                 if (task.status === 'completed') {
                     lastCompletedReportTask = task;
+                    graphPanelTaskId = task.task_id;
                     setGenerateButtonState(false);
                 } else if (task.status === 'running') {
                     setGenerateButtonState(true);
@@ -6489,6 +7518,7 @@ function getConsoleContainer() {
                 case 'completed':
                     appendReportStreamLine(payload.message || '任务完成', 'success');
                     stopProgressPolling();
+                    stopGraphPanelPolling();
 
                     // 【修复】任务完成前强制刷新最后一次日志，确保所有日志都被读取
                     if (reportLogManager && reportLogManager.isRunning) {
@@ -6505,6 +7535,8 @@ function getConsoleContainer() {
                     if (task) {
                         lastCompletedReportTask = task;
                         updateDownloadButtonState(task);
+                        graphPanelTaskId = task.task_id;
+                        refreshGraphPanel(task.task_id, true);
                     }
                     if (eventData.task_id && !reportAutoPreviewLoaded) {
                         viewReport(eventData.task_id);
@@ -6514,6 +7546,7 @@ function getConsoleContainer() {
                 case 'cancelled':
                     appendReportStreamLine(payload.message || '任务已取消', 'warn');
                     stopProgressPolling();
+                    stopGraphPanelPolling();
                     safeCloseReportStream();
                     updateReportStreamStatus('idle');
                     reportTaskId = null;
@@ -6522,6 +7555,7 @@ function getConsoleContainer() {
                 case 'error':
                     appendReportStreamLine(payload.message || '任务失败', 'error', { badge: 'ERROR' });
                     stopProgressPolling();
+                    stopGraphPanelPolling();
                     safeCloseReportStream();
                     updateReportStreamStatus('error');
                     reportTaskId = null;

@@ -1,5 +1,5 @@
 """
-使用最新的章节JSON重新装订并渲染HTML报告。
+使用最新的章节JSON重新装订并渲染Markdown报告。
 """
 
 import json
@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from ReportEngine.core import ChapterStorage, DocumentComposer
 from ReportEngine.ir import IRValidator
-from ReportEngine.renderers import HTMLRenderer
+from ReportEngine.renderers import MarkdownRenderer
 from ReportEngine.utils.config import settings
 
 
@@ -228,12 +228,12 @@ def save_document_ir(document_ir, base_name, timestamp):
     return ir_path
 
 
-def render_html(document_ir, base_name, timestamp, ir_path=None):
+def render_markdown(document_ir, base_name, timestamp, ir_path=None):
     """
-    使用 HTMLRenderer 将 Document IR 渲染为 HTML 并保存。
+    使用 MarkdownRenderer 将 Document IR 渲染为 Markdown 并保存。
 
-    渲染后落盘到 `final_reports/html`，打印图表验证统计信息，方便
-    观察 Chart.js 数据的修复/失败情况。
+    渲染后落盘到 `final_reports/md`，打印生成文件大小，便于确认
+    输出内容。
 
     参数:
         document_ir: 装订完成的整本 IR
@@ -242,28 +242,21 @@ def render_html(document_ir, base_name, timestamp, ir_path=None):
         ir_path: 可选，IR 文件路径，提供时修复后会自动保存
 
     返回:
-        Path: 生成的 HTML 文件路径
+        Path: 生成的 Markdown 文件路径
     """
-    renderer = HTMLRenderer()
+    renderer = MarkdownRenderer()
     # 传入 ir_file_path，修复后自动保存
-    html_content = renderer.render(document_ir, ir_file_path=str(ir_path) if ir_path else None)
+    markdown_content = renderer.render(document_ir, ir_file_path=str(ir_path) if ir_path else None)
 
-    output_dir = Path(settings.OUTPUT_DIR) / "html"
+    output_dir = Path(settings.OUTPUT_DIR) / "md"
     output_dir.mkdir(parents=True, exist_ok=True)
-    html_filename = f"report_html_{base_name}_{timestamp}.html"
-    html_path = output_dir / html_filename
-    html_path.write_text(html_content, encoding="utf-8")
+    md_filename = f"report_md_{base_name}_{timestamp}.md"
+    md_path = output_dir / md_filename
+    md_path.write_text(markdown_content, encoding="utf-8")
 
-    file_size_mb = html_path.stat().st_size / (1024 * 1024)
-    logger.info(f"HTML生成成功: {html_path} ({file_size_mb:.2f} MB)")
-    logger.info(
-        "图表验证统计: "
-        f"total={renderer.chart_validation_stats.get('total', 0)}, "
-        f"valid={renderer.chart_validation_stats.get('valid', 0)}, "
-        f"repaired={renderer.chart_validation_stats.get('repaired_locally', 0) + renderer.chart_validation_stats.get('repaired_api', 0)}, "
-        f"failed={renderer.chart_validation_stats.get('failed', 0)}"
-    )
-    return html_path
+    file_size_kb = md_path.stat().st_size / 1024
+    logger.info(f"Markdown生成成功: {md_path} ({file_size_kb:.1f} KB)")
+    return md_path
 
 
 def build_slug(text):
@@ -287,18 +280,18 @@ def build_slug(text):
 
 def main():
     """
-    主入口：读取最新章节、装订 IR 并渲染 HTML。
+    主入口：读取最新章节、装订 IR 并渲染 Markdown。
 
     流程：
         1) 找到最新的章节 run 目录并读取 manifest；
         2) 加载章节并执行结构校验（仅警告）；
         3) 装订整本 IR，保存 IR 副本；
-        4) 渲染 HTML 并输出路径与统计信息。
+        4) 渲染 Markdown 并输出路径。
 
     返回:
         int: 0 表示成功，其余表示失败。
     """
-    logger.info("🚀 使用最新的LLM章节重新装订并渲染HTML")
+    logger.info("🚀 使用最新的LLM章节重新装订并渲染Markdown")
 
     chapter_root = Path(settings.CHAPTER_OUTPUT_DIR)
     latest_run = find_latest_run_dir(chapter_root)
@@ -325,12 +318,12 @@ def main():
 
     ir_path = save_document_ir(document_ir, base_name, timestamp)
     # 传入 ir_path，修复后的图表会自动保存到 IR 文件
-    html_path = render_html(document_ir, base_name, timestamp, ir_path=ir_path)
+    md_path = render_markdown(document_ir, base_name, timestamp, ir_path=ir_path)
 
     logger.info("")
-    logger.info("🎉 HTML装订与渲染完成")
+    logger.info("🎉 Markdown装订与渲染完成")
     logger.info(f"IR文件: {ir_path.resolve()}")
-    logger.info(f"HTML文件: {html_path.resolve()}")
+    logger.info(f"Markdown文件: {md_path.resolve()}")
     return 0
 
 

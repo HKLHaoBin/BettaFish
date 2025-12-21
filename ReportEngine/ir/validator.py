@@ -132,6 +132,69 @@ class IRValidator:
                         errors,
                     )
 
+    def _validate_swotTable_block(self, block: Dict[str, Any], path: str, errors: List[str]):
+        """SWOT表至少提供四象限之一，每象限为条目数组"""
+        quadrants = ("strengths", "weaknesses", "opportunities", "threats")
+        if not any(block.get(name) is not None for name in quadrants):
+            errors.append(f"{path} 需要至少包含 strengths/weaknesses/opportunities/threats 之一")
+        for name in quadrants:
+            entries = block.get(name)
+            if entries is None:
+                continue
+            if not isinstance(entries, list):
+                errors.append(f"{path}.{name} 必须是数组")
+                continue
+            for idx, entry in enumerate(entries):
+                self._validate_swot_item(entry, f"{path}.{name}[{idx}]", errors)
+
+    # SWOT impact 字段允许的评级值
+    ALLOWED_IMPACT_VALUES = {"低", "中低", "中", "中高", "高", "极高"}
+
+    def _validate_swot_item(self, item: Any, path: str, errors: List[str]):
+        """单个SWOT条目支持字符串或带字段的对象"""
+        if isinstance(item, str):
+            if not item.strip():
+                errors.append(f"{path} 不能为空字符串")
+            return
+        if not isinstance(item, dict):
+            errors.append(f"{path} 必须是字符串或对象")
+            return
+        title = None
+        for key in ("title", "label", "text", "detail", "description"):
+            value = item.get(key)
+            if isinstance(value, str) and value.strip():
+                title = value
+                break
+        if title is None:
+            errors.append(f"{path} 缺少 title/label/text/description 等文字字段")
+
+        # 校验 impact 字段：只允许评级值
+        impact = item.get("impact")
+        if impact is not None:
+            if not isinstance(impact, str) or impact not in self.ALLOWED_IMPACT_VALUES:
+                errors.append(
+                    f"{path}.impact 只允许填写影响评级（低/中低/中/中高/高/极高），"
+                    f"当前值: {impact}；如需详细说明请写入 detail 字段"
+                )
+
+        # # 校验 score 字段：只允许 0-10 的数字（已禁用）
+        # score = item.get("score")
+        # if score is not None:
+        #     valid_score = False
+        #     if isinstance(score, (int, float)):
+        #         valid_score = 0 <= score <= 10
+        #     elif isinstance(score, str):
+        #         # 兼容字符串形式的数字
+        #         try:
+        #             numeric_score = float(score)
+        #             valid_score = 0 <= numeric_score <= 10
+        #         except ValueError:
+        #             valid_score = False
+        #     if not valid_score:
+        #         errors.append(
+        #             f"{path}.score 只允许填写 0-10 的数字，当前值: {score}"
+        #         )
+
     def _validate_blockquote_block(
         self, block: Dict[str, Any], path: str, errors: List[str]
     ):
