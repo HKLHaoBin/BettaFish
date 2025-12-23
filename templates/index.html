@@ -2249,11 +2249,11 @@
 
             // 时间更新定时器 - 只在页面可见时更新
             if (isPageVisible) {
-                allTimers.updateTime = setInterval(updateTime, 1000);
+            allTimers.updateTime = setInterval(safeUpdateTime, 1000);
             }
 
             // 状态检查定时器 - 优化频率
-            allTimers.checkStatus = setInterval(checkStatus, 10000);
+            allTimers.checkStatus = setInterval(safeCheckStatus, 10000);
 
             // 【优化】控制台刷新定时器 - 提升至2秒快速响应
             allTimers.refreshConsole = setInterval(() => {
@@ -2270,7 +2270,11 @@
             }, 2000);
 
             // 报告锁定检查定时器
-            allTimers.reportLockCheck = setInterval(checkReportLockStatus, 15000);
+            allTimers.reportLockCheck = setInterval(() => {
+                if (typeof window.checkReportLockStatus === 'function') {
+                    window.checkReportLockStatus();
+                }
+            }, 15000);
         }
 
         // 暂停所有定时器
@@ -2741,6 +2745,112 @@
             report: 'Report Agent - 最终报告生成'
         };
 
+        function getConsoleContainer() {
+            return document.getElementById('consoleOutput');
+        }
+
+        function initializeConsoleLayers() {
+            const container = getConsoleContainer();
+            if (!container) return;
+            container.innerHTML = '';
+
+            consoleLayerApps.forEach(app => {
+                const layer = document.createElement('div');
+                layer.className = 'console-layer';
+                layer.dataset.app = app;
+                if (app === currentApp) {
+                    layer.classList.add('active');
+                    activeConsoleLayer = app;
+                }
+                // 【图层优化】不再设置style.display，完全由CSS类控制
+
+                container.appendChild(layer);
+                consoleLayers[app] = layer;
+                logRenderers[app] = new LogVirtualList(layer);
+                logRenderers[app].setActive(app === currentApp);
+
+                // 【FIX Bug #3】初始提示立即渲染，避免黑屏
+                logRenderers[app].clear(`[系统] ${appNames[app] || app} 日志就绪`);
+                logRenderers[app].render(); // 立即同步渲染
+            });
+
+            // 不需要手动设置滚动位置，LogVirtualList会处理
+        }
+
+        // 同步状态栏位置，避免覆盖应用切换按钮
+        function syncStatusBarPosition() {
+            const bar = document.getElementById('consoleStatusBar');
+            const switcher = document.querySelector('.app-switcher');
+            if (!bar || !switcher) return;
+
+            const offset = switcher.offsetHeight || 0;
+            const barHeight = bar.offsetHeight || 26;
+            const totalOffset = offset + barHeight + 6; // 额外预留6px缓冲
+
+            bar.style.top = `${offset}px`;
+            document.documentElement.style.setProperty('--console-offset', `${totalOffset}px`);
+        }
+
+        function safePerformSearch() {
+            if (typeof window.performSearch === 'function') {
+                window.performSearch();
+            }
+        }
+
+        function safeHandleTemplateUpload(event) {
+            if (typeof window.handleTemplateUpload === 'function') {
+                window.handleTemplateUpload(event);
+            }
+        }
+
+        function safeUpdateAppStatus(data) {
+            if (typeof window.updateAppStatus === 'function') {
+                window.updateAppStatus(data);
+            }
+        }
+
+        function safeLoadConsoleOutput(app) {
+            if (typeof window.loadConsoleOutput === 'function') {
+                window.loadConsoleOutput(app);
+            }
+        }
+
+        function safePreloadAllConsoleOutputs() {
+            if (typeof window.preloadAllConsoleOutputs === 'function') {
+                window.preloadAllConsoleOutputs();
+            }
+        }
+
+        function safeUpdateTime() {
+            if (typeof window.updateTime === 'function') {
+                window.updateTime();
+            }
+        }
+
+        function safeCheckStatus() {
+            if (typeof window.checkStatus === 'function') {
+                window.checkStatus();
+            }
+        }
+
+        function safeCheckReportLockStatus() {
+            if (typeof window.checkReportLockStatus === 'function') {
+                window.checkReportLockStatus();
+            }
+        }
+
+        function safeStartSystem() {
+            if (typeof window.startSystem === 'function') {
+                window.startSystem();
+            }
+        }
+
+        function safeRefreshConnectionStatus() {
+            if (typeof window.refreshConnectionStatus === 'function') {
+                window.refreshConnectionStatus();
+            }
+        }
+
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
             initializeConsoleTheme();
@@ -2749,25 +2859,25 @@
             initializeSocket();
             initializeEventListeners();
             ensureSystemReadyOnLoad();
-            loadConsoleOutput(currentApp);
+            safeLoadConsoleOutput(currentApp);
             // 后台预加载其他引擎的历史日志，避免切换时空白
-            setTimeout(preloadAllConsoleOutputs, 400);
+            setTimeout(safePreloadAllConsoleOutputs, 400);
 
             // 使用新的定时器管理系统
-            updateTime(); // 立即更新一次
-            checkStatus(); // 立即检查一次
-            checkReportLockStatus(); // 立即检查一次
+            safeUpdateTime(); // 立即更新一次
+            safeCheckStatus(); // 立即检查一次
+            safeCheckReportLockStatus(); // 立即检查一次
 
             // 启动所有定时器
             startAllTimers();
 
             // 【新增】启动定期内存优化
-            startMemoryOptimization();
+            if (typeof window.startMemoryOptimization === 'function') {
+                window.startMemoryOptimization();
+            }
             console.log('[性能优化] 已启动定期内存优化（每5分钟）');
 
             // 【新增】将性能监控函数暴露到全局，方便调试
-            window.getGlobalPerformanceStats = getGlobalPerformanceStats;
-            window.resetAllPerformanceStats = resetAllPerformanceStats;
             console.log('[调试工具] 性能监控函数已挂载到window对象：');
             console.log('  - window.getGlobalPerformanceStats() : 查看所有渲染器性能统计');
             console.log('  - window.resetAllPerformanceStats() : 重置所有性能计数器');
@@ -2783,17 +2893,21 @@
             attachConfigPasswordToggles();
 
             // 初始化论坛相关功能
-            initializeForum();
+            if (typeof window.initializeForum === 'function') {
+                window.initializeForum();
+            }
 
             // 延迟预加载iframe以确保应用启动完成，并且只在页面可见时加载
             setTimeout(() => {
-                if (isPageVisible) {
-                    preloadIframes();
+                if (isPageVisible && typeof window.preloadIframes === 'function') {
+                    window.preloadIframes();
                 }
             }, 5000); // 延迟时间从3秒增加到5秒，减少初始加载压力
 
             // 连接探测定时器（保持运行）
-            startConnectionProbe();
+            if (typeof window.startConnectionProbe === 'function') {
+                window.startConnectionProbe();
+            }
 
             // 窗口尺寸变化时同步状态栏位置
             window.addEventListener('resize', syncStatusBarPosition);
@@ -2805,13 +2919,13 @@
 
             socket.on('connect', function() {
                 socketConnected = true;
-                refreshConnectionStatus();
+                safeRefreshConnectionStatus();
                 socket.emit('request_status');
             });
 
             socket.on('disconnect', function() {
                 socketConnected = false;
-                refreshConnectionStatus();
+                safeRefreshConnectionStatus();
             });
 
             socket.on('console_output', function(data) {
@@ -2832,17 +2946,17 @@
             });
 
             socket.on('status_update', function(data) {
-                updateAppStatus(data);
+                safeUpdateAppStatus(data);
             });
         }
 
         // 事件监听器
         function initializeEventListeners() {
             // 搜索按钮
-            document.getElementById('searchButton').addEventListener('click', performSearch);
+            document.getElementById('searchButton').addEventListener('click', safePerformSearch);
             document.getElementById('searchInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    performSearch();
+                    safePerformSearch();
                 }
             });
             document.getElementById('searchInput').addEventListener('input', function(e) {
@@ -2850,7 +2964,7 @@
             });
 
             // 文件上传
-            document.getElementById('templateFileInput').addEventListener('change', handleTemplateUpload);
+            document.getElementById('templateFileInput').addEventListener('change', safeHandleTemplateUpload);
 
             // 应用切换按钮
             document.querySelectorAll('.app-button').forEach(button => {
@@ -2892,7 +3006,7 @@
 
             const startSystemButton = document.getElementById('startSystemButton');
             if (startSystemButton) {
-                startSystemButton.addEventListener('click', () => startSystem());
+                startSystemButton.addEventListener('click', () => safeStartSystem());
             }
 
             const restartSystemButton = document.getElementById('restartSystemButton');
@@ -3814,38 +3928,6 @@
             if (!systemStarted) {
                 showMessage('系统尚未启动，无法重启', 'error');
                 setConfigStatus('系统尚未启动，请先启动系统', 'error');
-        async function handleSafeRefresh() {
-            if (pageRefreshInProgress) {
-                return;
-            }
-
-            pageRefreshInProgress = true;
-            const refreshButton = document.getElementById('pageRefreshButton');
-            const originalText = refreshButton ? refreshButton.textContent : '';
-            if (refreshButton) {
-                refreshButton.disabled = true;
-                refreshButton.textContent = '刷新中...';
-            }
-
-            try {
-                await fetchSystemStatus();
-                await checkStatus();
-                refreshConsoleOutput();
-                showMessage('已刷新最新状态与日志', 'success');
-            } catch (error) {
-                console.error('刷新页面数据失败', error);
-                showMessage(`刷新失败: ${error.message}`, 'error');
-            } finally {
-                pageRefreshInProgress = false;
-                if (refreshButton) {
-                    refreshButton.disabled = false;
-                    refreshButton.textContent = originalText || '安全刷新';
-                }
-            }
-        }
-
-        async function handleShutdownRequest() {
-            if (shutdownInProgress) {
                 return;
             }
 
@@ -3854,79 +3936,10 @@
                 return;
             }
 
-            const runningAgents = await detectActiveAgentsFromForum();
-            if (runningAgents.length > 0) {
-                showRestartConfirm(runningAgents);
-                return;
-            }
-
-            restartSystem({ skipAgentWarning: true });
-                showMessage('系统正在启动/重启，请稍后再关闭', 'error');
-                return;
-            }
-
-            const runningAgents = getRunningAgents();
-            if (runningAgents.length > 0) {
-                showShutdownConfirm(runningAgents);
-                return;
-            }
-
-            shutdownSystem({ skipAgentWarning: true });
+            await restartSystem();
         }
 
-        async function shutdownSystem(options = {}) {
-            const { skipAgentWarning = false } = options;
-
-            if (shutdownInProgress) {
-                return;
-            }
-
-            if (!skipAgentWarning) {
-                const runningAgents = getRunningAgents();
-                if (runningAgents.length > 0) {
-                    showShutdownConfirm(runningAgents);
-                    return;
-                }
-            }
-
-            shutdownInProgress = true;
-            const button = document.getElementById('shutdownButton');
-            const originalText = button ? button.textContent : '';
-            if (button) {
-                button.disabled = true;
-                button.textContent = '关闭中...';
-            }
-
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 4000);
-                const response = await fetch(SYSTEM_SHUTDOWN_ENDPOINT, { method: 'POST', signal: controller.signal });
-                clearTimeout(timeoutId);
-
-                const message = '系统正在停止，请稍候...';
-                if (!response.ok) {
-                    throw new Error(`服务返回 ${response.status}`);
-                }
-
-                setConfigStatus(message, 'success');
-                showMessage(message, 'success');
-            } catch (error) {
-                const text = error.name === 'AbortError'
-                    ? '停止指令已发送，请稍候退出'
-                    : `停止失败: ${error.message}`;
-                showMessage(text, error.name === 'AbortError' ? 'success' : 'error');
-
-                if (error.name !== 'AbortError') {
-                    shutdownInProgress = false;
-                    if (button) {
-                        button.disabled = false;
-                        button.textContent = originalText || '关闭系统';
-                    }
-                }
-            }
-        }
-
-        async function startSystem() {
+        window.startSystem = async function startSystem() {
             if (systemStarting) {
                 setConfigStatus('系统正在启动，请稍候...', '');
                 return;
@@ -4168,7 +4181,7 @@
                     }
                 }
                 backendReachable = false;
-                refreshConnectionStatus();
+                safeRefreshConnectionStatus();
             } catch (error) {
                 const text = error.name === 'AbortError'
                     ? '关闭指令已发送，服务即将退出'
@@ -4192,13 +4205,13 @@
                         }
                     }
                     backendReachable = false;
-                    refreshConnectionStatus();
+                    safeRefreshConnectionStatus();
                 }
             }
         }
 
         // 执行搜索
-        function performSearch() {
+        window.performSearch = function performSearch() {
             const query = document.getElementById('searchInput').value.trim();
             if (!query) {
                 showMessage('请输入搜索内容', 'error');
@@ -4361,7 +4374,9 @@
                 }
                 // 切换到report页面时检查是否可以自动生成报告
                 setTimeout(() => {
-                    checkReportLockStatus();
+                    if (typeof window.checkReportLockStatus === 'function') {
+                        window.checkReportLockStatus();
+                    }
                 }, 500);
             } else {
                 // 【修复】切换离开Report Engine时停止日志刷新，节省资源
@@ -4376,7 +4391,7 @@
         }
 
         // 【新增】全局性能监控函数
-        function getGlobalPerformanceStats() {
+        window.getGlobalPerformanceStats = function getGlobalPerformanceStats() {
             console.log('=== 日志渲染器性能统计 ===');
             let totalMemory = 0;
             let totalLines = 0;
@@ -4403,10 +4418,10 @@
             console.log(`\n=== 总计 ===`);
             console.log(`总日志行数: ${totalLines}`);
             console.log(`活跃渲染器: ${Object.keys(logRenderers).length}`);
-        }
+        };
 
         // 【新增】重置所有性能统计
-        function resetAllPerformanceStats() {
+        window.resetAllPerformanceStats = function resetAllPerformanceStats() {
             consoleLayerApps.forEach(app => {
                 const renderer = logRenderers[app];
                 if (renderer) {
@@ -4414,10 +4429,10 @@
                 }
             });
             console.log('[性能统计] 已重置所有渲染器的性能统计');
-        }
+        };
 
         // 【新增】定期内存优化（每5分钟检查一次）
-        function startMemoryOptimization() {
+        window.startMemoryOptimization = function startMemoryOptimization() {
             setInterval(() => {
                 consoleLayerApps.forEach(app => {
                     // 只优化非当前活跃的渲染器
@@ -4437,60 +4452,12 @@
                     }
                 });
             }, 5 * 60 * 1000); // 5分钟
-        }
+        };
 
 
 // 存储最后显示的行数，避免重复加载
                 let lastLineCount = {};
 
-
-
-
-function getConsoleContainer() {
-            return document.getElementById('consoleOutput');
-        }
-
-        // 同步状态栏位置，避免覆盖应用切换按钮
-        function syncStatusBarPosition() {
-            const bar = document.getElementById('consoleStatusBar');
-            const switcher = document.querySelector('.app-switcher');
-            if (!bar || !switcher) return;
-
-            const offset = switcher.offsetHeight || 0;
-            const barHeight = bar.offsetHeight || 26;
-            const totalOffset = offset + barHeight + 6; // 额外预留6px缓冲
-
-            bar.style.top = `${offset}px`;
-            document.documentElement.style.setProperty('--console-offset', `${totalOffset}px`);
-        }
-
-        function initializeConsoleLayers() {
-            const container = getConsoleContainer();
-            if (!container) return;
-            container.innerHTML = '';
-
-            consoleLayerApps.forEach(app => {
-                const layer = document.createElement('div');
-                layer.className = 'console-layer';
-                layer.dataset.app = app;
-                if (app === currentApp) {
-                    layer.classList.add('active');
-                    activeConsoleLayer = app;
-                }
-                // 【图层优化】不再设置style.display，完全由CSS类控制
-
-                container.appendChild(layer);
-                consoleLayers[app] = layer;
-                logRenderers[app] = new LogVirtualList(layer);
-                logRenderers[app].setActive(app === currentApp);
-
-                // 【FIX Bug #3】初始提示立即渲染，避免黑屏
-                logRenderers[app].clear(`[系统] ${appNames[app] || app} 日志就绪`);
-                logRenderers[app].render(); // 立即同步渲染
-            });
-
-            // 不需要手动设置滚动位置，LogVirtualList会处理
-        }
 
         function getConsoleLayer(app) {
             if (consoleLayers[app]) {
@@ -4585,7 +4552,7 @@ function getConsoleContainer() {
         }
         
         // 加载控制台输出
-        function loadConsoleOutput(app) {
+        window.loadConsoleOutput = function loadConsoleOutput(app) {
             if (app === 'forum') {
                 loadForumLog();
                 return;
@@ -4645,7 +4612,7 @@ function getConsoleContainer() {
         }
         
         // 预加载所有Engine的历史日志，切换时无需等待
-        function preloadAllConsoleOutputs() {
+        window.preloadAllConsoleOutputs = function preloadAllConsoleOutputs() {
             ['insight', 'media', 'query', 'forum'].forEach(app => {
                 if (app === currentApp) return;
                 loadConsoleOutput(app);
@@ -4792,11 +4759,11 @@ function getConsoleContainer() {
         }
 
         // 预加载所有iframe（只执行一次）- 已废弃，改用懒加载
-        function preloadIframes() {
+        window.preloadIframes = function preloadIframes() {
             // 不再预加载所有iframe，改用懒加载机制
             console.log('使用懒加载机制，不再预加载所有iframe');
             iframesInitialized = true;
-        }
+        };
 
         // 更新嵌入页面
         function updateEmbeddedPage(app) {
@@ -4915,28 +4882,28 @@ function getConsoleContainer() {
         }
 
         // 检查应用状态
-        function checkStatus() {
+        window.checkStatus = function checkStatus() {
             fetch('/api/status')
             .then(response => response.json())
             .then(data => {
                 backendReachable = true;
-                updateAppStatus(data);
-                refreshConnectionStatus();
+                safeUpdateAppStatus(data);
+                safeRefreshConnectionStatus();
             })
             .catch(error => {
                 console.error('状态检查失败:', error);
                 backendReachable = false;
-                refreshConnectionStatus();
+                safeRefreshConnectionStatus();
             });
         }
 
-        function startConnectionProbe() {
+        window.startConnectionProbe = function startConnectionProbe() {
             if (connectionProbeTimer) {
                 clearInterval(connectionProbeTimer);
             }
             probeBackendConnection();
             connectionProbeTimer = setInterval(probeBackendConnection, CONNECTION_PROBE_INTERVAL);
-        }
+        };
 
         function probeBackendConnection() {
             fetch('/api/report/status?heartbeat=1', { cache: 'no-store' })
@@ -4946,16 +4913,16 @@ function getConsoleContainer() {
             })
             .then(() => {
                 backendReachable = true;
-                refreshConnectionStatus();
+                safeRefreshConnectionStatus();
             })
             .catch(() => {
                 backendReachable = false;
-                refreshConnectionStatus();
+                safeRefreshConnectionStatus();
             });
         }
 
         // 更新应用状态
-        function updateAppStatus(data) {
+        window.updateAppStatus = function updateAppStatus(data) {
             for (const [app, info] of Object.entries(data)) {
                 // 适配实际的API格式：{app: {status: string, port: int, output_lines: int}}
                 const status = info.status === 'running' ? 'running' : 'stopped';
@@ -4972,7 +4939,7 @@ function getConsoleContainer() {
         }
 
         // 根据当前的Socket/SSE状态刷新底部连接指示
-        function refreshConnectionStatus() {
+        window.refreshConnectionStatus = function refreshConnectionStatus() {
             const statusEl = document.getElementById('connectionStatus');
             if (!statusEl) return;
             if (socketConnected || reportStreamConnected || backendReachable) {
@@ -4983,7 +4950,7 @@ function getConsoleContainer() {
         }
 
         // 更新时间
-        function updateTime() {
+        window.updateTime = function updateTime() {
             const now = new Date();
             const timeString = now.toLocaleTimeString('zh-CN');
             document.getElementById('systemTime').textContent = timeString;
@@ -5013,7 +4980,7 @@ function getConsoleContainer() {
         }
 
         // 处理模板文件上传
-        function handleTemplateUpload(event) {
+        window.handleTemplateUpload = function handleTemplateUpload(event) {
             const file = event.target.files[0];
             const statusDiv = document.getElementById('uploadStatus');
             
@@ -5506,11 +5473,11 @@ function getConsoleContainer() {
         }
 
         // 初始化论坛功能
-        function initializeForum() {
+        window.initializeForum = function initializeForum() {
             // 初始化时加载一次论坛日志
             refreshForumMessages();
             attachForumScrollHandler();
-        }
+        };
 
         // 加载论坛日志
         let forumLogPosition = 0;  // 记录已接收的日志位置
@@ -5631,7 +5598,7 @@ function getConsoleContainer() {
         // 检查Report Engine锁定状态并自动生成报告
         let autoGenerateTriggered = false; // 防止重复触发
         
-        function checkReportLockStatus() {
+        window.checkReportLockStatus = function checkReportLockStatus() {
             fetch('/api/report/status')
             .then(response => response.json())
             .then(data => {
@@ -7259,7 +7226,7 @@ function getConsoleContainer() {
                 statusEl.dataset.state = state;
             }
 
-            refreshConnectionStatus();
+            safeRefreshConnectionStatus();
         }
 
         // 往黑色控制台输出区域追加一条流式日志
@@ -7397,7 +7364,7 @@ function getConsoleContainer() {
                 updateReportStreamStatus('idle');
             } else {
                 reportStreamConnected = false;
-                refreshConnectionStatus();
+                safeRefreshConnectionStatus();
             }
             if (!preserveRetryDelay) {
                 reportStreamRetryDelay = 3000;
@@ -7800,7 +7767,7 @@ function getConsoleContainer() {
                 statusContent.innerHTML = statusHTML;
                 statusContent.className = `report-status ${statusClass}`;
             }
-        }}
+        }
     </script>
 </body>
 </html>
