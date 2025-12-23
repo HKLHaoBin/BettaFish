@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-生成覆盖全部允许block类型的演示 IR，用于验证 HTML 与 PDF 渲染。
+生成覆盖全部允许block类型的演示 IR，用于验证 HTML / PDF / Markdown 渲染。
 
 执行后会在 `final_reports/ir` 写入一份带时间戳的 IR，
-并分别在 `final_reports/html` 与 `final_reports/pdf` 输出对应的渲染文件。
+并分别在 `final_reports/html`、`final_reports/pdf` 与 `final_reports/md`
+输出对应的渲染文件。
 """
 
 from __future__ import annotations
@@ -21,7 +22,7 @@ if str(ROOT) not in sys.path:
 from ReportEngine.core import DocumentComposer
 from ReportEngine.ir import IRValidator
 from ReportEngine.ir.schema import ENGINE_AGENT_TITLES
-from ReportEngine.renderers import HTMLRenderer, PDFRenderer
+from ReportEngine.renderers import HTMLRenderer, MarkdownRenderer, PDFRenderer
 from ReportEngine.utils.config import settings
 
 
@@ -508,6 +509,49 @@ def build_chapters() -> list[dict]:
             ],
         },
     }
+    horizontal_bar_chart_block = {
+        "type": "widget",
+        "widgetId": "demo-horizontal-voice",
+        "widgetType": "chart.js/bar",
+        "props": {
+            # 通过 indexAxis 切换横向柱状图
+            "type": "bar",
+            "options": {
+                "indexAxis": "y",
+                "plugins": {"legend": {"position": "right"}},
+                "scales": {"x": {"title": {"display": True, "text": "提及量(万)"}}},
+            },
+        },
+        "data": {
+            "labels": ["微博", "短视频", "社区论坛", "新闻客户端"],
+            "datasets": [
+                {
+                    "label": "声量对比",
+                    "data": [42, 58, 27, 36],
+                    "backgroundColor": ["#2ecc71", "#3498db", "#9b59b6", "#f39c12"],
+                }
+            ],
+        },
+    }
+    pie_chart_block = {
+        "type": "widget",
+        "widgetId": "demo-stance-pie",
+        "widgetType": "chart.js/pie",
+        "props": {
+            "type": "pie",
+            "options": {"plugins": {"legend": {"position": "bottom"}}},
+        },
+        "data": {
+            "labels": ["支持", "中立", "质疑"],
+            "datasets": [
+                {
+                    "label": "立场分布",
+                    "data": [36, 28, 21],
+                    "backgroundColor": ["#27ae60", "#f1c40f", "#c0392b"],
+                }
+            ],
+        },
+    }
     doughnut_chart_block = {
         "type": "widget",
         "widgetId": "demo-sentiment-share",
@@ -713,12 +757,14 @@ def build_chapters() -> list[dict]:
                 "type": "paragraph",
                 "inlines": [
                     {
-                        "text": "折线/柱状/饼图/雷达/极区/散点/气泡等多类型图表，用于验证 Chart.js 兼容性。",
+                        "text": "折线 / 柱状（含横向、堆叠）/ 饼图 / 圆环 / 雷达 / 极区 / 散点 / 气泡等多类型图表，用于验证 Chart.js 兼容性。",
                     }
                 ],
             },
             widget_block,
             stacked_bar_chart_block,
+            horizontal_bar_chart_block,
+            pie_chart_block,
             doughnut_chart_block,
             radar_chart_block,
             polar_area_chart_block,
@@ -768,14 +814,16 @@ def validate_chapters(chapters: list[dict]) -> None:
             raise ValueError(f"{chapter.get('chapterId', 'unknown')} 校验失败: {errors}")
 
 
-def render_and_save(document_ir: dict, timestamp: str) -> tuple[Path, Path, Path]:
-    """将 IR 保存为 JSON，并渲染 HTML / PDF，返回三个路径。"""
+def render_and_save(document_ir: dict, timestamp: str) -> tuple[Path, Path, Path, Path]:
+    """将 IR 保存为 JSON，并渲染 HTML / PDF / Markdown，返回四个路径。"""
     ir_dir = Path(settings.DOCUMENT_IR_OUTPUT_DIR)
     html_dir = Path(settings.OUTPUT_DIR) / "html"
     pdf_dir = Path(settings.OUTPUT_DIR) / "pdf"
+    md_dir = Path(settings.OUTPUT_DIR) / "md"
     ir_dir.mkdir(parents=True, exist_ok=True)
     html_dir.mkdir(parents=True, exist_ok=True)
     pdf_dir.mkdir(parents=True, exist_ok=True)
+    md_dir.mkdir(parents=True, exist_ok=True)
 
     ir_path = ir_dir / f"report_ir_all_blocks_demo_{timestamp}.json"
     ir_path.write_text(json.dumps(document_ir, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -789,7 +837,12 @@ def render_and_save(document_ir: dict, timestamp: str) -> tuple[Path, Path, Path
     pdf_path = pdf_dir / f"report_pdf_all_blocks_demo_{timestamp}.pdf"
     pdf_renderer.render_to_pdf(document_ir, pdf_path)
 
-    return ir_path, html_path, pdf_path
+    md_renderer = MarkdownRenderer()
+    md_content = md_renderer.render(document_ir, ir_file_path=str(ir_path))
+    md_path = md_dir / f"report_md_all_blocks_demo_{timestamp}.md"
+    md_path.write_text(md_content, encoding="utf-8")
+
+    return ir_path, html_path, pdf_path, md_path
 
 
 def main() -> int:
@@ -817,12 +870,13 @@ def main() -> int:
     composer = DocumentComposer()
     document_ir = composer.build_document(report_id, metadata, chapters)
 
-    ir_path, html_path, pdf_path = render_and_save(document_ir, timestamp)
+    ir_path, html_path, pdf_path, md_path = render_and_save(document_ir, timestamp)
 
     print("✅ 演示 IR 生成完成")
     print(f"IR:   {ir_path}")
     print(f"HTML: {html_path}")
     print(f"PDF:  {pdf_path}")
+    print(f"MD:   {md_path}")
     return 0
 
 

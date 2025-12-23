@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>全量组件与图表类型演示报告 V2</title>
+  <title>社会公共热点事件渲染测试</title>
   <script>
     // Chart.js - 嵌入式版本
     try {
@@ -674,694 +674,1761 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   
   <style>
 
-:root {
-  --bg-color: #f8f9fa;
-  --text-color: #212529;
-  --primary-color: #1a365d;
-  --primary-color-light: #2d3748;
-  --primary-color-dark: #0f1a2d;
-  --secondary-color: #e53e3e;
-  --secondary-color-light: #fc8181;
-  --secondary-color-dark: #c53030;
-  --card-bg: #ffffff;
-  --border-color: #dee2e6;
-  --shadow-color: rgba(0,0,0,0.08);
+:root { /* 含义：亮色主题变量区域；设置：在本块内调整相关属性 */
+  --bg-color: #f8f9fa; /* 含义：页面背景色主色调；设置：在 themeTokens 中覆盖或改此默认值 */
+  --text-color: #212529; /* 含义：正文文本基础颜色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --primary-color: #1a365d; /* 含义：主色调（按钮/高亮）；设置：在 themeTokens 中覆盖或改此默认值 */
+  --primary-color-light: #2d3748; /* 含义：主色调浅色，用于悬浮/渐变；设置：在 themeTokens 中覆盖或改此默认值 */
+  --primary-color-dark: #0f1a2d; /* 含义：主色调深色，用于强调；设置：在 themeTokens 中覆盖或改此默认值 */
+  --secondary-color: #e53e3e; /* 含义：次级色（提示/标签）；设置：在 themeTokens 中覆盖或改此默认值 */
+  --secondary-color-light: #fc8181; /* 含义：次级色浅色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --secondary-color-dark: #c53030; /* 含义：次级色深色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --card-bg: #ffffff; /* 含义：卡片/容器背景色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --border-color: #dee2e6; /* 含义：常规边框色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --shadow-color: rgba(0,0,0,0.08); /* 含义：阴影基色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-insight-bg: #f4f7ff; /* 含义：Insight 引擎卡片背景；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-insight-border: #dce7ff; /* 含义：Insight 引擎边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-insight-text: #1f4b99; /* 含义：Insight 引擎文字色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-media-bg: #fff6ec; /* 含义：Media 引擎卡片背景；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-media-border: #ffd9b3; /* 含义：Media 引擎边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-media-text: #b65a1a; /* 含义：Media 引擎文字色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-query-bg: #f1fbf5; /* 含义：Query 引擎卡片背景；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-query-border: #c7ebd6; /* 含义：Query 引擎边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-query-text: #1d6b3f; /* 含义：Query 引擎文字色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-quote-shadow: 0 12px 30px rgba(0,0,0,0.04); /* 含义：Engine 引用阴影；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-strength: #1c7f6e; /* 含义：SWOT 优势主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-weakness: #c0392b; /* 含义：SWOT 劣势主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-opportunity: #1f5ab3; /* 含义：SWOT 机会主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-threat: #b36b16; /* 含义：SWOT 威胁主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-on-light: #0f1b2b; /* 含义：SWOT 亮底文字色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-on-dark: #f7fbff; /* 含义：SWOT 暗底文字色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-text: var(--text-color); /* 含义：SWOT 文本主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-muted: rgba(0,0,0,0.58); /* 含义：SWOT 次文本色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-surface: rgba(255,255,255,0.92); /* 含义：SWOT 卡片表面色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-chip-bg: rgba(0,0,0,0.04); /* 含义：SWOT 标签底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-tag-border: var(--border-color); /* 含义：SWOT 标签边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-card-bg: linear-gradient(135deg, rgba(76,132,255,0.04), rgba(28,127,110,0.06)), var(--card-bg); /* 含义：SWOT 卡片背景渐变；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-card-border: var(--border-color); /* 含义：SWOT 卡片边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-card-shadow: 0 14px 28px var(--shadow-color); /* 含义：SWOT 卡片阴影；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-card-blur: none; /* 含义：SWOT 卡片模糊；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-base: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.5)); /* 含义：SWOT 象限基础底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-border: rgba(0,0,0,0.04); /* 含义：SWOT 象限边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-strength-bg: linear-gradient(135deg, rgba(28,127,110,0.07), rgba(255,255,255,0.78)), var(--card-bg); /* 含义：SWOT 优势象限底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-weakness-bg: linear-gradient(135deg, rgba(192,57,43,0.07), rgba(255,255,255,0.78)), var(--card-bg); /* 含义：SWOT 劣势象限底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-opportunity-bg: linear-gradient(135deg, rgba(31,90,179,0.07), rgba(255,255,255,0.78)), var(--card-bg); /* 含义：SWOT 机会象限底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-threat-bg: linear-gradient(135deg, rgba(179,107,22,0.07), rgba(255,255,255,0.78)), var(--card-bg); /* 含义：SWOT 威胁象限底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-strength-border: rgba(28,127,110,0.35); /* 含义：SWOT 优势边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-weakness-border: rgba(192,57,43,0.35); /* 含义：SWOT 劣势边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-opportunity-border: rgba(31,90,179,0.35); /* 含义：SWOT 机会边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-threat-border: rgba(179,107,22,0.35); /* 含义：SWOT 威胁边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-item-border: rgba(0,0,0,0.05); /* 含义：SWOT 条目边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  /* PEST 分析变量 - 紫青色系 */
+  --pest-political: #8e44ad; /* 含义：PEST 政治维度主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-economic: #16a085; /* 含义：PEST 经济维度主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-social: #e84393; /* 含义：PEST 社会维度主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-technological: #2980b9; /* 含义：PEST 技术维度主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-on-light: #1a1a2e; /* 含义：PEST 亮底文字色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-on-dark: #f8f9ff; /* 含义：PEST 暗底文字色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-text: var(--text-color); /* 含义：PEST 文本主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-muted: rgba(0,0,0,0.55); /* 含义：PEST 次文本色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-surface: rgba(255,255,255,0.88); /* 含义：PEST 卡片表面色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-chip-bg: rgba(0,0,0,0.05); /* 含义：PEST 标签底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-tag-border: var(--border-color); /* 含义：PEST 标签边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-card-bg: linear-gradient(145deg, rgba(142,68,173,0.03), rgba(22,160,133,0.04)), var(--card-bg); /* 含义：PEST 卡片背景渐变；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-card-border: var(--border-color); /* 含义：PEST 卡片边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-card-shadow: 0 16px 32px var(--shadow-color); /* 含义：PEST 卡片阴影；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-card-blur: none; /* 含义：PEST 卡片模糊；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-base: linear-gradient(90deg, rgba(255,255,255,0.95), rgba(255,255,255,0.7)); /* 含义：PEST 条带基础底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-border: rgba(0,0,0,0.06); /* 含义：PEST 条带边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-political-bg: linear-gradient(90deg, rgba(142,68,173,0.08), rgba(255,255,255,0.85)), var(--card-bg); /* 含义：PEST 政治条带底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-economic-bg: linear-gradient(90deg, rgba(22,160,133,0.08), rgba(255,255,255,0.85)), var(--card-bg); /* 含义：PEST 经济条带底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-social-bg: linear-gradient(90deg, rgba(232,67,147,0.08), rgba(255,255,255,0.85)), var(--card-bg); /* 含义：PEST 社会条带底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-technological-bg: linear-gradient(90deg, rgba(41,128,185,0.08), rgba(255,255,255,0.85)), var(--card-bg); /* 含义：PEST 技术条带底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-political-border: rgba(142,68,173,0.4); /* 含义：PEST 政治条带边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-economic-border: rgba(22,160,133,0.4); /* 含义：PEST 经济条带边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-social-border: rgba(232,67,147,0.4); /* 含义：PEST 社会条带边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-technological-border: rgba(41,128,185,0.4); /* 含义：PEST 技术条带边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-item-border: rgba(0,0,0,0.06); /* 含义：PEST 条目边框；设置：在 themeTokens 中覆盖或改此默认值 */
+} /* 结束 :root */
+.dark-mode { /* 含义：暗色主题变量区域；设置：在本块内调整相关属性 */
+  --bg-color: #121212; /* 含义：页面背景色主色调；设置：在 themeTokens 中覆盖或改此默认值 */
+  --text-color: #e0e0e0; /* 含义：正文文本基础颜色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --primary-color: #6ea8fe; /* 含义：主色调（按钮/高亮）；设置：在 themeTokens 中覆盖或改此默认值 */
+  --primary-color-light: #91caff; /* 含义：主色调浅色，用于悬浮/渐变；设置：在 themeTokens 中覆盖或改此默认值 */
+  --primary-color-dark: #1f6feb; /* 含义：主色调深色，用于强调；设置：在 themeTokens 中覆盖或改此默认值 */
+  --secondary-color: #f28b82; /* 含义：次级色（提示/标签）；设置：在 themeTokens 中覆盖或改此默认值 */
+  --secondary-color-light: #f9b4ae; /* 含义：次级色浅色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --secondary-color-dark: #d9655c; /* 含义：次级色深色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --card-bg: #1f1f1f; /* 含义：卡片/容器背景色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --border-color: #2c2c2c; /* 含义：常规边框色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --shadow-color: rgba(0, 0, 0, 0.4); /* 含义：阴影基色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-insight-bg: rgba(145, 202, 255, 0.08); /* 含义：Insight 引擎卡片背景；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-insight-border: rgba(145, 202, 255, 0.45); /* 含义：Insight 引擎边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-insight-text: #9dc2ff; /* 含义：Insight 引擎文字色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-media-bg: rgba(255, 196, 138, 0.08); /* 含义：Media 引擎卡片背景；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-media-border: rgba(255, 196, 138, 0.45); /* 含义：Media 引擎边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-media-text: #ffcb9b; /* 含义：Media 引擎文字色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-query-bg: rgba(141, 215, 165, 0.08); /* 含义：Query 引擎卡片背景；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-query-border: rgba(141, 215, 165, 0.45); /* 含义：Query 引擎边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-query-text: #a7e2ba; /* 含义：Query 引擎文字色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-quote-shadow: 0 12px 28px rgba(0, 0, 0, 0.35); /* 含义：Engine 引用阴影；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-strength: #1c7f6e; /* 含义：SWOT 优势主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-weakness: #e06754; /* 含义：SWOT 劣势主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-opportunity: #5a8cff; /* 含义：SWOT 机会主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-threat: #d48a2c; /* 含义：SWOT 威胁主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-on-light: #0f1b2b; /* 含义：SWOT 亮底文字色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-on-dark: #e6f0ff; /* 含义：SWOT 暗底文字色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-text: #e6f0ff; /* 含义：SWOT 文本主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-muted: rgba(230,240,255,0.75); /* 含义：SWOT 次文本色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-surface: rgba(255,255,255,0.08); /* 含义：SWOT 卡片表面色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-chip-bg: rgba(255,255,255,0.14); /* 含义：SWOT 标签底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-tag-border: rgba(255,255,255,0.24); /* 含义：SWOT 标签边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-card-bg: radial-gradient(140% 140% at 18% 18%, rgba(110,168,254,0.18), transparent 55%), radial-gradient(120% 140% at 82% 0%, rgba(28,127,110,0.16), transparent 52%), linear-gradient(160deg, #0b1424 0%, #0b1f31 52%, #0a1626 100%); /* 含义：SWOT 卡片背景渐变；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-card-border: rgba(255,255,255,0.14); /* 含义：SWOT 卡片边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-card-shadow: 0 24px 60px rgba(0, 0, 0, 0.58); /* 含义：SWOT 卡片阴影；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-card-blur: blur(12px); /* 含义：SWOT 卡片模糊；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-base: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); /* 含义：SWOT 象限基础底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-border: rgba(255,255,255,0.2); /* 含义：SWOT 象限边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-strength-bg: linear-gradient(150deg, rgba(28,127,110,0.28), rgba(28,127,110,0.12)), var(--swot-cell-base); /* 含义：SWOT 优势象限底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-weakness-bg: linear-gradient(150deg, rgba(192,57,43,0.32), rgba(192,57,43,0.14)), var(--swot-cell-base); /* 含义：SWOT 劣势象限底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-opportunity-bg: linear-gradient(150deg, rgba(31,90,179,0.28), rgba(31,90,179,0.12)), var(--swot-cell-base); /* 含义：SWOT 机会象限底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-threat-bg: linear-gradient(150deg, rgba(179,107,22,0.32), rgba(179,107,22,0.14)), var(--swot-cell-base); /* 含义：SWOT 威胁象限底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-strength-border: rgba(28,127,110,0.65); /* 含义：SWOT 优势边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-weakness-border: rgba(192,57,43,0.68); /* 含义：SWOT 劣势边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-opportunity-border: rgba(31,90,179,0.68); /* 含义：SWOT 机会边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-cell-threat-border: rgba(179,107,22,0.68); /* 含义：SWOT 威胁边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --swot-item-border: rgba(255,255,255,0.14); /* 含义：SWOT 条目边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  /* PEST 分析变量 - 暗色模式 */
+  --pest-political: #a569bd; /* 含义：PEST 政治维度主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-economic: #48c9b0; /* 含义：PEST 经济维度主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-social: #f06292; /* 含义：PEST 社会维度主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-technological: #5dade2; /* 含义：PEST 技术维度主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-on-light: #1a1a2e; /* 含义：PEST 亮底文字色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-on-dark: #f0f4ff; /* 含义：PEST 暗底文字色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-text: #f0f4ff; /* 含义：PEST 文本主色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-muted: rgba(240,244,255,0.7); /* 含义：PEST 次文本色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-surface: rgba(255,255,255,0.06); /* 含义：PEST 卡片表面色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-chip-bg: rgba(255,255,255,0.12); /* 含义：PEST 标签底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-tag-border: rgba(255,255,255,0.22); /* 含义：PEST 标签边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-card-bg: radial-gradient(130% 130% at 15% 15%, rgba(165,105,189,0.16), transparent 50%), radial-gradient(110% 130% at 85% 5%, rgba(72,201,176,0.14), transparent 48%), linear-gradient(155deg, #12162a 0%, #161b30 50%, #0f1425 100%); /* 含义：PEST 卡片背景渐变；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-card-border: rgba(255,255,255,0.12); /* 含义：PEST 卡片边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-card-shadow: 0 28px 65px rgba(0, 0, 0, 0.55); /* 含义：PEST 卡片阴影；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-card-blur: blur(10px); /* 含义：PEST 卡片模糊；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-base: linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)); /* 含义：PEST 条带基础底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-border: rgba(255,255,255,0.18); /* 含义：PEST 条带边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-political-bg: linear-gradient(90deg, rgba(142,68,173,0.25), rgba(142,68,173,0.1)), var(--pest-strip-base); /* 含义：PEST 政治条带底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-economic-bg: linear-gradient(90deg, rgba(22,160,133,0.25), rgba(22,160,133,0.1)), var(--pest-strip-base); /* 含义：PEST 经济条带底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-social-bg: linear-gradient(90deg, rgba(232,67,147,0.25), rgba(232,67,147,0.1)), var(--pest-strip-base); /* 含义：PEST 社会条带底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-technological-bg: linear-gradient(90deg, rgba(41,128,185,0.25), rgba(41,128,185,0.1)), var(--pest-strip-base); /* 含义：PEST 技术条带底色；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-political-border: rgba(165,105,189,0.6); /* 含义：PEST 政治条带边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-economic-border: rgba(72,201,176,0.6); /* 含义：PEST 经济条带边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-social-border: rgba(240,98,146,0.6); /* 含义：PEST 社会条带边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-strip-technological-border: rgba(93,173,226,0.6); /* 含义：PEST 技术条带边框；设置：在 themeTokens 中覆盖或改此默认值 */
+  --pest-item-border: rgba(255,255,255,0.12); /* 含义：PEST 条目边框；设置：在 themeTokens 中覆盖或改此默认值 */
+} /* 结束 .dark-mode */
+* { box-sizing: border-box; } /* 含义：全局统一盒模型，避免内外边距计算误差；设置：通常保持 border-box，如需原生行为可改为 content-box */
+body { /* 含义：全局排版与背景设置；设置：在本块内调整相关属性 */
+  margin: 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; /* 含义：字体族；设置：按需调整数值/颜色/变量 */
+  background: linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0)) fixed, var(--bg-color); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  color: var(--text-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  line-height: 1.7; /* 含义：行高，提升可读性；设置：按需调整数值/颜色/变量 */
+  min-height: 100vh; /* 含义：最小高度，防止塌陷；设置：按需调整数值/颜色/变量 */
+  transition: background-color 0.45s ease, color 0.45s ease; /* 含义：过渡动画时长/属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 body */
+.report-header, main, .hero-section, .chapter, .chart-card, .callout, .engine-quote, .kpi-card, .toc, .table-wrap { /* 含义：常用容器的统一过渡动画；设置：在本块内调整相关属性 */
+  transition: background-color 0.45s ease, color 0.45s ease, border-color 0.45s ease, box-shadow 0.45s ease; /* 含义：过渡动画时长/属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .report-header, main, .hero-section, .chapter, .chart-card, .callout, .engine-quote, .kpi-card, .toc, .table-wrap */
+.report-header { /* 含义：页眉吸顶区域；设置：在本块内调整相关属性 */
+  position: sticky; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+  top: 0; /* 含义：顶部偏移量；设置：按需调整数值/颜色/变量 */
+  z-index: 10; /* 含义：层叠顺序；设置：按需调整数值/颜色/变量 */
+  background: var(--card-bg); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  padding: 20px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-bottom: 1px solid var(--border-color); /* 含义：底部边框；设置：按需调整数值/颜色/变量 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  align-items: center; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  justify-content: space-between; /* 含义：flex 主轴对齐；设置：按需调整数值/颜色/变量 */
+  gap: 16px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 2px 6px var(--shadow-color); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .report-header */
+.tagline { /* 含义：标题标语行；设置：在本块内调整相关属性 */
+  margin: 4px 0 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  color: var(--secondary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  font-size: 0.95rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 .tagline */
+.hero-section { /* 含义：封面摘要主容器；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  flex-wrap: wrap; /* 含义：换行策略；设置：按需调整数值/颜色/变量 */
+  gap: 24px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  padding: 24px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 20px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  background: linear-gradient(135deg, rgba(0,123,255,0.1), rgba(23,162,184,0.1)); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  border: 1px solid rgba(0,0,0,0.08); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  margin-bottom: 32px; /* 含义：margin-bottom 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .hero-section */
+.hero-content { /* 含义：封面左侧文字区；设置：在本块内调整相关属性 */
+  flex: 2; /* 含义：flex 占位比例；设置：按需调整数值/颜色/变量 */
+  min-width: 260px; /* 含义：最小宽度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .hero-content */
+.hero-side { /* 含义：封面右侧 KPI 栏；设置：在本块内调整相关属性 */
+  flex: 1; /* 含义：flex 占位比例；设置：按需调整数值/颜色/变量 */
+  min-width: 220px; /* 含义：最小宽度；设置：按需调整数值/颜色/变量 */
+  display: grid; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* 含义：网格列模板；设置：按需调整数值/颜色/变量 */
+  gap: 12px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+} /* 结束 .hero-side */
+@media screen {
+  .hero-side {
+    margin-top: 28px; /* 含义：仅在屏幕显示时下移，避免遮挡；设置：按需调整数值 */
+  }
 }
-.dark-mode {
-  --bg-color: #121212;
-  --text-color: #e0e0e0;
-  --primary-color: #6ea8fe;
-  --primary-color-light: #91caff;
-  --primary-color-dark: #1f6feb;
-  --secondary-color: #f28b82;
-  --secondary-color-light: #f9b4ae;
-  --secondary-color-dark: #d9655c;
-  --card-bg: #1f1f1f;
-  --border-color: #2c2c2c;
-  --shadow-color: rgba(0, 0, 0, 0.4);
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0)) fixed, var(--bg-color);
-  color: var(--text-color);
-  line-height: 1.7;
-  min-height: 100vh;
-  transition: background-color 0.45s ease, color 0.45s ease;
-}
-.report-header, main, .hero-section, .chapter, .chart-card, .callout, .kpi-card, .toc, .table-wrap {
-  transition: background-color 0.45s ease, color 0.45s ease, border-color 0.45s ease, box-shadow 0.45s ease;
-}
-.report-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--card-bg);
-  padding: 20px;
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  box-shadow: 0 2px 6px var(--shadow-color);
-}
-.tagline {
-  margin: 4px 0 0;
-  color: var(--secondary-color);
-  font-size: 0.95rem;
-}
-.hero-section {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  padding: 24px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(0,123,255,0.1), rgba(23,162,184,0.1));
-  border: 1px solid rgba(0,0,0,0.08);
-  margin-bottom: 32px;
-}
-.hero-content {
-  flex: 2;
-  min-width: 260px;
-}
-.hero-side {
-  flex: 1;
-  min-width: 220px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-}
-.hero-kpi {
-  background: var(--card-bg);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 6px 16px var(--shadow-color);
-}
-.hero-kpi .label {
-  font-size: 0.9rem;
-  color: var(--secondary-color);
-}
-.hero-kpi .value {
-  font-size: 1.8rem;
-  font-weight: 700;
-}
-.hero-highlights {
-  list-style: none;
-  padding: 0;
-  margin: 16px 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.hero-highlights li {
-  margin: 0;
-}
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(0,0,0,0.05);
-  font-size: 0.9rem;
-}
-.broken-link {
-  text-decoration: underline dotted;
-  color: var(--primary-color);
-}
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.ghost-btn {
-  border: 1px solid var(--primary-color);
-  background: transparent;
-  color: var(--primary-color);
-  border-radius: 999px;
-  padding: 8px 16px;
-  cursor: pointer;
-}
-.hero-summary {
-  font-size: 1.05rem;
-  font-weight: 500;
-  margin-top: 0;
-}
-.llm-error-block {
-  border: 1px dashed var(--secondary-color);
-  border-radius: 12px;
-  padding: 12px;
-  margin: 12px 0;
-  background: rgba(229,62,62,0.06);
-  position: relative;
-}
-.llm-error-block.importance-critical {
-  border-color: var(--secondary-color-dark);
-  background: rgba(229,62,62,0.12);
-}
-.llm-error-block::after {
-  content: attr(data-raw);
-  white-space: pre-wrap;
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 100%;
-  max-height: 240px;
-  overflow: auto;
-  background: rgba(0,0,0,0.85);
-  color: #fff;
-  font-size: 0.85rem;
-  padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 8px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-  z-index: 20;
-}
-.llm-error-block:hover::after {
-  opacity: 1;
-}
-.report-header h1 {
-  margin: 0;
-  font-size: 1.6rem;
-  color: var(--primary-color);
-}
-.report-header .subtitle {
-  margin: 4px 0 0;
-  color: var(--secondary-color);
-}
-.header-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.cover {
-  text-align: center;
-  margin: 20px 0 40px;
-}
-.cover h1 {
-  font-size: 2.4rem;
-  margin: 0.4em 0;
-}
-.cover-hint {
-  letter-spacing: 0.4em;
-  color: var(--secondary-color);
-  font-size: 0.95rem;
-}
-.cover-subtitle {
-  color: var(--secondary-color);
-  margin: 0;
-}
-.action-btn {
-  border: none;
-  border-radius: 6px;
-  background: var(--primary-color);
-  color: #fff;
-  padding: 10px 16px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  transition: transform 0.2s ease;
-  min-width: 160px;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.action-btn:hover {
-  transform: translateY(-1px);
-}
-body.exporting {
-  cursor: progress;
-}
-.export-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(3, 9, 26, 0.55);
-  backdrop-filter: blur(2px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  z-index: 999;
-}
-.export-overlay.active {
-  opacity: 1;
-  pointer-events: all;
-}
-.export-dialog {
-  background: rgba(12, 19, 38, 0.92);
-  padding: 24px 32px;
-  border-radius: 18px;
-  color: #fff;
-  text-align: center;
-  min-width: 280px;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.45);
-}
-.export-spinner {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 3px solid rgba(255,255,255,0.2);
-  border-top-color: var(--secondary-color);
-  margin: 0 auto 16px;
-  animation: export-spin 1s linear infinite;
-}
-.export-status {
-  margin: 0;
-  font-size: 1rem;
-}
+.hero-kpi { /* 含义：封面 KPI 卡片；设置：在本块内调整相关属性 */
+  background: var(--card-bg); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  border-radius: 14px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  padding: 16px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 6px 16px var(--shadow-color); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .hero-kpi */
+.hero-kpi .label { /* 含义：.hero-kpi .label 样式区域；设置：在本块内调整相关属性 */
+  font-size: 0.9rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  color: var(--secondary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .hero-kpi .label */
+.hero-kpi .value { /* 含义：.hero-kpi .value 样式区域；设置：在本块内调整相关属性 */
+  font-size: 1.8rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  font-weight: 700; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+} /* 结束 .hero-kpi .value */
+.hero-highlights { /* 含义：封面亮点列表；设置：在本块内调整相关属性 */
+  list-style: none; /* 含义：列表样式；设置：按需调整数值/颜色/变量 */
+  padding: 0; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  margin: 16px 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  flex-wrap: wrap; /* 含义：换行策略；设置：按需调整数值/颜色/变量 */
+  gap: 10px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+} /* 结束 .hero-highlights */
+.hero-highlights li { /* 含义：.hero-highlights li 样式区域；设置：在本块内调整相关属性 */
+  margin: 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+} /* 结束 .hero-highlights li */
+.badge { /* 含义：徽章标签；设置：在本块内调整相关属性 */
+  display: inline-flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  align-items: center; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  padding: 6px 12px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 999px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  background: rgba(0,0,0,0.05); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  font-size: 0.9rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 .badge */
+.broken-link { /* 含义：无效链接提示样式；设置：在本块内调整相关属性 */
+  text-decoration: underline dotted; /* 含义：文本装饰；设置：按需调整数值/颜色/变量 */
+  color: var(--primary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .broken-link */
+.hero-actions { /* 含义：封面操作按钮容器；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  flex-wrap: wrap; /* 含义：换行策略；设置：按需调整数值/颜色/变量 */
+  gap: 12px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+} /* 结束 .hero-actions */
+.ghost-btn { /* 含义：次级按钮样式；设置：在本块内调整相关属性 */
+  border: 1px solid var(--primary-color); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  background: transparent; /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  color: var(--primary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  border-radius: 999px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  padding: 8px 16px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  cursor: pointer; /* 含义：鼠标指针样式；设置：按需调整数值/颜色/变量 */
+} /* 结束 .ghost-btn */
+.hero-summary { /* 含义：封面摘要文字；设置：在本块内调整相关属性 */
+  font-size: 1.05rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  font-weight: 500; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  margin-top: 0; /* 含义：margin-top 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .hero-summary */
+.llm-error-block { /* 含义：LLM 错误提示容器；设置：在本块内调整相关属性 */
+  border: 1px dashed var(--secondary-color); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  border-radius: 12px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  padding: 12px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  margin: 12px 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  background: rgba(229,62,62,0.06); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  position: relative; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+} /* 结束 .llm-error-block */
+.llm-error-block.importance-critical { /* 含义：.llm-error-block.importance-critical 样式区域；设置：在本块内调整相关属性 */
+  border-color: var(--secondary-color-dark); /* 含义：border-color 样式属性；设置：按需调整数值/颜色/变量 */
+  background: rgba(229,62,62,0.12); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .llm-error-block.importance-critical */
+.llm-error-block::after { /* 含义：.llm-error-block::after 样式区域；设置：在本块内调整相关属性 */
+  content: attr(data-raw); /* 含义：content 样式属性；设置：按需调整数值/颜色/变量 */
+  white-space: pre-wrap; /* 含义：空白与换行策略；设置：按需调整数值/颜色/变量 */
+  position: absolute; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+  left: 0; /* 含义：left 样式属性；设置：按需调整数值/颜色/变量 */
+  right: 0; /* 含义：right 样式属性；设置：按需调整数值/颜色/变量 */
+  bottom: 100%; /* 含义：bottom 样式属性；设置：按需调整数值/颜色/变量 */
+  max-height: 240px; /* 含义：max-height 样式属性；设置：按需调整数值/颜色/变量 */
+  overflow: auto; /* 含义：溢出处理；设置：按需调整数值/颜色/变量 */
+  background: rgba(0,0,0,0.85); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  color: #fff; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  font-size: 0.85rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  padding: 12px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 10px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  margin-bottom: 8px; /* 含义：margin-bottom 样式属性；设置：按需调整数值/颜色/变量 */
+  opacity: 0; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+  pointer-events: none; /* 含义：pointer-events 样式属性；设置：按需调整数值/颜色/变量 */
+  transition: opacity 0.2s ease; /* 含义：过渡动画时长/属性；设置：按需调整数值/颜色/变量 */
+  z-index: 20; /* 含义：层叠顺序；设置：按需调整数值/颜色/变量 */
+} /* 结束 .llm-error-block::after */
+.llm-error-block:hover::after { /* 含义：.llm-error-block:hover::after 样式区域；设置：在本块内调整相关属性 */
+  opacity: 1; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .llm-error-block:hover::after */
+.report-header h1 { /* 含义：页眉主标题；设置：在本块内调整相关属性 */
+  margin: 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  font-size: 1.6rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  color: var(--primary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .report-header h1 */
+.report-header .subtitle { /* 含义：页眉副标题；设置：在本块内调整相关属性 */
+  margin: 4px 0 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  color: var(--secondary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .report-header .subtitle */
+.header-actions { /* 含义：页眉按钮组；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  gap: 12px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  flex-wrap: wrap; /* 含义：换行策略；设置：按需调整数值/颜色/变量 */
+  align-items: center; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+} /* 结束 .header-actions */
+theme-button { /* 含义：主题切换组件；设置：在本块内调整相关属性 */
+  display: inline-block; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  vertical-align: middle; /* 含义：vertical-align 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 theme-button */
+.cover { /* 含义：封面区域；设置：在本块内调整相关属性 */
+  text-align: center; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  margin: 20px 0 40px; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+} /* 结束 .cover */
+.cover h1 { /* 含义：.cover h1 样式区域；设置：在本块内调整相关属性 */
+  font-size: 2.4rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  margin: 0.4em 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+} /* 结束 .cover h1 */
+.cover-hint { /* 含义：.cover-hint 样式区域；设置：在本块内调整相关属性 */
+  letter-spacing: 0.4em; /* 含义：字间距；设置：按需调整数值/颜色/变量 */
+  color: var(--secondary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  font-size: 0.95rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 .cover-hint */
+.cover-subtitle { /* 含义：.cover-subtitle 样式区域；设置：在本块内调整相关属性 */
+  color: var(--secondary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  margin: 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+} /* 结束 .cover-subtitle */
+.action-btn { /* 含义：主按钮基础样式；设置：在本块内调整相关属性 */
+  --mouse-x: 50%; /* 含义：主题变量 mouse-x；设置：在 themeTokens 中覆盖或改此默认值 */
+  --mouse-y: 50%; /* 含义：主题变量 mouse-y；设置：在 themeTokens 中覆盖或改此默认值 */
+  border: none; /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  border-radius: 10px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  color: #fff; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  padding: 11px 22px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  cursor: pointer; /* 含义：鼠标指针样式；设置：按需调整数值/颜色/变量 */
+  font-size: 0.92rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  font-weight: 600; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  letter-spacing: 0.025em; /* 含义：字间距；设置：按需调整数值/颜色/变量 */
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); /* 含义：过渡动画时长/属性；设置：按需调整数值/颜色/变量 */
+  min-width: 140px; /* 含义：最小宽度；设置：按需调整数值/颜色/变量 */
+  white-space: nowrap; /* 含义：空白与换行策略；设置：按需调整数值/颜色/变量 */
+  display: inline-flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  align-items: center; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  justify-content: center; /* 含义：flex 主轴对齐；设置：按需调整数值/颜色/变量 */
+  gap: 10px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+  position: relative; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+  overflow: hidden; /* 含义：溢出处理；设置：按需调整数值/颜色/变量 */
+} /* 结束 .action-btn */
+.action-btn::before { /* 含义：.action-btn::before 样式区域；设置：在本块内调整相关属性 */
+  content: ''; /* 含义：content 样式属性；设置：按需调整数值/颜色/变量 */
+  position: absolute; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+  top: 0; /* 含义：顶部偏移量；设置：按需调整数值/颜色/变量 */
+  left: 0; /* 含义：left 样式属性；设置：按需调整数值/颜色/变量 */
+  width: 100%; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  height: 100%; /* 含义：高度设置；设置：按需调整数值/颜色/变量 */
+  background: linear-gradient(to bottom, rgba(255,255,255,0.12), transparent); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  opacity: 0; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+  transition: opacity 0.35s ease; /* 含义：过渡动画时长/属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .action-btn::before */
+.action-btn::after { /* 含义：.action-btn::after 样式区域；设置：在本块内调整相关属性 */
+  content: ''; /* 含义：content 样式属性；设置：按需调整数值/颜色/变量 */
+  position: absolute; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+  top: var(--mouse-y); /* 含义：顶部偏移量；设置：按需调整数值/颜色/变量 */
+  left: var(--mouse-x); /* 含义：left 样式属性；设置：按需调整数值/颜色/变量 */
+  width: 0; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  height: 0; /* 含义：高度设置；设置：按需调整数值/颜色/变量 */
+  background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  border-radius: 50%; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  transform: translate(-50%, -50%); /* 含义：transform 样式属性；设置：按需调整数值/颜色/变量 */
+  transition: width 0.45s ease-out, height 0.45s ease-out; /* 含义：过渡动画时长/属性；设置：按需调整数值/颜色/变量 */
+  pointer-events: none; /* 含义：pointer-events 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .action-btn::after */
+.action-btn:hover { /* 含义：.action-btn:hover 样式区域；设置：在本块内调整相关属性 */
+  transform: translateY(-2px); /* 含义：transform 样式属性；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18), 0 4px 10px rgba(0, 0, 0, 0.1); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .action-btn:hover */
+.action-btn:hover::before { /* 含义：.action-btn:hover::before 样式区域；设置：在本块内调整相关属性 */
+  opacity: 1; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .action-btn:hover::before */
+.action-btn:hover::after { /* 含义：.action-btn:hover::after 样式区域；设置：在本块内调整相关属性 */
+  width: 280%; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  height: 280%; /* 含义：高度设置；设置：按需调整数值/颜色/变量 */
+} /* 结束 .action-btn:hover::after */
+.action-btn:active { /* 含义：.action-btn:active 样式区域；设置：在本块内调整相关属性 */
+  transform: translateY(0) scale(0.98); /* 含义：transform 样式属性；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .action-btn:active */
+.action-btn .btn-icon { /* 含义：.action-btn .btn-icon 样式区域；设置：在本块内调整相关属性 */
+  width: 18px; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  height: 18px; /* 含义：高度设置；设置：按需调整数值/颜色/变量 */
+  flex-shrink: 0; /* 含义：flex-shrink 样式属性；设置：按需调整数值/颜色/变量 */
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.15)); /* 含义：滤镜效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .action-btn .btn-icon */
+.theme-toggle-btn .sun-icon,
+.theme-toggle-btn .moon-icon { /* 含义：主题切换按钮图标样式；设置：在本块内调整相关属性 */
+  transition: transform 0.3s ease, opacity 0.3s ease; /* 含义：过渡动画时长/属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .theme-toggle-btn 图标 */
+.theme-toggle-btn .sun-icon { /* 含义：太阳图标样式；设置：在本块内调整相关属性 */
+  color: #F59E0B; /* 含义：太阳图标颜色；设置：按需调整数值/颜色/变量 */
+  stroke: #F59E0B; /* 含义：太阳图标描边颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .theme-toggle-btn .sun-icon */
+.theme-toggle-btn .moon-icon { /* 含义：月亮图标样式；设置：在本块内调整相关属性 */
+  color: #6366F1; /* 含义：月亮图标颜色；设置：按需调整数值/颜色/变量 */
+  stroke: #6366F1; /* 含义：月亮图标描边颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .theme-toggle-btn .moon-icon */
+.theme-toggle-btn:hover .sun-icon { /* 含义：悬停时太阳图标效果；设置：在本块内调整相关属性 */
+  transform: rotate(15deg); /* 含义：旋转变换；设置：按需调整数值/颜色/变量 */
+} /* 结束 .theme-toggle-btn:hover .sun-icon */
+.theme-toggle-btn:hover .moon-icon { /* 含义：悬停时月亮图标效果；设置：在本块内调整相关属性 */
+  transform: rotate(-15deg) scale(1.1); /* 含义：旋转和缩放变换；设置：按需调整数值/颜色/变量 */
+} /* 结束 .theme-toggle-btn:hover .moon-icon */
+body.exporting { /* 含义：body.exporting 样式区域；设置：在本块内调整相关属性 */
+  cursor: progress; /* 含义：鼠标指针样式；设置：按需调整数值/颜色/变量 */
+} /* 结束 body.exporting */
+.export-overlay { /* 含义：导出遮罩层；设置：在本块内调整相关属性 */
+  position: fixed; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+  inset: 0; /* 含义：inset 样式属性；设置：按需调整数值/颜色/变量 */
+  background: rgba(3, 9, 26, 0.55); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  backdrop-filter: blur(2px); /* 含义：背景模糊；设置：按需调整数值/颜色/变量 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  align-items: center; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  justify-content: center; /* 含义：flex 主轴对齐；设置：按需调整数值/颜色/变量 */
+  opacity: 0; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+  pointer-events: none; /* 含义：pointer-events 样式属性；设置：按需调整数值/颜色/变量 */
+  transition: opacity 0.3s ease; /* 含义：过渡动画时长/属性；设置：按需调整数值/颜色/变量 */
+  z-index: 999; /* 含义：层叠顺序；设置：按需调整数值/颜色/变量 */
+} /* 结束 .export-overlay */
+.export-overlay.active { /* 含义：.export-overlay.active 样式区域；设置：在本块内调整相关属性 */
+  opacity: 1; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+  pointer-events: all; /* 含义：pointer-events 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .export-overlay.active */
+.export-dialog { /* 含义：.export-dialog 样式区域；设置：在本块内调整相关属性 */
+  background: rgba(12, 19, 38, 0.92); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  padding: 24px 32px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 18px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  color: #fff; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  text-align: center; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  min-width: 280px; /* 含义：最小宽度；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 16px 40px rgba(0,0,0,0.45); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .export-dialog */
+.export-spinner { /* 含义：.export-spinner 样式区域；设置：在本块内调整相关属性 */
+  width: 48px; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  height: 48px; /* 含义：高度设置；设置：按需调整数值/颜色/变量 */
+  border-radius: 50%; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  border: 3px solid rgba(255,255,255,0.2); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  border-top-color: var(--secondary-color); /* 含义：border-top-color 样式属性；设置：按需调整数值/颜色/变量 */
+  margin: 0 auto 16px; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  animation: export-spin 1s linear infinite; /* 含义：animation 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .export-spinner */
+.export-status { /* 含义：.export-status 样式区域；设置：在本块内调整相关属性 */
+  margin: 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  font-size: 1rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 .export-status */
 .exporting *,
-.exporting *::before,
-.exporting *::after {
-  animation: none !important;
-  transition: none !important;
-}
-.export-progress {
-  width: 220px;
-  height: 6px;
-  background: rgba(255,255,255,0.25);
-  border-radius: 999px;
-  overflow: hidden;
-  margin: 20px auto 0;
-  position: relative;
-}
-.export-progress-bar {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 45%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-  animation: export-progress 1.4s ease-in-out infinite;
-}
-@keyframes export-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-@keyframes export-progress {
-  0% { left: -45%; }
-  50% { left: 20%; }
-  100% { left: 110%; }
-}
-main {
-  max-width: 1200px;
-  margin: 40px auto;
-  padding: 24px;
-  background: var(--card-bg);
-  border-radius: 16px;
-  box-shadow: 0 10px 30px var(--shadow-color);
-}
-h1, h2, h3, h4, h5, h6 {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: var(--text-color);
-  margin-top: 2em;
-  margin-bottom: 0.6em;
-  line-height: 1.35;
-}
-h2 {
-  font-size: 1.9rem;
-}
-h3 {
-  font-size: 1.4rem;
-}
-h4 {
-  font-size: 1.2rem;
-}
-p {
-  margin: 1em 0;
-  text-align: justify;
-}
-ul, ol {
-  margin-left: 1.5em;
-  padding-left: 0;
-}
-img, canvas, svg {
-  max-width: 100%;
-  height: auto;
-}
-.meta-card {
-  background: rgba(0,0,0,0.02);
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid var(--border-color);
-}
-.meta-card ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.meta-card li {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px dashed var(--border-color);
-  padding: 8px 0;
-}
-.toc {
-  margin-top: 30px;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 20px;
-  background: rgba(0,0,0,0.01);
-}
-.toc-title {
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-.toc ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.toc li {
-  margin: 4px 0;
-}
-.toc li.level-1 {
-  font-size: 1.05rem;
-  font-weight: 600;
-  margin-top: 12px;
-}
-.toc li.level-2 {
-  margin-left: 12px;
-}
-.toc li a {
-  color: var(--primary-color);
-  text-decoration: none;
-}
-.toc li.level-3 {
-  margin-left: 16px;
-  font-size: 0.95em;
-}
-.toc-desc {
-  margin: 2px 0 0;
-  color: var(--secondary-color);
-  font-size: 0.9rem;
-}
-.toc-desc {
-  margin: 2px 0 0;
-  color: var(--secondary-color);
-  font-size: 0.9rem;
-}
-.chapter {
-  margin-top: 40px;
-  padding-top: 32px;
-  border-top: 1px solid rgba(0,0,0,0.05);
-}
-.chapter:first-of-type {
-  border-top: none;
-  padding-top: 0;
-}
-blockquote {
-  border-left: 4px solid var(--primary-color);
-  padding: 12px 16px;
-  background: rgba(0,0,0,0.04);
-  border-radius: 0 8px 8px 0;
-}
-.table-wrap {
-  overflow-x: auto;
-  margin: 20px 0;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-table th, table td {
-  padding: 12px;
-  border: 1px solid var(--border-color);
-}
-table th {
-  background: rgba(0,0,0,0.03);
-}
-.align-center { text-align: center; }
-.align-right { text-align: right; }
-.callout {
-  border-left: 4px solid var(--primary-color);
-  padding: 16px;
-  border-radius: 8px;
-  margin: 20px 0;
-  background: rgba(0,0,0,0.02);
-}
-.callout.tone-warning { border-color: #ff9800; }
-.callout.tone-success { border-color: #2ecc71; }
-.callout.tone-danger { border-color: #e74c3c; }
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin: 20px 0;
-}
-.kpi-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 16px;
-  border-radius: 12px;
-  background: rgba(0,0,0,0.02);
-  border: 1px solid var(--border-color);
-  align-items: flex-start;
-}
-.kpi-value {
-  font-size: 2rem;
-  font-weight: 700;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 6px;
-  line-height: 1.25;
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
-.kpi-label {
-  color: var(--secondary-color);
-  line-height: 1.35;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  max-width: 100%;
-}
-.delta.up { color: #27ae60; }
-.delta.down { color: #e74c3c; }
-.delta.neutral { color: var(--secondary-color); }
-.delta {
-  display: block;
-  line-height: 1.3;
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
-.chart-card {
-  margin: 30px 0;
-  padding: 20px;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  background: rgba(0,0,0,0.01);
-}
-.chart-card.chart-card--error {
-  border-style: dashed;
-  background: linear-gradient(135deg, rgba(0,0,0,0.015), rgba(0,0,0,0.04));
-}
-.chart-error {
-  display: flex;
-  gap: 12px;
-  padding: 14px 12px;
-  border-radius: 10px;
-  align-items: flex-start;
-  background: rgba(0,0,0,0.03);
-  color: var(--secondary-color);
-}
-.chart-error__icon {
-  width: 28px;
-  height: 28px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: var(--secondary-color-dark);
-  background: rgba(0,0,0,0.06);
-  font-size: 0.9rem;
-}
-.chart-error__title {
-  font-weight: 600;
-  color: var(--text-color);
-}
-.chart-error__desc {
-  margin: 4px 0 0;
-  color: var(--secondary-color);
-  line-height: 1.6;
-}
-.chart-card.wordcloud-card .chart-container {
-  min-height: 180px;
-}
-.chart-container {
-  position: relative;
-  min-height: 220px;
-}
-.chart-fallback {
-  display: none;
-  margin-top: 12px;
-  font-size: 0.85rem;
-  overflow-x: auto;
-}
-.no-js .chart-fallback {
-  display: block;
-}
-.no-js .chart-container {
-  display: none;
-}
-.chart-fallback table {
-  width: 100%;
-  border-collapse: collapse;
-}
+.exporting *::before, /* 含义：.exporting * 样式属性；设置：按需调整数值/颜色/变量 */
+.exporting *::after { /* 含义：.exporting *::after 样式区域；设置：在本块内调整相关属性 */
+  animation: none !important; /* 含义：animation 样式属性；设置：按需调整数值/颜色/变量 */
+  transition: none !important; /* 含义：过渡动画时长/属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .exporting *::after */
+.export-progress { /* 含义：.export-progress 样式区域；设置：在本块内调整相关属性 */
+  width: 220px; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  height: 6px; /* 含义：高度设置；设置：按需调整数值/颜色/变量 */
+  background: rgba(255,255,255,0.25); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  border-radius: 999px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  overflow: hidden; /* 含义：溢出处理；设置：按需调整数值/颜色/变量 */
+  margin: 20px auto 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  position: relative; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+} /* 结束 .export-progress */
+.export-progress-bar { /* 含义：.export-progress-bar 样式区域；设置：在本块内调整相关属性 */
+  position: absolute; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+  top: 0; /* 含义：顶部偏移量；设置：按需调整数值/颜色/变量 */
+  bottom: 0; /* 含义：bottom 样式属性；设置：按需调整数值/颜色/变量 */
+  width: 45%; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  border-radius: inherit; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  animation: export-progress 1.4s ease-in-out infinite; /* 含义：animation 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .export-progress-bar */
+@keyframes export-spin { /* 含义：@keyframes export-spin 样式区域；设置：在本块内调整相关属性 */
+  from { transform: rotate(0deg); } /* 含义：关键帧起点，保持 0° 角度；设置：可改为其他起始旋转或缩放状态 */
+  to { transform: rotate(360deg); } /* 含义：关键帧终点，旋转一圈；设置：可改为自定义终态角度/效果 */
+} /* 结束 @keyframes export-spin */
+@keyframes export-progress { /* 含义：@keyframes export-progress 样式区域；设置：在本块内调整相关属性 */
+  0% { left: -45%; } /* 含义：进度动画起点，条形从左侧之外进入；设置：调整起始 left 百分比 */
+  50% { left: 20%; } /* 含义：进度动画中点，条形位于容器中段；设置：按需调整偏移比例 */
+  100% { left: 110%; } /* 含义：进度动画终点，条形滑出右侧；设置：调整收尾 left 百分比 */
+} /* 结束 @keyframes export-progress */
+main { /* 含义：主体内容容器；设置：在本块内调整相关属性 */
+  max-width: 1200px; /* 含义：最大宽度；设置：按需调整数值/颜色/变量 */
+  margin: 40px auto; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  padding: 24px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  background: var(--card-bg); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  border-radius: 16px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 10px 30px var(--shadow-color); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 main */
+h1, h2, h3, h4, h5, h6 { /* 含义：标题通用样式；设置：在本块内调整相关属性 */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; /* 含义：字体族；设置：按需调整数值/颜色/变量 */
+  color: var(--text-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  margin-top: 2em; /* 含义：margin-top 样式属性；设置：按需调整数值/颜色/变量 */
+  margin-bottom: 0.6em; /* 含义：margin-bottom 样式属性；设置：按需调整数值/颜色/变量 */
+  line-height: 1.35; /* 含义：行高，提升可读性；设置：按需调整数值/颜色/变量 */
+} /* 结束 h1, h2, h3, h4, h5, h6 */
+h2 { /* 含义：h2 样式区域；设置：在本块内调整相关属性 */
+  font-size: 1.9rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 h2 */
+h3 { /* 含义：h3 样式区域；设置：在本块内调整相关属性 */
+  font-size: 1.4rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 h3 */
+h4 { /* 含义：h4 样式区域；设置：在本块内调整相关属性 */
+  font-size: 1.2rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 h4 */
+p { /* 含义：段落样式；设置：在本块内调整相关属性 */
+  margin: 1em 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  text-align: justify; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+} /* 结束 p */
+ul, ol { /* 含义：列表样式；设置：在本块内调整相关属性 */
+  margin-left: 1.5em; /* 含义：margin-left 样式属性；设置：按需调整数值/颜色/变量 */
+  padding-left: 0; /* 含义：左侧内边距/缩进；设置：按需调整数值/颜色/变量 */
+} /* 结束 ul, ol */
+img, canvas, svg { /* 含义：媒体元素尺寸限制；设置：在本块内调整相关属性 */
+  max-width: 100%; /* 含义：最大宽度；设置：按需调整数值/颜色/变量 */
+  height: auto; /* 含义：高度设置；设置：按需调整数值/颜色/变量 */
+} /* 结束 img, canvas, svg */
+.meta-card { /* 含义：元信息卡片；设置：在本块内调整相关属性 */
+  background: rgba(0,0,0,0.02); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  border-radius: 12px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  padding: 20px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--border-color); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+} /* 结束 .meta-card */
+.meta-card ul { /* 含义：.meta-card ul 样式区域；设置：在本块内调整相关属性 */
+  list-style: none; /* 含义：列表样式；设置：按需调整数值/颜色/变量 */
+  padding: 0; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  margin: 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+} /* 结束 .meta-card ul */
+.meta-card li { /* 含义：.meta-card li 样式区域；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  justify-content: space-between; /* 含义：flex 主轴对齐；设置：按需调整数值/颜色/变量 */
+  border-bottom: 1px dashed var(--border-color); /* 含义：底部边框；设置：按需调整数值/颜色/变量 */
+  padding: 8px 0; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+} /* 结束 .meta-card li */
+.toc { /* 含义：目录容器；设置：在本块内调整相关属性 */
+  margin-top: 30px; /* 含义：margin-top 样式属性；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--border-color); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  border-radius: 12px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  padding: 20px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  background: rgba(0,0,0,0.01); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .toc */
+.toc-title { /* 含义：.toc-title 样式区域；设置：在本块内调整相关属性 */
+  font-weight: 600; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  margin-bottom: 10px; /* 含义：margin-bottom 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .toc-title */
+.toc ul { /* 含义：.toc ul 样式区域；设置：在本块内调整相关属性 */
+  list-style: none; /* 含义：列表样式；设置：按需调整数值/颜色/变量 */
+  margin: 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  padding: 0; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+} /* 结束 .toc ul */
+.toc li { /* 含义：.toc li 样式区域；设置：在本块内调整相关属性 */
+  margin: 4px 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+} /* 结束 .toc li */
+.toc li.level-1 { /* 含义：.toc li.level-1 样式区域；设置：在本块内调整相关属性 */
+  font-size: 1.05rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  font-weight: 600; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  margin-top: 12px; /* 含义：margin-top 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .toc li.level-1 */
+.toc li.level-2 { /* 含义：.toc li.level-2 样式区域；设置：在本块内调整相关属性 */
+  margin-left: 12px; /* 含义：margin-left 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .toc li.level-2 */
+.toc li a { /* 含义：.toc li a 样式区域；设置：在本块内调整相关属性 */
+  color: var(--primary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  text-decoration: none; /* 含义：文本装饰；设置：按需调整数值/颜色/变量 */
+} /* 结束 .toc li a */
+.toc li.level-3 { /* 含义：.toc li.level-3 样式区域；设置：在本块内调整相关属性 */
+  margin-left: 16px; /* 含义：margin-left 样式属性；设置：按需调整数值/颜色/变量 */
+  font-size: 0.95em; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 .toc li.level-3 */
+.toc-desc { /* 含义：.toc-desc 样式区域；设置：在本块内调整相关属性 */
+  margin: 2px 0 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  color: var(--secondary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  font-size: 0.9rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 .toc-desc */
+.toc-desc { /* 含义：.toc-desc 样式区域；设置：在本块内调整相关属性 */
+  margin: 2px 0 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  color: var(--secondary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  font-size: 0.9rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 .toc-desc */
+.chapter { /* 含义：章节容器；设置：在本块内调整相关属性 */
+  margin-top: 40px; /* 含义：margin-top 样式属性；设置：按需调整数值/颜色/变量 */
+  padding-top: 32px; /* 含义：padding-top 样式属性；设置：按需调整数值/颜色/变量 */
+  border-top: 1px solid rgba(0,0,0,0.05); /* 含义：border-top 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .chapter */
+.chapter:first-of-type { /* 含义：.chapter:first-of-type 样式区域；设置：在本块内调整相关属性 */
+  border-top: none; /* 含义：border-top 样式属性；设置：按需调整数值/颜色/变量 */
+  padding-top: 0; /* 含义：padding-top 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .chapter:first-of-type */
+blockquote { /* 含义：引用块 - PDF基础样式；设置：在本块内调整相关属性 */
+  padding: 12px 16px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  background: rgba(0,0,0,0.04); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  border-radius: 8px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  border-left: none; /* 含义：移除左侧色条；设置：按需调整数值/颜色/变量 */
+} /* 结束 blockquote */
+/* ==================== Blockquote 液态玻璃效果 - 仅屏幕显示 ==================== */
+@media screen {
+  blockquote { /* 含义：引用块液态玻璃 - 透明悬浮设计；设置：在本块内调整相关属性 */
+    position: relative; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+    margin: 20px 0; /* 含义：外边距增加悬浮空间；设置：按需调整数值/颜色/变量 */
+    padding: 18px 22px; /* 含义：内边距；设置：按需调整数值/颜色/变量 */
+    border: none; /* 含义：移除默认边框；设置：按需调整数值/颜色/变量 */
+    border-radius: 20px; /* 含义：大圆角增强液态感；设置：按需调整数值/颜色/变量 */
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%); /* 含义：极淡透明渐变；设置：按需调整数值/颜色/变量 */
+    backdrop-filter: blur(24px) saturate(180%); /* 含义：强背景模糊实现玻璃透视；设置：按需调整数值/颜色/变量 */
+    -webkit-backdrop-filter: blur(24px) saturate(180%); /* 含义：Safari 背景模糊；设置：按需调整数值/颜色/变量 */
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.12),
+      0 2px 8px rgba(0, 0, 0, 0.06),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+      inset 0 2px 4px rgba(255, 255, 255, 0.15); /* 含义：多层阴影营造悬浮感；设置：按需调整数值/颜色/变量 */
+    transform: translateY(0); /* 含义：初始位置；设置：按需调整数值/颜色/变量 */
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease; /* 含义：弹性过渡动画；设置：按需调整数值/颜色/变量 */
+    overflow: visible; /* 含义：允许光效溢出；设置：按需调整数值/颜色/变量 */
+    isolation: isolate; /* 含义：创建层叠上下文；设置：按需调整数值/颜色/变量 */
+  } /* 结束 blockquote 液态玻璃基础 */
+  blockquote:hover { /* 含义：悬停时增强悬浮效果；设置：在本块内调整相关属性 */
+    transform: translateY(-3px); /* 含义：上浮效果；设置：按需调整数值/颜色/变量 */
+    box-shadow: 
+      0 16px 48px rgba(0, 0, 0, 0.15),
+      0 4px 16px rgba(0, 0, 0, 0.08),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.25),
+      inset 0 2px 6px rgba(255, 255, 255, 0.2); /* 含义：增强阴影；设置：按需调整数值/颜色/变量 */
+  } /* 结束 blockquote:hover */
+  blockquote::after { /* 含义：顶部高光反射；设置：在本块内调整相关属性 */
+    content: ''; /* 含义：伪元素内容；设置：按需调整数值/颜色/变量 */
+    position: absolute; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+    top: 0; /* 含义：顶部位置；设置：按需调整数值/颜色/变量 */
+    left: 0; /* 含义：左边位置；设置：按需调整数值/颜色/变量 */
+    right: 0; /* 含义：右边位置；设置：按需调整数值/颜色/变量 */
+    height: 50%; /* 含义：覆盖上半部分；设置：按需调整数值/颜色/变量 */
+    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%); /* 含义：顶部高光渐变；设置：按需调整数值/颜色/变量 */
+    border-radius: 20px 20px 0 0; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+    pointer-events: none; /* 含义：不响应鼠标；设置：按需调整数值/颜色/变量 */
+    z-index: -1; /* 含义：置于内容下方；设置：按需调整数值/颜色/变量 */
+  } /* 结束 blockquote::after */
+  /* 暗色模式 blockquote 液态玻璃 */
+  .dark-mode blockquote { /* 含义：暗色模式引用块液态玻璃；设置：在本块内调整相关属性 */
+    background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%); /* 含义：暗色透明渐变；设置：按需调整数值/颜色/变量 */
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      0 2px 8px rgba(0, 0, 0, 0.2),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+      inset 0 2px 4px rgba(255, 255, 255, 0.05); /* 含义：暗色阴影；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .dark-mode blockquote */
+  .dark-mode blockquote:hover { /* 含义：暗色悬停效果；设置：在本块内调整相关属性 */
+    box-shadow: 
+      0 20px 56px rgba(0, 0, 0, 0.5),
+      0 6px 20px rgba(0, 0, 0, 0.25),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+      inset 0 2px 6px rgba(255, 255, 255, 0.08); /* 含义：暗色增强阴影；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .dark-mode blockquote:hover */
+  .dark-mode blockquote::after { /* 含义：暗色顶部高光；设置：在本块内调整相关属性 */
+    background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 100%); /* 含义：暗色高光；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .dark-mode blockquote::after */
+} /* 结束 @media screen blockquote 液态玻璃 */
+.engine-quote { /* 含义：引擎发言块；设置：在本块内调整相关属性 */
+  --engine-quote-bg: var(--engine-insight-bg); /* 含义：主题变量 engine-quote-bg；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-quote-border: var(--engine-insight-border); /* 含义：主题变量 engine-quote-border；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-quote-text: var(--engine-insight-text); /* 含义：主题变量 engine-quote-text；设置：在 themeTokens 中覆盖或改此默认值 */
+  margin: 22px 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  padding: 16px 18px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 14px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--engine-quote-border); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  background: var(--engine-quote-bg); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  box-shadow: var(--engine-quote-shadow); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+  line-height: 1.65; /* 含义：行高，提升可读性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .engine-quote */
+.engine-quote__header { /* 含义：.engine-quote__header 样式区域；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  align-items: center; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  gap: 10px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  font-weight: 650; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  color: var(--engine-quote-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  margin-bottom: 8px; /* 含义：margin-bottom 样式属性；设置：按需调整数值/颜色/变量 */
+  letter-spacing: 0.02em; /* 含义：字间距；设置：按需调整数值/颜色/变量 */
+} /* 结束 .engine-quote__header */
+.engine-quote__dot { /* 含义：.engine-quote__dot 样式区域；设置：在本块内调整相关属性 */
+  width: 10px; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  height: 10px; /* 含义：高度设置；设置：按需调整数值/颜色/变量 */
+  border-radius: 50%; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  background: var(--engine-quote-text); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 0 0 8px rgba(0,0,0,0.02); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .engine-quote__dot */
+.engine-quote__title { /* 含义：.engine-quote__title 样式区域；设置：在本块内调整相关属性 */
+  font-size: 0.98rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 .engine-quote__title */
+.engine-quote__body > *:first-child { margin-top: 0; } /* 含义：.engine-quote__body > * 样式属性；设置：按需调整数值/颜色/变量 */
+.engine-quote__body > *:last-child { margin-bottom: 0; } /* 含义：.engine-quote__body > * 样式属性；设置：按需调整数值/颜色/变量 */
+.engine-quote.engine-media { /* 含义：.engine-quote.engine-media 样式区域；设置：在本块内调整相关属性 */
+  --engine-quote-bg: var(--engine-media-bg); /* 含义：主题变量 engine-quote-bg；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-quote-border: var(--engine-media-border); /* 含义：主题变量 engine-quote-border；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-quote-text: var(--engine-media-text); /* 含义：主题变量 engine-quote-text；设置：在 themeTokens 中覆盖或改此默认值 */
+} /* 结束 .engine-quote.engine-media */
+.engine-quote.engine-query { /* 含义：.engine-quote.engine-query 样式区域；设置：在本块内调整相关属性 */
+  --engine-quote-bg: var(--engine-query-bg); /* 含义：主题变量 engine-quote-bg；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-quote-border: var(--engine-query-border); /* 含义：主题变量 engine-quote-border；设置：在 themeTokens 中覆盖或改此默认值 */
+  --engine-quote-text: var(--engine-query-text); /* 含义：主题变量 engine-quote-text；设置：在 themeTokens 中覆盖或改此默认值 */
+} /* 结束 .engine-quote.engine-query */
+.table-wrap { /* 含义：表格滚动容器；设置：在本块内调整相关属性 */
+  overflow-x: auto; /* 含义：横向溢出处理；设置：按需调整数值/颜色/变量 */
+  margin: 20px 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+} /* 结束 .table-wrap */
+table { /* 含义：表格基础样式；设置：在本块内调整相关属性 */
+  width: 100%; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  border-collapse: collapse; /* 含义：border-collapse 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 table */
+table th, table td { /* 含义：表格单元格；设置：在本块内调整相关属性 */
+  padding: 12px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--border-color); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+} /* 结束 table th, table td */
+table th { /* 含义：table th 样式区域；设置：在本块内调整相关属性 */
+  background: rgba(0,0,0,0.03); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 table th */
+.align-center { text-align: center; } /* 含义：.align-center  text-align 样式属性；设置：按需调整数值/颜色/变量 */
+.align-right { text-align: right; } /* 含义：.align-right  text-align 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-card { /* 含义：SWOT 卡片容器；设置：在本块内调整相关属性 */
+  margin: 26px 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  padding: 18px 18px 14px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 16px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--swot-card-border); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  background: var(--swot-card-bg); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  box-shadow: var(--swot-card-shadow); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+  color: var(--swot-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  backdrop-filter: var(--swot-card-blur); /* 含义：背景模糊；设置：按需调整数值/颜色/变量 */
+  position: relative; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+  overflow: hidden; /* 含义：溢出处理；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-card */
+.swot-card__head { /* 含义：.swot-card__head 样式区域；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  justify-content: space-between; /* 含义：flex 主轴对齐；设置：按需调整数值/颜色/变量 */
+  gap: 16px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  align-items: flex-start; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  flex-wrap: wrap; /* 含义：换行策略；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-card__head */
+.swot-card__title { /* 含义：.swot-card__title 样式区域；设置：在本块内调整相关属性 */
+  font-size: 1.15rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  font-weight: 750; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  margin-bottom: 4px; /* 含义：margin-bottom 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-card__title */
+.swot-card__summary { /* 含义：.swot-card__summary 样式区域；设置：在本块内调整相关属性 */
+  margin: 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  color: var(--swot-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  opacity: 0.82; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-card__summary */
+.swot-legend { /* 含义：.swot-legend 样式区域；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  gap: 8px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  flex-wrap: wrap; /* 含义：换行策略；设置：按需调整数值/颜色/变量 */
+  align-items: center; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-legend */
+.swot-legend__item { /* 含义：.swot-legend__item 样式区域；设置：在本块内调整相关属性 */
+  padding: 6px 12px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 999px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  font-weight: 700; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  color: var(--swot-on-dark); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--swot-tag-border); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.16); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.35); /* 含义：文字阴影；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-legend__item */
+.swot-legend__item.strength { background: var(--swot-strength); } /* 含义：.swot-legend__item.strength  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-legend__item.weakness { background: var(--swot-weakness); } /* 含义：.swot-legend__item.weakness  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-legend__item.opportunity { background: var(--swot-opportunity); } /* 含义：.swot-legend__item.opportunity  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-legend__item.threat { background: var(--swot-threat); } /* 含义：.swot-legend__item.threat  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-grid { /* 含义：SWOT 象限网格；设置：在本块内调整相关属性 */
+  display: grid; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* 含义：网格列模板；设置：按需调整数值/颜色/变量 */
+  gap: 12px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  margin-top: 14px; /* 含义：margin-top 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-grid */
+.swot-cell { /* 含义：SWOT 象限单元格；设置：在本块内调整相关属性 */
+  border-radius: 14px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--swot-cell-border); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  padding: 12px 12px 10px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  background: var(--swot-cell-base); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-cell */
+.swot-cell.strength { border-color: var(--swot-cell-strength-border); background: var(--swot-cell-strength-bg); } /* 含义：.swot-cell.strength  border-color 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-cell.weakness { border-color: var(--swot-cell-weakness-border); background: var(--swot-cell-weakness-bg); } /* 含义：.swot-cell.weakness  border-color 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-cell.opportunity { border-color: var(--swot-cell-opportunity-border); background: var(--swot-cell-opportunity-bg); } /* 含义：.swot-cell.opportunity  border-color 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-cell.threat { border-color: var(--swot-cell-threat-border); background: var(--swot-cell-threat-bg); } /* 含义：.swot-cell.threat  border-color 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-cell__meta { /* 含义：.swot-cell__meta 样式区域；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  gap: 10px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  align-items: flex-start; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  margin-bottom: 8px; /* 含义：margin-bottom 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-cell__meta */
+.swot-pill { /* 含义：.swot-pill 样式区域；设置：在本块内调整相关属性 */
+  display: inline-flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  align-items: center; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  justify-content: center; /* 含义：flex 主轴对齐；设置：按需调整数值/颜色/变量 */
+  width: 36px; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  height: 36px; /* 含义：高度设置；设置：按需调整数值/颜色/变量 */
+  border-radius: 12px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  font-weight: 800; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  color: var(--swot-on-dark); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--swot-tag-border); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pill */
+.swot-pill.strength { background: var(--swot-strength); } /* 含义：.swot-pill.strength  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pill.weakness { background: var(--swot-weakness); } /* 含义：.swot-pill.weakness  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pill.opportunity { background: var(--swot-opportunity); } /* 含义：.swot-pill.opportunity  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pill.threat { background: var(--swot-threat); } /* 含义：.swot-pill.threat  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-cell__title { /* 含义：.swot-cell__title 样式区域；设置：在本块内调整相关属性 */
+  font-weight: 750; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  letter-spacing: 0.01em; /* 含义：字间距；设置：按需调整数值/颜色/变量 */
+  color: var(--swot-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-cell__title */
+.swot-cell__caption { /* 含义：.swot-cell__caption 样式区域；设置：在本块内调整相关属性 */
+  font-size: 0.9rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  color: var(--swot-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  opacity: 0.7; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-cell__caption */
+.swot-list { /* 含义：SWOT 条目列表；设置：在本块内调整相关属性 */
+  list-style: none; /* 含义：列表样式；设置：按需调整数值/颜色/变量 */
+  padding: 0; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  margin: 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  flex-direction: column; /* 含义：flex 主轴方向；设置：按需调整数值/颜色/变量 */
+  gap: 8px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-list */
+.swot-item { /* 含义：SWOT 条目；设置：在本块内调整相关属性 */
+  padding: 10px 12px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 12px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  background: var(--swot-surface); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--swot-item-border); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 12px 22px rgba(0,0,0,0.08); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-item */
+.swot-item-title { /* 含义：.swot-item-title 样式区域；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  justify-content: space-between; /* 含义：flex 主轴对齐；设置：按需调整数值/颜色/变量 */
+  gap: 8px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  font-weight: 650; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  color: var(--swot-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-item-title */
+.swot-item-tags { /* 含义：.swot-item-tags 样式区域；设置：在本块内调整相关属性 */
+  display: inline-flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  gap: 6px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  flex-wrap: wrap; /* 含义：换行策略；设置：按需调整数值/颜色/变量 */
+  font-size: 0.85rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-item-tags */
+.swot-tag { /* 含义：.swot-tag 样式区域；设置：在本块内调整相关属性 */
+  display: inline-block; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  padding: 4px 8px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 10px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  background: var(--swot-chip-bg); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  color: var(--swot-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--swot-tag-border); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+  line-height: 1.2; /* 含义：行高，提升可读性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-tag */
+.swot-tag.neutral { /* 含义：.swot-tag.neutral 样式区域；设置：在本块内调整相关属性 */
+  opacity: 0.9; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-tag.neutral */
+.swot-item-desc { /* 含义：.swot-item-desc 样式区域；设置：在本块内调整相关属性 */
+  margin-top: 4px; /* 含义：margin-top 样式属性；设置：按需调整数值/颜色/变量 */
+  color: var(--swot-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  opacity: 0.92; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-item-desc */
+.swot-item-evidence { /* 含义：.swot-item-evidence 样式区域；设置：在本块内调整相关属性 */
+  margin-top: 4px; /* 含义：margin-top 样式属性；设置：按需调整数值/颜色/变量 */
+  font-size: 0.9rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  color: var(--secondary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  opacity: 0.94; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-item-evidence */
+.swot-empty { /* 含义：.swot-empty 样式区域；设置：在本块内调整相关属性 */
+  padding: 12px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 12px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  border: 1px dashed var(--swot-card-border); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  text-align: center; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  color: var(--swot-muted); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  opacity: 0.7; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-empty */
+
+/* ========== SWOT PDF表格布局样式（默认隐藏）========== */
+.swot-pdf-wrapper { /* 含义：SWOT PDF 表格容器；设置：在本块内调整相关属性 */
+  display: none; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-wrapper */
+
+/* SWOT PDF表格样式定义（用于PDF渲染时显示） */
+.swot-pdf-table { /* 含义：.swot-pdf-table 样式区域；设置：在本块内调整相关属性 */
+  width: 100%; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  border-collapse: collapse; /* 含义：border-collapse 样式属性；设置：按需调整数值/颜色/变量 */
+  margin: 20px 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  font-size: 13px; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  table-layout: fixed; /* 含义：表格布局算法；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-table */
+.swot-pdf-caption { /* 含义：.swot-pdf-caption 样式区域；设置：在本块内调整相关属性 */
+  caption-side: top; /* 含义：caption-side 样式属性；设置：按需调整数值/颜色/变量 */
+  text-align: left; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  font-size: 1.15rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  font-weight: 700; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  padding: 12px 0; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  color: var(--text-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-caption */
+.swot-pdf-thead th { /* 含义：.swot-pdf-thead th 样式区域；设置：在本块内调整相关属性 */
+  background: #f8f9fa; /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  padding: 10px 8px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  text-align: left; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  font-weight: 600; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  border: 1px solid #dee2e6; /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  color: #495057; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-thead th */
+.swot-pdf-th-quadrant { width: 80px; } /* 含义：.swot-pdf-th-quadrant  width 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pdf-th-num { width: 50px; text-align: center; } /* 含义：.swot-pdf-th-num  width 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pdf-th-title { width: 22%; } /* 含义：.swot-pdf-th-title  width 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pdf-th-detail { width: auto; } /* 含义：.swot-pdf-th-detail  width 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pdf-th-tags { width: 100px; text-align: center; } /* 含义：.swot-pdf-th-tags  width 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pdf-summary { /* 含义：.swot-pdf-summary 样式区域；设置：在本块内调整相关属性 */
+  padding: 12px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  background: #f8f9fa; /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  color: #666; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  font-style: italic; /* 含义：font-style 样式属性；设置：按需调整数值/颜色/变量 */
+  border: 1px solid #dee2e6; /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-summary */
+.swot-pdf-quadrant { /* 含义：.swot-pdf-quadrant 样式区域；设置：在本块内调整相关属性 */
+  break-inside: avoid; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+  page-break-inside: avoid; /* 含义：page-break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-quadrant */
+.swot-pdf-quadrant-label { /* 含义：.swot-pdf-quadrant-label 样式区域；设置：在本块内调整相关属性 */
+  text-align: center; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  vertical-align: middle; /* 含义：vertical-align 样式属性；设置：按需调整数值/颜色/变量 */
+  padding: 12px 8px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  font-weight: 700; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  border: 1px solid #dee2e6; /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  writing-mode: horizontal-tb; /* 含义：writing-mode 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-quadrant-label */
+.swot-pdf-quadrant-label.swot-pdf-strength { background: rgba(28,127,110,0.15); color: #1c7f6e; border-left: 4px solid #1c7f6e; } /* 含义：.swot-pdf-quadrant-label.swot-pdf-strength  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pdf-quadrant-label.swot-pdf-weakness { background: rgba(192,57,43,0.12); color: #c0392b; border-left: 4px solid #c0392b; } /* 含义：.swot-pdf-quadrant-label.swot-pdf-weakness  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pdf-quadrant-label.swot-pdf-opportunity { background: rgba(31,90,179,0.12); color: #1f5ab3; border-left: 4px solid #1f5ab3; } /* 含义：.swot-pdf-quadrant-label.swot-pdf-opportunity  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pdf-quadrant-label.swot-pdf-threat { background: rgba(179,107,22,0.12); color: #b36b16; border-left: 4px solid #b36b16; } /* 含义：.swot-pdf-quadrant-label.swot-pdf-threat  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pdf-code { /* 含义：.swot-pdf-code 样式区域；设置：在本块内调整相关属性 */
+  display: block; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  font-size: 1.5rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  font-weight: 800; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  margin-bottom: 4px; /* 含义：margin-bottom 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-code */
+.swot-pdf-label-text { /* 含义：.swot-pdf-label-text 样式区域；设置：在本块内调整相关属性 */
+  display: block; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  font-size: 0.75rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  font-weight: 600; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  letter-spacing: 0.02em; /* 含义：字间距；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-label-text */
+.swot-pdf-item-row td { /* 含义：.swot-pdf-item-row td 样式区域；设置：在本块内调整相关属性 */
+  padding: 10px 8px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border: 1px solid #dee2e6; /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  vertical-align: top; /* 含义：vertical-align 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-item-row td */
+.swot-pdf-item-row.swot-pdf-strength td { background: rgba(28,127,110,0.03); } /* 含义：.swot-pdf-item-row.swot-pdf-strength td  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pdf-item-row.swot-pdf-weakness td { background: rgba(192,57,43,0.03); } /* 含义：.swot-pdf-item-row.swot-pdf-weakness td  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pdf-item-row.swot-pdf-opportunity td { background: rgba(31,90,179,0.03); } /* 含义：.swot-pdf-item-row.swot-pdf-opportunity td  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pdf-item-row.swot-pdf-threat td { background: rgba(179,107,22,0.03); } /* 含义：.swot-pdf-item-row.swot-pdf-threat td  background 样式属性；设置：按需调整数值/颜色/变量 */
+.swot-pdf-item-num { /* 含义：.swot-pdf-item-num 样式区域；设置：在本块内调整相关属性 */
+  text-align: center; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  font-weight: 600; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  color: #6c757d; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-item-num */
+.swot-pdf-item-title { /* 含义：.swot-pdf-item-title 样式区域；设置：在本块内调整相关属性 */
+  font-weight: 600; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  color: #212529; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-item-title */
+.swot-pdf-item-detail { /* 含义：.swot-pdf-item-detail 样式区域；设置：在本块内调整相关属性 */
+  color: #495057; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  line-height: 1.5; /* 含义：行高，提升可读性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-item-detail */
+.swot-pdf-item-tags { /* 含义：.swot-pdf-item-tags 样式区域；设置：在本块内调整相关属性 */
+  text-align: center; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-item-tags */
+.swot-pdf-tag { /* 含义：.swot-pdf-tag 样式区域；设置：在本块内调整相关属性 */
+  display: inline-block; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  padding: 3px 8px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 4px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  font-size: 0.75rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  background: #e9ecef; /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  color: #495057; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  margin: 2px; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-tag */
+.swot-pdf-tag--score { /* 含义：.swot-pdf-tag--score 样式区域；设置：在本块内调整相关属性 */
+  background: #fff3cd; /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  color: #856404; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-tag--score */
+.swot-pdf-empty { /* 含义：.swot-pdf-empty 样式区域；设置：在本块内调整相关属性 */
+  text-align: center; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  color: #adb5bd; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  font-style: italic; /* 含义：font-style 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .swot-pdf-empty */
+
+/* 打印模式下的SWOT分页控制（保留卡片布局的打印支持） */
+@media print { /* 含义：打印模式样式；设置：在本块内调整相关属性 */
+  .swot-card { /* 含义：SWOT 卡片容器；设置：在本块内调整相关属性 */
+    break-inside: auto; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-inside: auto; /* 含义：page-break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .swot-card */
+  .swot-card__head { /* 含义：.swot-card__head 样式区域；设置：在本块内调整相关属性 */
+    break-after: avoid; /* 含义：break-after 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-after: avoid; /* 含义：page-break-after 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .swot-card__head */
+  .swot-pdf-quadrant { /* 含义：.swot-pdf-quadrant 样式区域；设置：在本块内调整相关属性 */
+    break-inside: avoid; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-inside: avoid; /* 含义：page-break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .swot-pdf-quadrant */
+} /* 结束 @media print */
+
+/* ==================== PEST 分析样式 ==================== */
+.pest-card { /* 含义：PEST 卡片容器；设置：在本块内调整相关属性 */
+  margin: 28px 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  padding: 20px 20px 16px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 18px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--pest-card-border); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  background: var(--pest-card-bg); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  box-shadow: var(--pest-card-shadow); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+  color: var(--pest-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  backdrop-filter: var(--pest-card-blur); /* 含义：背景模糊；设置：按需调整数值/颜色/变量 */
+  position: relative; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+  overflow: hidden; /* 含义：溢出处理；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-card */
+.pest-card__head { /* 含义：.pest-card__head 样式区域；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  justify-content: space-between; /* 含义：flex 主轴对齐；设置：按需调整数值/颜色/变量 */
+  gap: 16px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  align-items: flex-start; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  flex-wrap: wrap; /* 含义：换行策略；设置：按需调整数值/颜色/变量 */
+  margin-bottom: 16px; /* 含义：margin-bottom 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-card__head */
+.pest-card__title { /* 含义：.pest-card__title 样式区域；设置：在本块内调整相关属性 */
+  font-size: 1.18rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  font-weight: 750; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  margin-bottom: 4px; /* 含义：margin-bottom 样式属性；设置：按需调整数值/颜色/变量 */
+  background: linear-gradient(135deg, var(--pest-political), var(--pest-technological)); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  -webkit-background-clip: text; /* 含义：-webkit-background-clip 样式属性；设置：按需调整数值/颜色/变量 */
+  -webkit-text-fill-color: transparent; /* 含义：-webkit-text-fill-color 样式属性；设置：按需调整数值/颜色/变量 */
+  background-clip: text; /* 含义：background-clip 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-card__title */
+.pest-card__summary { /* 含义：.pest-card__summary 样式区域；设置：在本块内调整相关属性 */
+  margin: 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  color: var(--pest-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  opacity: 0.8; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-card__summary */
+.pest-legend { /* 含义：.pest-legend 样式区域；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  gap: 8px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  flex-wrap: wrap; /* 含义：换行策略；设置：按需调整数值/颜色/变量 */
+  align-items: center; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-legend */
+.pest-legend__item { /* 含义：.pest-legend__item 样式区域；设置：在本块内调整相关属性 */
+  padding: 6px 14px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 8px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  font-weight: 700; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  font-size: 0.85rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  color: var(--pest-on-dark); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--pest-tag-border); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3); /* 含义：文字阴影；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-legend__item */
+.pest-legend__item.political { background: var(--pest-political); } /* 含义：.pest-legend__item.political  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-legend__item.economic { background: var(--pest-economic); } /* 含义：.pest-legend__item.economic  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-legend__item.social { background: var(--pest-social); } /* 含义：.pest-legend__item.social  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-legend__item.technological { background: var(--pest-technological); } /* 含义：.pest-legend__item.technological  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-strips { /* 含义：PEST 条带容器；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  flex-direction: column; /* 含义：flex 主轴方向；设置：按需调整数值/颜色/变量 */
+  gap: 14px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-strips */
+.pest-strip { /* 含义：PEST 条带；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  border-radius: 14px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--pest-strip-border); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  background: var(--pest-strip-base); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  overflow: hidden; /* 含义：溢出处理；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* 含义：过渡动画时长/属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-strip */
+.pest-strip:hover { /* 含义：.pest-strip:hover 样式区域；设置：在本块内调整相关属性 */
+  transform: translateY(-2px); /* 含义：transform 样式属性；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 10px 24px rgba(0,0,0,0.1); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-strip:hover */
+.pest-strip.political { border-color: var(--pest-strip-political-border); background: var(--pest-strip-political-bg); } /* 含义：.pest-strip.political  border-color 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-strip.economic { border-color: var(--pest-strip-economic-border); background: var(--pest-strip-economic-bg); } /* 含义：.pest-strip.economic  border-color 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-strip.social { border-color: var(--pest-strip-social-border); background: var(--pest-strip-social-bg); } /* 含义：.pest-strip.social  border-color 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-strip.technological { border-color: var(--pest-strip-technological-border); background: var(--pest-strip-technological-bg); } /* 含义：.pest-strip.technological  border-color 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-strip__indicator { /* 含义：.pest-strip__indicator 样式区域；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  align-items: center; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  justify-content: center; /* 含义：flex 主轴对齐；设置：按需调整数值/颜色/变量 */
+  width: 56px; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  min-width: 56px; /* 含义：最小宽度；设置：按需调整数值/颜色/变量 */
+  padding: 16px 8px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  color: var(--pest-on-dark); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  text-shadow: 0 2px 4px rgba(0,0,0,0.25); /* 含义：文字阴影；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-strip__indicator */
+.pest-strip__indicator.political { background: linear-gradient(180deg, var(--pest-political), rgba(142,68,173,0.8)); } /* 含义：.pest-strip__indicator.political  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-strip__indicator.economic { background: linear-gradient(180deg, var(--pest-economic), rgba(22,160,133,0.8)); } /* 含义：.pest-strip__indicator.economic  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-strip__indicator.social { background: linear-gradient(180deg, var(--pest-social), rgba(232,67,147,0.8)); } /* 含义：.pest-strip__indicator.social  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-strip__indicator.technological { background: linear-gradient(180deg, var(--pest-technological), rgba(41,128,185,0.8)); } /* 含义：.pest-strip__indicator.technological  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-code { /* 含义：.pest-code 样式区域；设置：在本块内调整相关属性 */
+  font-size: 1.6rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  font-weight: 900; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  letter-spacing: 0.02em; /* 含义：字间距；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-code */
+.pest-strip__content { /* 含义：.pest-strip__content 样式区域；设置：在本块内调整相关属性 */
+  flex: 1; /* 含义：flex 占位比例；设置：按需调整数值/颜色/变量 */
+  padding: 14px 16px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  min-width: 0; /* 含义：最小宽度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-strip__content */
+.pest-strip__header { /* 含义：.pest-strip__header 样式区域；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  justify-content: space-between; /* 含义：flex 主轴对齐；设置：按需调整数值/颜色/变量 */
+  align-items: baseline; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  gap: 12px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  margin-bottom: 10px; /* 含义：margin-bottom 样式属性；设置：按需调整数值/颜色/变量 */
+  flex-wrap: wrap; /* 含义：换行策略；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-strip__header */
+.pest-strip__title { /* 含义：.pest-strip__title 样式区域；设置：在本块内调整相关属性 */
+  font-weight: 700; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  font-size: 1rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  color: var(--pest-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-strip__title */
+.pest-strip__caption { /* 含义：.pest-strip__caption 样式区域；设置：在本块内调整相关属性 */
+  font-size: 0.85rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  color: var(--pest-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  opacity: 0.65; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-strip__caption */
+.pest-list { /* 含义：PEST 条目列表；设置：在本块内调整相关属性 */
+  list-style: none; /* 含义：列表样式；设置：按需调整数值/颜色/变量 */
+  padding: 0; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  margin: 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  flex-direction: column; /* 含义：flex 主轴方向；设置：按需调整数值/颜色/变量 */
+  gap: 8px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-list */
+.pest-item { /* 含义：PEST 条目；设置：在本块内调整相关属性 */
+  padding: 10px 14px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 10px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  background: var(--pest-surface); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--pest-item-border); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 8px 18px rgba(0,0,0,0.06); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-item */
+.pest-item-title { /* 含义：.pest-item-title 样式区域；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  justify-content: space-between; /* 含义：flex 主轴对齐；设置：按需调整数值/颜色/变量 */
+  gap: 8px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  font-weight: 650; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  color: var(--pest-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-item-title */
+.pest-item-tags { /* 含义：.pest-item-tags 样式区域；设置：在本块内调整相关属性 */
+  display: inline-flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  gap: 6px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  flex-wrap: wrap; /* 含义：换行策略；设置：按需调整数值/颜色/变量 */
+  font-size: 0.82rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-item-tags */
+.pest-tag { /* 含义：.pest-tag 样式区域；设置：在本块内调整相关属性 */
+  display: inline-block; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  padding: 3px 8px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 6px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  background: var(--pest-chip-bg); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  color: var(--pest-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--pest-tag-border); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+  line-height: 1.2; /* 含义：行高，提升可读性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-tag */
+.pest-item-desc { /* 含义：.pest-item-desc 样式区域；设置：在本块内调整相关属性 */
+  margin-top: 5px; /* 含义：margin-top 样式属性；设置：按需调整数值/颜色/变量 */
+  color: var(--pest-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  opacity: 0.88; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+  font-size: 0.95rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-item-desc */
+.pest-item-source { /* 含义：.pest-item-source 样式区域；设置：在本块内调整相关属性 */
+  margin-top: 4px; /* 含义：margin-top 样式属性；设置：按需调整数值/颜色/变量 */
+  font-size: 0.88rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  color: var(--secondary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  opacity: 0.9; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-item-source */
+.pest-empty { /* 含义：.pest-empty 样式区域；设置：在本块内调整相关属性 */
+  padding: 14px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 10px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  border: 1px dashed var(--pest-card-border); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  text-align: center; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  color: var(--pest-muted); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  opacity: 0.65; /* 含义：透明度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-empty */
+
+/* ========== PEST PDF表格布局样式（默认隐藏）========== */
+.pest-pdf-wrapper { /* 含义：PEST PDF 容器；设置：在本块内调整相关属性 */
+  display: none; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-wrapper */
+
+/* PEST PDF表格样式定义（用于PDF渲染时显示） */
+.pest-pdf-table { /* 含义：.pest-pdf-table 样式区域；设置：在本块内调整相关属性 */
+  width: 100%; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  border-collapse: collapse; /* 含义：border-collapse 样式属性；设置：按需调整数值/颜色/变量 */
+  margin: 20px 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  font-size: 13px; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  table-layout: fixed; /* 含义：表格布局算法；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-table */
+.pest-pdf-caption { /* 含义：.pest-pdf-caption 样式区域；设置：在本块内调整相关属性 */
+  caption-side: top; /* 含义：caption-side 样式属性；设置：按需调整数值/颜色/变量 */
+  text-align: left; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  font-size: 1.15rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  font-weight: 700; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  padding: 12px 0; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  color: var(--text-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-caption */
+.pest-pdf-thead th { /* 含义：.pest-pdf-thead th 样式区域；设置：在本块内调整相关属性 */
+  background: #f5f3f7; /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  padding: 10px 8px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  text-align: left; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  font-weight: 600; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  border: 1px solid #e0dce3; /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  color: #4a4458; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-thead th */
+.pest-pdf-th-dimension { width: 85px; } /* 含义：.pest-pdf-th-dimension  width 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-pdf-th-num { width: 50px; text-align: center; } /* 含义：.pest-pdf-th-num  width 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-pdf-th-title { width: 22%; } /* 含义：.pest-pdf-th-title  width 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-pdf-th-detail { width: auto; } /* 含义：.pest-pdf-th-detail  width 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-pdf-th-tags { width: 100px; text-align: center; } /* 含义：.pest-pdf-th-tags  width 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-pdf-summary { /* 含义：.pest-pdf-summary 样式区域；设置：在本块内调整相关属性 */
+  padding: 12px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  background: #f8f6fa; /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  color: #666; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  font-style: italic; /* 含义：font-style 样式属性；设置：按需调整数值/颜色/变量 */
+  border: 1px solid #e0dce3; /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-summary */
+.pest-pdf-dimension { /* 含义：.pest-pdf-dimension 样式区域；设置：在本块内调整相关属性 */
+  break-inside: avoid; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+  page-break-inside: avoid; /* 含义：page-break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-dimension */
+.pest-pdf-dimension-label { /* 含义：.pest-pdf-dimension-label 样式区域；设置：在本块内调整相关属性 */
+  text-align: center; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  vertical-align: middle; /* 含义：vertical-align 样式属性；设置：按需调整数值/颜色/变量 */
+  padding: 12px 8px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  font-weight: 700; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  border: 1px solid #e0dce3; /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  writing-mode: horizontal-tb; /* 含义：writing-mode 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-dimension-label */
+.pest-pdf-dimension-label.pest-pdf-political { background: rgba(142,68,173,0.12); color: #8e44ad; border-left: 4px solid #8e44ad; } /* 含义：.pest-pdf-dimension-label.pest-pdf-political  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-pdf-dimension-label.pest-pdf-economic { background: rgba(22,160,133,0.12); color: #16a085; border-left: 4px solid #16a085; } /* 含义：.pest-pdf-dimension-label.pest-pdf-economic  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-pdf-dimension-label.pest-pdf-social { background: rgba(232,67,147,0.12); color: #e84393; border-left: 4px solid #e84393; } /* 含义：.pest-pdf-dimension-label.pest-pdf-social  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-pdf-dimension-label.pest-pdf-technological { background: rgba(41,128,185,0.12); color: #2980b9; border-left: 4px solid #2980b9; } /* 含义：.pest-pdf-dimension-label.pest-pdf-technological  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-pdf-code { /* 含义：.pest-pdf-code 样式区域；设置：在本块内调整相关属性 */
+  display: block; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  font-size: 1.5rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  font-weight: 800; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  margin-bottom: 4px; /* 含义：margin-bottom 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-code */
+.pest-pdf-label-text { /* 含义：.pest-pdf-label-text 样式区域；设置：在本块内调整相关属性 */
+  display: block; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  font-size: 0.75rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  font-weight: 600; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  letter-spacing: 0.02em; /* 含义：字间距；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-label-text */
+.pest-pdf-item-row td { /* 含义：.pest-pdf-item-row td 样式区域；设置：在本块内调整相关属性 */
+  padding: 10px 8px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border: 1px solid #e0dce3; /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  vertical-align: top; /* 含义：vertical-align 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-item-row td */
+.pest-pdf-item-row.pest-pdf-political td { background: rgba(142,68,173,0.03); } /* 含义：.pest-pdf-item-row.pest-pdf-political td  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-pdf-item-row.pest-pdf-economic td { background: rgba(22,160,133,0.03); } /* 含义：.pest-pdf-item-row.pest-pdf-economic td  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-pdf-item-row.pest-pdf-social td { background: rgba(232,67,147,0.03); } /* 含义：.pest-pdf-item-row.pest-pdf-social td  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-pdf-item-row.pest-pdf-technological td { background: rgba(41,128,185,0.03); } /* 含义：.pest-pdf-item-row.pest-pdf-technological td  background 样式属性；设置：按需调整数值/颜色/变量 */
+.pest-pdf-item-num { /* 含义：.pest-pdf-item-num 样式区域；设置：在本块内调整相关属性 */
+  text-align: center; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  font-weight: 600; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  color: #6c757d; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-item-num */
+.pest-pdf-item-title { /* 含义：.pest-pdf-item-title 样式区域；设置：在本块内调整相关属性 */
+  font-weight: 600; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  color: #212529; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-item-title */
+.pest-pdf-item-detail { /* 含义：.pest-pdf-item-detail 样式区域；设置：在本块内调整相关属性 */
+  color: #495057; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  line-height: 1.5; /* 含义：行高，提升可读性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-item-detail */
+.pest-pdf-item-tags { /* 含义：.pest-pdf-item-tags 样式区域；设置：在本块内调整相关属性 */
+  text-align: center; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-item-tags */
+.pest-pdf-tag { /* 含义：.pest-pdf-tag 样式区域；设置：在本块内调整相关属性 */
+  display: inline-block; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  padding: 3px 8px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 4px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  font-size: 0.75rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  background: #ece9f1; /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  color: #5a4f6a; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  margin: 2px; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-tag */
+.pest-pdf-empty { /* 含义：.pest-pdf-empty 样式区域；设置：在本块内调整相关属性 */
+  text-align: center; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  color: #adb5bd; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  font-style: italic; /* 含义：font-style 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .pest-pdf-empty */
+
+/* 打印模式下的PEST分页控制 */
+@media print { /* 含义：打印模式样式；设置：在本块内调整相关属性 */
+  .pest-card { /* 含义：PEST 卡片容器；设置：在本块内调整相关属性 */
+    break-inside: auto; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-inside: auto; /* 含义：page-break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .pest-card */
+  .pest-card__head { /* 含义：.pest-card__head 样式区域；设置：在本块内调整相关属性 */
+    break-after: avoid; /* 含义：break-after 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-after: avoid; /* 含义：page-break-after 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .pest-card__head */
+  .pest-pdf-dimension { /* 含义：.pest-pdf-dimension 样式区域；设置：在本块内调整相关属性 */
+    break-inside: avoid; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-inside: avoid; /* 含义：page-break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .pest-pdf-dimension */
+  .pest-strip { /* 含义：PEST 条带；设置：在本块内调整相关属性 */
+    break-inside: avoid; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-inside: avoid; /* 含义：page-break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .pest-strip */
+} /* 结束 @media print */
+.callout { /* 含义：高亮提示框 - PDF基础样式；设置：在本块内调整相关属性 */
+  padding: 16px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 8px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  margin: 20px 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  background: rgba(0,0,0,0.02); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  border-left: none; /* 含义：移除左侧色条；设置：按需调整数值/颜色/变量 */
+} /* 结束 .callout */
+.callout.tone-warning { border-color: #ff9800; } /* 含义：.callout.tone-warning  border-color 样式属性；设置：按需调整数值/颜色/变量 */
+.callout.tone-success { border-color: #2ecc71; } /* 含义：.callout.tone-success  border-color 样式属性；设置：按需调整数值/颜色/变量 */
+.callout.tone-danger { border-color: #e74c3c; } /* 含义：.callout.tone-danger  border-color 样式属性；设置：按需调整数值/颜色/变量 */
+/* ==================== Callout 液态玻璃效果 - 仅屏幕显示 ==================== */
+@media screen {
+  .callout { /* 含义：高亮提示框液态玻璃 - 透明悬浮设计；设置：在本块内调整相关属性 */
+    --callout-accent: var(--primary-color); /* 含义：callout 主色调；设置：按需调整数值/颜色/变量 */
+    --callout-glow-color: rgba(0, 123, 255, 0.35); /* 含义：callout 发光色；设置：按需调整数值/颜色/变量 */
+    position: relative; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+    margin: 24px 0; /* 含义：增加外边距强化悬浮感；设置：按需调整数值/颜色/变量 */
+    padding: 20px 24px; /* 含义：内边距；设置：按需调整数值/颜色/变量 */
+    border: none; /* 含义：移除默认边框；设置：按需调整数值/颜色/变量 */
+    border-radius: 24px; /* 含义：大圆角增强液态感；设置：按需调整数值/颜色/变量 */
+    background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 100%); /* 含义：极淡透明渐变；设置：按需调整数值/颜色/变量 */
+    backdrop-filter: blur(28px) saturate(200%); /* 含义：强背景模糊实现玻璃透视；设置：按需调整数值/颜色/变量 */
+    -webkit-backdrop-filter: blur(28px) saturate(200%); /* 含义：Safari 背景模糊；设置：按需调整数值/颜色/变量 */
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.1),
+      0 4px 12px rgba(0, 0, 0, 0.05),
+      inset 0 0 0 1.5px rgba(255, 255, 255, 0.18),
+      inset 0 2px 6px rgba(255, 255, 255, 0.12); /* 含义：多层阴影营造悬浮感；设置：按需调整数值/颜色/变量 */
+    transform: translateY(0); /* 含义：初始位置；设置：按需调整数值/颜色/变量 */
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.45s ease; /* 含义：弹性过渡动画；设置：按需调整数值/颜色/变量 */
+    overflow: hidden; /* 含义：隐藏溢出内容；设置：按需调整数值/颜色/变量 */
+    isolation: isolate; /* 含义：创建层叠上下文；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .callout 液态玻璃基础 */
+  .callout:hover { /* 含义：悬停时增强悬浮效果；设置：在本块内调整相关属性 */
+    transform: translateY(-4px); /* 含义：上浮效果；设置：按需调整数值/颜色/变量 */
+    box-shadow: 
+      0 20px 56px rgba(0, 0, 0, 0.12),
+      0 8px 20px rgba(0, 0, 0, 0.06),
+      inset 0 0 0 1.5px rgba(255, 255, 255, 0.22),
+      inset 0 3px 8px rgba(255, 255, 255, 0.15); /* 含义：增强阴影；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .callout:hover */
+  .callout::after { /* 含义：顶部弧形高光反射；设置：在本块内调整相关属性 */
+    content: ''; /* 含义：伪元素内容；设置：按需调整数值/颜色/变量 */
+    position: absolute; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+    top: 0; /* 含义：顶部位置；设置：按需调整数值/颜色/变量 */
+    left: 0; /* 含义：左边位置；设置：按需调整数值/颜色/变量 */
+    right: 0; /* 含义：右边位置；设置：按需调整数值/颜色/变量 */
+    height: 55%; /* 含义：覆盖上半部分；设置：按需调整数值/颜色/变量 */
+    background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.03) 60%, transparent 100%); /* 含义：顶部高光渐变；设置：按需调整数值/颜色/变量 */
+    border-radius: 24px 24px 0 0; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+    pointer-events: none; /* 含义：不响应鼠标；设置：按需调整数值/颜色/变量 */
+    z-index: -1; /* 含义：置于内容下方；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .callout::after */
+  /* Callout tone 变体 - 不同颜色发光 */
+  .callout.tone-info { /* 含义：信息类型 callout；设置：在本块内调整相关属性 */
+    --callout-accent: #3b82f6; /* 含义：信息蓝色调；设置：按需调整数值/颜色/变量 */
+    --callout-glow-color: rgba(59, 130, 246, 0.4); /* 含义：信息蓝发光；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .callout.tone-info */
+  .callout.tone-warning { /* 含义：警告类型 callout；设置：在本块内调整相关属性 */
+    --callout-accent: #f59e0b; /* 含义：警告橙色调；设置：按需调整数值/颜色/变量 */
+    --callout-glow-color: rgba(245, 158, 11, 0.4); /* 含义：警告橙发光；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .callout.tone-warning */
+  .callout.tone-success { /* 含义：成功类型 callout；设置：在本块内调整相关属性 */
+    --callout-accent: #10b981; /* 含义：成功绿色调；设置：按需调整数值/颜色/变量 */
+    --callout-glow-color: rgba(16, 185, 129, 0.4); /* 含义：成功绿发光；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .callout.tone-success */
+  .callout.tone-danger { /* 含义：危险类型 callout；设置：在本块内调整相关属性 */
+    --callout-accent: #ef4444; /* 含义：危险红色调；设置：按需调整数值/颜色/变量 */
+    --callout-glow-color: rgba(239, 68, 68, 0.4); /* 含义：危险红发光；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .callout.tone-danger */
+  /* 暗色模式 callout 液态玻璃 */
+  .dark-mode .callout { /* 含义：暗色模式 callout 液态玻璃；设置：在本块内调整相关属性 */
+    background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%); /* 含义：暗色透明渐变；设置：按需调整数值/颜色/变量 */
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.35),
+      0 4px 12px rgba(0, 0, 0, 0.18),
+      inset 0 0 0 1.5px rgba(255, 255, 255, 0.08),
+      inset 0 2px 6px rgba(255, 255, 255, 0.04); /* 含义：暗色阴影；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .dark-mode .callout */
+  .dark-mode .callout:hover { /* 含义：暗色悬停效果；设置：在本块内调整相关属性 */
+    box-shadow: 
+      0 24px 64px rgba(0, 0, 0, 0.45),
+      0 10px 28px rgba(0, 0, 0, 0.22),
+      inset 0 0 0 1.5px rgba(255, 255, 255, 0.12),
+      inset 0 3px 8px rgba(255, 255, 255, 0.06); /* 含义：暗色增强阴影；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .dark-mode .callout:hover */
+  .dark-mode .callout::after { /* 含义：暗色顶部高光；设置：在本块内调整相关属性 */
+    background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.01) 50%, transparent 100%); /* 含义：暗色高光；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .dark-mode .callout::after */
+  /* 暗色模式发光颜色增强 */
+  .dark-mode .callout.tone-info { /* 含义：暗色信息类型；设置：在本块内调整相关属性 */
+    --callout-glow-color: rgba(96, 165, 250, 0.5); /* 含义：暗色信息发光；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .dark-mode .callout.tone-info */
+  .dark-mode .callout.tone-warning { /* 含义：暗色警告类型；设置：在本块内调整相关属性 */
+    --callout-glow-color: rgba(251, 191, 36, 0.5); /* 含义：暗色警告发光；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .dark-mode .callout.tone-warning */
+  .dark-mode .callout.tone-success { /* 含义：暗色成功类型；设置：在本块内调整相关属性 */
+    --callout-glow-color: rgba(52, 211, 153, 0.5); /* 含义：暗色成功发光；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .dark-mode .callout.tone-success */
+  .dark-mode .callout.tone-danger { /* 含义：暗色危险类型；设置：在本块内调整相关属性 */
+    --callout-glow-color: rgba(248, 113, 113, 0.5); /* 含义：暗色危险发光；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .dark-mode .callout.tone-danger */
+} /* 结束 @media screen callout 液态玻璃 */
+.kpi-grid { /* 含义：KPI 栅格容器；设置：在本块内调整相关属性 */
+  display: grid; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* 含义：网格列模板；设置：按需调整数值/颜色/变量 */
+  gap: 16px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  margin: 20px 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+} /* 结束 .kpi-grid */
+.kpi-card { /* 含义：KPI 卡片；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  flex-direction: column; /* 含义：flex 主轴方向；设置：按需调整数值/颜色/变量 */
+  gap: 8px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  padding: 16px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 12px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  background: rgba(0,0,0,0.02); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--border-color); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  align-items: flex-start; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+} /* 结束 .kpi-card */
+.kpi-value { /* 含义：.kpi-value 样式区域；设置：在本块内调整相关属性 */
+  font-size: 2rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  font-weight: 700; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  flex-wrap: nowrap; /* 含义：换行策略；设置：按需调整数值/颜色/变量 */
+  gap: 4px 6px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  line-height: 1.25; /* 含义：行高，提升可读性；设置：按需调整数值/颜色/变量 */
+  word-break: break-word; /* 含义：单词断行规则；设置：按需调整数值/颜色/变量 */
+  overflow-wrap: break-word; /* 含义：长单词换行；设置：按需调整数值/颜色/变量 */
+} /* 结束 .kpi-value */
+.kpi-value small { /* 含义：.kpi-value small 样式区域；设置：在本块内调整相关属性 */
+  font-size: 0.65em; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  align-self: baseline; /* 含义：align-self 样式属性；设置：按需调整数值/颜色/变量 */
+  white-space: nowrap; /* 含义：空白与换行策略；设置：按需调整数值/颜色/变量 */
+} /* 结束 .kpi-value small */
+.kpi-label { /* 含义：.kpi-label 样式区域；设置：在本块内调整相关属性 */
+  color: var(--secondary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  line-height: 1.35; /* 含义：行高，提升可读性；设置：按需调整数值/颜色/变量 */
+  word-break: break-word; /* 含义：单词断行规则；设置：按需调整数值/颜色/变量 */
+  overflow-wrap: break-word; /* 含义：长单词换行；设置：按需调整数值/颜色/变量 */
+  max-width: 100%; /* 含义：最大宽度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .kpi-label */
+.delta.up { color: #27ae60; } /* 含义：.delta.up  color 样式属性；设置：按需调整数值/颜色/变量 */
+.delta.down { color: #e74c3c; } /* 含义：.delta.down  color 样式属性；设置：按需调整数值/颜色/变量 */
+.delta.neutral { color: var(--secondary-color); } /* 含义：.delta.neutral  color 样式属性；设置：按需调整数值/颜色/变量 */
+.delta { /* 含义：.delta 样式区域；设置：在本块内调整相关属性 */
+  display: block; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  line-height: 1.3; /* 含义：行高，提升可读性；设置：按需调整数值/颜色/变量 */
+  word-break: break-word; /* 含义：单词断行规则；设置：按需调整数值/颜色/变量 */
+  overflow-wrap: break-word; /* 含义：长单词换行；设置：按需调整数值/颜色/变量 */
+} /* 结束 .delta */
+.chart-card { /* 含义：图表卡片容器；设置：在本块内调整相关属性 */
+  margin: 30px 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  padding: 20px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border: 1px solid var(--border-color); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  border-radius: 12px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  background: rgba(0,0,0,0.01); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .chart-card */
+.chart-card.chart-card--error { /* 含义：.chart-card.chart-card--error 样式区域；设置：在本块内调整相关属性 */
+  border-style: dashed; /* 含义：border-style 样式属性；设置：按需调整数值/颜色/变量 */
+  background: linear-gradient(135deg, rgba(0,0,0,0.015), rgba(0,0,0,0.04)); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .chart-card.chart-card--error */
+.chart-error { /* 含义：.chart-error 样式区域；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  gap: 12px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  padding: 14px 12px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 10px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  align-items: flex-start; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  background: rgba(0,0,0,0.03); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  color: var(--secondary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .chart-error */
+.chart-error__icon { /* 含义：.chart-error__icon 样式区域；设置：在本块内调整相关属性 */
+  width: 28px; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  height: 28px; /* 含义：高度设置；设置：按需调整数值/颜色/变量 */
+  flex-shrink: 0; /* 含义：flex-shrink 样式属性；设置：按需调整数值/颜色/变量 */
+  border-radius: 50%; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  display: inline-flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  align-items: center; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  justify-content: center; /* 含义：flex 主轴对齐；设置：按需调整数值/颜色/变量 */
+  font-weight: 700; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  color: var(--secondary-color-dark); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  background: rgba(0,0,0,0.06); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  font-size: 0.9rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 .chart-error__icon */
+.chart-error__title { /* 含义：.chart-error__title 样式区域；设置：在本块内调整相关属性 */
+  font-weight: 600; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  color: var(--text-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .chart-error__title */
+.chart-error__desc { /* 含义：.chart-error__desc 样式区域；设置：在本块内调整相关属性 */
+  margin: 4px 0 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  color: var(--secondary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  line-height: 1.6; /* 含义：行高，提升可读性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .chart-error__desc */
+.chart-card.wordcloud-card .chart-container { /* 含义：.chart-card.wordcloud-card .chart-container 样式区域；设置：在本块内调整相关属性 */
+  min-height: 180px; /* 含义：最小高度，防止塌陷；设置：按需调整数值/颜色/变量 */
+} /* 结束 .chart-card.wordcloud-card .chart-container */
+.chart-container { /* 含义：图表 canvas 容器；设置：在本块内调整相关属性 */
+  position: relative; /* 含义：定位方式；设置：按需调整数值/颜色/变量 */
+  min-height: 220px; /* 含义：最小高度，防止塌陷；设置：按需调整数值/颜色/变量 */
+} /* 结束 .chart-container */
+.chart-fallback { /* 含义：图表兜底表格；设置：在本块内调整相关属性 */
+  display: none; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  margin-top: 12px; /* 含义：margin-top 样式属性；设置：按需调整数值/颜色/变量 */
+  font-size: 0.85rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  overflow-x: auto; /* 含义：横向溢出处理；设置：按需调整数值/颜色/变量 */
+} /* 结束 .chart-fallback */
+.no-js .chart-fallback { /* 含义：.no-js .chart-fallback 样式区域；设置：在本块内调整相关属性 */
+  display: block; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+} /* 结束 .no-js .chart-fallback */
+.no-js .chart-container { /* 含义：.no-js .chart-container 样式区域；设置：在本块内调整相关属性 */
+  display: none; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+} /* 结束 .no-js .chart-container */
+.chart-fallback table { /* 含义：.chart-fallback table 样式区域；设置：在本块内调整相关属性 */
+  width: 100%; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  border-collapse: collapse; /* 含义：border-collapse 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .chart-fallback table */
 .chart-fallback th,
-.chart-fallback td {
-  border: 1px solid var(--border-color);
-  padding: 6px 8px;
-  text-align: left;
-}
-.chart-fallback th {
-  background: rgba(0,0,0,0.04);
-}
-.wordcloud-fallback .wordcloud-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 6px;
-}
-.wordcloud-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(74, 144, 226, 0.35);
-  color: var(--text-color);
-  background: linear-gradient(135deg, rgba(74, 144, 226, 0.14) 0%, rgba(74, 144, 226, 0.24) 100%);
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
-}
-.dark-mode .wordcloud-badge {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
-}
-.wordcloud-badge small {
-  color: var(--secondary-color);
-  font-weight: 600;
-  font-size: 0.75rem;
-}
-.chart-note {
-  margin-top: 8px;
-  font-size: 0.85rem;
-  color: var(--secondary-color);
-}
-figure {
-  margin: 20px 0;
-  text-align: center;
-}
-figure img {
-  max-width: 100%;
-  border-radius: 12px;
-}
-.figure-placeholder {
-  padding: 16px;
-  border: 1px dashed var(--border-color);
-  border-radius: 12px;
-  color: var(--secondary-color);
-  text-align: center;
-  font-size: 0.95rem;
-  margin: 20px 0;
-}
-.math-block {
-  text-align: center;
-  font-size: 1.1rem;
-  margin: 24px 0;
-}
-.math-inline {
-  font-family: sans-serif;
-  font-style: italic;
-  white-space: nowrap;
-  padding: 0 0.15em;
-}
-pre.code-block {
-  background: #1e1e1e;
-  color: #fff;
-  padding: 16px;
-  border-radius: 12px;
-  overflow-x: auto;
-}
-@media (max-width: 768px) {
-  .report-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  main {
-    margin: 0;
-    border-radius: 0;
-  }
-}
-@media print {
-  .no-print { display: none !important; }
-  body {
-    background: #fff;
-  }
-  main {
-    box-shadow: none;
-    margin: 0;
-    max-width: 100%;
-  }
+.chart-fallback td { /* 含义：.chart-fallback td 样式区域；设置：在本块内调整相关属性 */
+  border: 1px solid var(--border-color); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  padding: 6px 8px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  text-align: left; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+} /* 结束 .chart-fallback td */
+.chart-fallback th { /* 含义：.chart-fallback th 样式区域；设置：在本块内调整相关属性 */
+  background: rgba(0,0,0,0.04); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .chart-fallback th */
+.wordcloud-fallback .wordcloud-badges { /* 含义：.wordcloud-fallback .wordcloud-badges 样式区域；设置：在本块内调整相关属性 */
+  display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  flex-wrap: wrap; /* 含义：换行策略；设置：按需调整数值/颜色/变量 */
+  gap: 6px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  margin-top: 6px; /* 含义：margin-top 样式属性；设置：按需调整数值/颜色/变量 */
+} /* 结束 .wordcloud-fallback .wordcloud-badges */
+.wordcloud-badge { /* 含义：词云徽章；设置：在本块内调整相关属性 */
+  display: inline-flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  align-items: center; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  gap: 4px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+  padding: 4px 8px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 999px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  border: 1px solid rgba(74, 144, 226, 0.35); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  color: var(--text-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  background: linear-gradient(135deg, rgba(74, 144, 226, 0.14) 0%, rgba(74, 144, 226, 0.24) 100%); /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .wordcloud-badge */
+.dark-mode .wordcloud-badge { /* 含义：.dark-mode .wordcloud-badge 样式区域；设置：在本块内调整相关属性 */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35); /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+} /* 结束 .dark-mode .wordcloud-badge */
+.wordcloud-badge small { /* 含义：.wordcloud-badge small 样式区域；设置：在本块内调整相关属性 */
+  color: var(--secondary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  font-weight: 600; /* 含义：字重；设置：按需调整数值/颜色/变量 */
+  font-size: 0.75rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+} /* 结束 .wordcloud-badge small */
+.chart-note { /* 含义：图表降级提示；设置：在本块内调整相关属性 */
+  margin-top: 8px; /* 含义：margin-top 样式属性；设置：按需调整数值/颜色/变量 */
+  font-size: 0.85rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  color: var(--secondary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+} /* 结束 .chart-note */
+figure { /* 含义：figure 样式区域；设置：在本块内调整相关属性 */
+  margin: 20px 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+  text-align: center; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+} /* 结束 figure */
+figure img { /* 含义：figure img 样式区域；设置：在本块内调整相关属性 */
+  max-width: 100%; /* 含义：最大宽度；设置：按需调整数值/颜色/变量 */
+  border-radius: 12px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+} /* 结束 figure img */
+.figure-placeholder { /* 含义：.figure-placeholder 样式区域；设置：在本块内调整相关属性 */
+  padding: 16px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border: 1px dashed var(--border-color); /* 含义：边框样式；设置：按需调整数值/颜色/变量 */
+  border-radius: 12px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  color: var(--secondary-color); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  text-align: center; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  font-size: 0.95rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  margin: 20px 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+} /* 结束 .figure-placeholder */
+.math-block { /* 含义：块级公式；设置：在本块内调整相关属性 */
+  text-align: center; /* 含义：文本对齐；设置：按需调整数值/颜色/变量 */
+  font-size: 1.1rem; /* 含义：字号；设置：按需调整数值/颜色/变量 */
+  margin: 24px 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+} /* 结束 .math-block */
+.math-inline { /* 含义：行内公式；设置：在本块内调整相关属性 */
+  font-family: sans-serif; /* 含义：字体族；设置：按需调整数值/颜色/变量 */
+  font-style: italic; /* 含义：font-style 样式属性；设置：按需调整数值/颜色/变量 */
+  white-space: nowrap; /* 含义：空白与换行策略；设置：按需调整数值/颜色/变量 */
+  padding: 0 0.15em; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+} /* 结束 .math-inline */
+pre.code-block { /* 含义：代码块；设置：在本块内调整相关属性 */
+  background: #1e1e1e; /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  color: #fff; /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+  padding: 16px; /* 含义：内边距，控制内容与容器边缘的距离；设置：按需调整数值/颜色/变量 */
+  border-radius: 12px; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  overflow-x: auto; /* 含义：横向溢出处理；设置：按需调整数值/颜色/变量 */
+} /* 结束 pre.code-block */
+@media (max-width: 768px) { /* 含义：移动端断点样式；设置：在本块内调整相关属性 */
+  .report-header { /* 含义：页眉吸顶区域；设置：在本块内调整相关属性 */
+    flex-direction: column; /* 含义：flex 主轴方向；设置：按需调整数值/颜色/变量 */
+    align-items: flex-start; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .report-header */
+  main { /* 含义：主体内容容器；设置：在本块内调整相关属性 */
+    margin: 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+    border-radius: 0; /* 含义：圆角；设置：按需调整数值/颜色/变量 */
+  } /* 结束 main */
+} /* 结束 @media (max-width: 768px) */
+@media print { /* 含义：打印模式样式；设置：在本块内调整相关属性 */
+  .no-print { display: none !important; } /* 含义：.no-print  display 样式属性；设置：按需调整数值/颜色/变量 */
+  body { /* 含义：全局排版与背景设置；设置：在本块内调整相关属性 */
+    background: #fff; /* 含义：背景色或渐变效果；设置：按需调整数值/颜色/变量 */
+  } /* 结束 body */
+  main { /* 含义：主体内容容器；设置：在本块内调整相关属性 */
+    box-shadow: none; /* 含义：阴影效果；设置：按需调整数值/颜色/变量 */
+    margin: 0; /* 含义：外边距，控制与周围元素的距离；设置：按需调整数值/颜色/变量 */
+    max-width: 100%; /* 含义：最大宽度；设置：按需调整数值/颜色/变量 */
+  } /* 结束 main */
   .chapter > *,
   .hero-section,
-.callout,
-.chart-card,
-.kpi-grid,
+  .callout,
+  .engine-quote,
+  .chart-card,
+  .kpi-grid,
+.swot-card,
+.pest-card,
 .table-wrap,
 figure,
-blockquote {
-  break-inside: avoid;
-  page-break-inside: avoid;
-  max-width: 100%;
-}
-.chapter h2,
-.chapter h3,
-.chapter h4 {
-  break-after: avoid;
-  page-break-after: avoid;
-  break-inside: avoid;
-}
-.chart-card,
-.table-wrap {
-  overflow: visible !important;
-  max-width: 100% !important;
-  box-sizing: border-box;
-}
-.chart-card canvas {
-  width: 100% !important;
-  height: auto !important;
-  max-width: 100% !important;
-}
-.table-wrap {
-  overflow-x: auto;
-  max-width: 100%;
-}
-.table-wrap table {
-  table-layout: fixed;
-  width: 100%;
-  max-width: 100%;
-}
+blockquote { /* 含义：引用块；设置：在本块内调整相关属性 */
+  break-inside: avoid; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-inside: avoid; /* 含义：page-break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+    max-width: 100%; /* 含义：最大宽度；设置：按需调整数值/颜色/变量 */
+  } /* 结束 blockquote */
+  .chapter h2,
+  .chapter h3,
+  .chapter h4 { /* 含义：.chapter h4 样式区域；设置：在本块内调整相关属性 */
+    break-after: avoid; /* 含义：break-after 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-after: avoid; /* 含义：page-break-after 样式属性；设置：按需调整数值/颜色/变量 */
+    break-inside: avoid; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .chapter h4 */
+  .chart-card,
+  .table-wrap { /* 含义：表格滚动容器；设置：在本块内调整相关属性 */
+    overflow: visible !important; /* 含义：溢出处理；设置：按需调整数值/颜色/变量 */
+    max-width: 100% !important; /* 含义：最大宽度；设置：按需调整数值/颜色/变量 */
+    box-sizing: border-box; /* 含义：尺寸计算方式；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .table-wrap */
+  .chart-card canvas { /* 含义：.chart-card canvas 样式区域；设置：在本块内调整相关属性 */
+    width: 100% !important; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+    height: auto !important; /* 含义：高度设置；设置：按需调整数值/颜色/变量 */
+    max-width: 100% !important; /* 含义：最大宽度；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .chart-card canvas */
+  .swot-card,
+  .swot-cell { /* 含义：SWOT 象限单元格；设置：在本块内调整相关属性 */
+    break-inside: avoid; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-inside: avoid; /* 含义：page-break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .swot-cell */
+  .swot-card { /* 含义：SWOT 卡片容器；设置：在本块内调整相关属性 */
+    color: var(--swot-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+    /* 允许卡片内部分页，避免整体被抬到下一页 */
+    break-inside: auto !important; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-inside: auto !important; /* 含义：page-break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .swot-card */
+  .swot-card__head { /* 含义：.swot-card__head 样式区域；设置：在本块内调整相关属性 */
+    break-after: avoid; /* 含义：break-after 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-after: avoid; /* 含义：page-break-after 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .swot-card__head */
+  .swot-grid { /* 含义：SWOT 象限网格；设置：在本块内调整相关属性 */
+    break-before: avoid; /* 含义：break-before 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-before: avoid; /* 含义：page-break-before 样式属性；设置：按需调整数值/颜色/变量 */
+    break-inside: auto; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-inside: auto; /* 含义：page-break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+    display: flex; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+    flex-wrap: wrap; /* 含义：换行策略；设置：按需调整数值/颜色/变量 */
+    gap: 10px; /* 含义：子元素间距；设置：按需调整数值/颜色/变量 */
+    align-items: stretch; /* 含义：flex 对齐方式（交叉轴）；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .swot-grid */
+  .swot-grid .swot-cell { /* 含义：.swot-grid .swot-cell 样式区域；设置：在本块内调整相关属性 */
+    break-inside: avoid; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-inside: avoid; /* 含义：page-break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .swot-grid .swot-cell */
+  .swot-legend { /* 含义：.swot-legend 样式区域；设置：在本块内调整相关属性 */
+    display: none !important; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .swot-legend */
+  .swot-grid .swot-cell { /* 含义：.swot-grid .swot-cell 样式区域；设置：在本块内调整相关属性 */
+    flex: 1 1 320px; /* 含义：flex 占位比例；设置：按需调整数值/颜色/变量 */
+    min-width: 240px; /* 含义：最小宽度；设置：按需调整数值/颜色/变量 */
+    height: auto; /* 含义：高度设置；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .swot-grid .swot-cell */
+  /* PEST 打印样式 */
+  .pest-card,
+  .pest-strip { /* 含义：PEST 条带；设置：在本块内调整相关属性 */
+    break-inside: avoid; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-inside: avoid; /* 含义：page-break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .pest-strip */
+  .pest-card { /* 含义：PEST 卡片容器；设置：在本块内调整相关属性 */
+    color: var(--pest-text); /* 含义：文字颜色；设置：按需调整数值/颜色/变量 */
+    break-inside: auto !important; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-inside: auto !important; /* 含义：page-break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .pest-card */
+  .pest-card__head { /* 含义：.pest-card__head 样式区域；设置：在本块内调整相关属性 */
+    break-after: avoid; /* 含义：break-after 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-after: avoid; /* 含义：page-break-after 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .pest-card__head */
+  .pest-strips { /* 含义：PEST 条带容器；设置：在本块内调整相关属性 */
+    break-before: avoid; /* 含义：break-before 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-before: avoid; /* 含义：page-break-before 样式属性；设置：按需调整数值/颜色/变量 */
+    break-inside: auto; /* 含义：break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+    page-break-inside: auto; /* 含义：page-break-inside 样式属性；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .pest-strips */
+  .pest-legend { /* 含义：.pest-legend 样式区域；设置：在本块内调整相关属性 */
+    display: none !important; /* 含义：布局展示方式；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .pest-legend */
+  .pest-strip { /* 含义：PEST 条带；设置：在本块内调整相关属性 */
+    flex-direction: row; /* 含义：flex 主轴方向；设置：按需调整数值/颜色/变量 */
+  } /* 结束 .pest-strip */
+.table-wrap { /* 含义：表格滚动容器；设置：在本块内调整相关属性 */
+  overflow-x: auto; /* 含义：横向溢出处理；设置：按需调整数值/颜色/变量 */
+  max-width: 100%; /* 含义：最大宽度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .table-wrap */
+.table-wrap table { /* 含义：.table-wrap table 样式区域；设置：在本块内调整相关属性 */
+  table-layout: fixed; /* 含义：表格布局算法；设置：按需调整数值/颜色/变量 */
+  width: 100%; /* 含义：宽度设置；设置：按需调整数值/颜色/变量 */
+  max-width: 100%; /* 含义：最大宽度；设置：按需调整数值/颜色/变量 */
+} /* 结束 .table-wrap table */
 .table-wrap table th,
-.table-wrap table td {
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
+.table-wrap table td { /* 含义：.table-wrap table td 样式区域；设置：在本块内调整相关属性 */
+  word-break: break-word; /* 含义：单词断行规则；设置：按需调整数值/颜色/变量 */
+  overflow-wrap: break-word; /* 含义：长单词换行；设置：按需调整数值/颜色/变量 */
+} /* 结束 .table-wrap table td */
 /* 防止图片和图表溢出 */
-img, canvas, svg {
-  max-width: 100% !important;
-  height: auto !important;
-}
+img, canvas, svg { /* 含义：媒体元素尺寸限制；设置：在本块内调整相关属性 */
+  max-width: 100% !important; /* 含义：最大宽度；设置：按需调整数值/颜色/变量 */
+  height: auto !important; /* 含义：高度设置；设置：按需调整数值/颜色/变量 */
+} /* 结束 img, canvas, svg */
 /* 确保所有容器不超出页面宽度 */
-* {
-  box-sizing: border-box;
-  max-width: 100%;
-}
-}
+* { /* 含义：* 样式区域；设置：在本块内调整相关属性 */
+  box-sizing: border-box; /* 含义：尺寸计算方式；设置：按需调整数值/颜色/变量 */
+  max-width: 100%; /* 含义：最大宽度；设置：按需调整数值/颜色/变量 */
+} /* 结束 * */
+} /* 结束 @media print */
+
 
   </style>
   <script>
@@ -1372,13 +2439,39 @@ img, canvas, svg {
 <body>
 <header class="report-header no-print">
   <div>
-    <h1>全量组件与图表类型演示报告 V2</h1>
-    <p class="subtitle">覆盖所有block与Chart.js类型的最新样例</p>
-    <p class="tagline">用于验证渲染链路与验证器的端到端健康度</p>
+    <h1>社会公共热点事件渲染测试</h1>
+    <p class="subtitle">覆盖全部 IR 块类型的示例数据，含多种图表与 PEST 演示</p>
+    
   </div>
   <div class="header-actions">
-    <button id="theme-toggle" class="action-btn" type="button">🌗 主题切换</button>
-    <button id="print-btn" class="action-btn" type="button">🖨️ 打印</button>
+    <!-- 旧版日夜模式切换按钮（Web Component 风格）：
+    <theme-button value="light" id="theme-toggle" size="1.5"></theme-button>
+    -->
+    <button id="theme-toggle-btn" class="action-btn theme-toggle-btn" type="button">
+      <svg class="btn-icon sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+      <svg class="btn-icon moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+      <span class="theme-label">切换模式</span>
+    </button>
+    <button id="print-btn" class="action-btn print-btn" type="button">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+        <rect x="6" y="14" width="12" height="8"></rect>
+      </svg>
+      <span>打印页面</span>
+    </button>
     <button id="export-btn" class="action-btn" type="button" style="display: none;">⬇️ 导出PDF</button>
   </div>
 </header>
@@ -1395,39 +2488,27 @@ img, canvas, svg {
 <section class="hero-section-combined">
   <div class="hero-header">
     <p class="hero-hint">文章总览</p>
-    <h1 class="hero-title">全量组件与图表类型演示报告 V2</h1>
-    <p class="hero-subtitle">覆盖所有block与Chart.js类型的最新样例</p>
+    <h1 class="hero-title">社会公共热点事件渲染测试</h1>
+    <p class="hero-subtitle">覆盖全部 IR 块类型的示例数据，含多种图表与 PEST 演示</p>
   </div>
   <div class="hero-body">
     <div class="hero-content">
-      
-      <ul class="hero-highlights"></ul>
-      <div class="hero-actions"></div>
+      <p class="hero-summary">用于验证 Report Engine 在 HTML / PDF 渲染时对各类区块、Chart.js 组件与 PEST 模块的兼容性。</p>
+      <ul class="hero-highlights"><li><span class="badge">覆盖全部 block</span></li><li><span class="badge">含行内/块级公式</span></li><li><span class="badge">Chart.js 多类型</span></li><li><span class="badge">PEST + SWOT</span></li></ul>
+      <div class="hero-actions"><button class="ghost-btn" type="button">重新生成</button><button class="ghost-btn" type="button">导出 PDF</button></div>
     </div>
     <div class="hero-side">
       
             <div class="hero-kpi">
-                <div class="label">Block类型</div>
-                <div class="value">12</div>
-                <span class="delta neutral">+0</span>
+                <div class="label">示例块数量</div>
+                <div class="value">20+</div>
+                <span class="delta up">含 PEST</span>
             </div>
             
             <div class="hero-kpi">
-                <div class="label">Chart.js类型</div>
-                <div class="value">9</div>
-                <span class="delta neutral">+0</span>
-            </div>
-            
-            <div class="hero-kpi">
-                <div class="label">数据覆盖</div>
-                <div class="value">100%</div>
-                <span class="delta neutral">齐全</span>
-            </div>
-            
-            <div class="hero-kpi">
-                <div class="label">生成时间</div>
-                <div class="value">11-27 03:32</div>
-                <span class="delta neutral">即时</span>
+                <div class="label">图表数</div>
+                <div class="value">7</div>
+                <span class="delta neutral">新增多类型</span>
             </div>
             
     </div>
@@ -1436,70 +2517,50 @@ img, canvas, svg {
 <nav class="toc">
   <div class="toc-title">目录</div>
   <ul>
-    <li class="level-1"><a href="#c1-overview-v2">一、 演示概览</a></li><li class="level-1"><a href="#c2-charts-v2">二、 数据与可视化</a></li><li class="level-1"><a href="#c3-appendix-v2">三、 使用步骤</a></li>
+    <li class="level-1"><a href="#overview">一、 封面与目录</a></li><li class="level-1"><a href="#blocks-showcase">二、 块类型演示</a></li><li class="level-3"><a href="#lists-and-tables">2.1.1 列表与表格</a></li><li class="level-3"><a href="#charts-demo">2.1.2 图表组件演示</a></li><li class="level-3"><a href="#advanced-blocks">2.1.3 高阶块与富媒体</a></li>
   </ul>
 </nav>
-<section id="overview-v2" class="chapter">
-<h2 id="c1-overview-v2">一、 演示概览</h2><p>本章节涵盖全部 block，<strong>粗体</strong>、<em>斜体</em>、<span style="text-decoration: underline">下划线</span>、<span style="text-decoration: line-through">删除线</span>、<code>代码</code>、<mark>高亮</mark>、H<sub>2</sub>O、<span style="color: #EF4444">彩色</span>、<span style="font-family: Inter; font-size: 15px; font-weight: 500">定制字体</span>、<a href="https://example.org" title="示例" target="_blank" rel="noopener">链接</a>，以及内联公式 <span class="math-inline">\( \sum_{i=1}^n x_i \)</span> 。</p><div class="kpi-grid" data-kpi-count="4">
+<section id="overview" class="chapter">
+<h2 id="overview">一、 封面与目录</h2><p>模拟社会公共热点事件的摘要，便于快速确认排版与字体效果。</p><p>这一段覆盖全部内联标记：<strong>粗体</strong><em> / 斜体</em><span style="text-decoration: underline"> / 下划线</span><span style="text-decoration: line-through"> / 删除线</span><code> / 代码</code><a href="https://example.com/demo" title="示例链接" target="_blank" rel="noopener"> / 链接</a><span style="color: #c0392b"> / 颜色</span><span style="font-family: Georgia, serif; font-size: 15px; font-weight: 600"> / 字体</span><mark> / 高亮</mark><sub> / 下标</sub><sup> / 上标</sup><span class="math-inline">\( E=mc^2 \)</span>。</p><div class="kpi-grid" data-kpi-count="4">
             <div class="kpi-card">
-              <div class="kpi-value">15<small>个</small></div>
-              <div class="kpi-label">接口</div>
-              <span class="delta up">+2</span>
+              <div class="kpi-value">98K<small></small></div>
+              <div class="kpi-label">24h提及量</div>
+              <span class="delta up">+41%</span>
             </div>
             
             <div class="kpi-card">
-              <div class="kpi-value">380<small>ms</small></div>
-              <div class="kpi-label">延迟</div>
-              <span class="delta up">-20ms</span>
+              <div class="kpi-value">32%<small></small></div>
+              <div class="kpi-label">正向占比</div>
+              <span class="delta up">+5pp</span>
             </div>
             
             <div class="kpi-card">
-              <div class="kpi-value">99.3%<small></small></div>
-              <div class="kpi-label">成功率</div>
-              <span class="delta up">+0.4pp</span>
+              <div class="kpi-value">18%<small></small></div>
+              <div class="kpi-label">负向占比</div>
+              <span class="delta down">-3pp</span>
             </div>
             
             <div class="kpi-card">
-              <div class="kpi-value">0<small>次</small></div>
-              <div class="kpi-label">异常</div>
-              <span class="delta down">-1</span>
+              <div class="kpi-value">短视频 / 微博<small></small></div>
+              <div class="kpi-label">高频渠道</div>
+              
             </div>
-            </div><div class="callout tone-warning"><strong>使用提示</strong><p>保持字段与IR规范一致，可直接送入渲染链路。</p><ul><li><p>Chart.js 数据长度一致</p></li><li><p>词云/公式提供兜底</p></li><li><p>图表均为原生配置</p></li></ul></div><hr /><blockquote><p>“新版样例聚焦结构完整性与渲染稳定性。”</p></blockquote><div class="table-wrap"><table><caption>核心指标快照</caption><tbody><tr><td><p>指标</p></td><td><p>当前值</p></td><td><p>目标</p></td></tr><tr><td><p>新客转化</p></td><td><p>18%</p></td><td><p>22%</p></td></tr><tr><td><p>内容生成合规率</p></td><td><p>98.9%</p></td><td><p>99.5%</p></td></tr></tbody></table></div><div class="figure-placeholder">系统示意（渲染时使用占位提示，避免外部依赖）</div><pre class="code-block" data-lang="json"><code>{
-  "pipeline": {
-    "schedule": "15min",
-    "sources": [
-      "search",
-      "faq",
-      "forum"
-    ]
-  },
-  "quality": {
-    "rules": 32,
-    "auto_fix": true
-  },
-  "alert": {
-    "channels": [
-      "slack",
-      "ops"
-    ],
-    "on_fail": true
-  }
-}</code></pre><div class="math-block">$$ \\int_{0}^{2} e^{-t}\\,dt = 1 - e^{-2} $$</div><ol><li><p>校验IR结构</p></li><li><p>渲染HTML</p></li><li><p>生成PDF</p></li></ol>
-</section><section id="charts-v2" class="chapter">
-<h2 id="c2-charts-v2">二、 数据与可视化</h2><p>折线、柱、横向柱、饼、环形、雷达、极区、散点、气泡及词云全部覆盖。</p>
+            </div><hr />
+</section><section id="blocks-showcase" class="chapter">
+<h2 id="blocks-showcase">二、 块类型演示</h2><p>以下内容逐一覆盖 paragraph/list/table/swot/pest/widget 等全部块类型。</p><h3 id="lists-and-tables">2.1.1 列表与表格</h3><ul><li><p>社交媒体热度在 48 小时内翻倍</p></li><li><p>主流媒体报道集中在早间时段</p><ol><li><p>07:00-09:00：首轮报道</p></li><li><p>10:00-12:00：评论扩散</p></li></ol></li><li><p>地方政务号开始回应并同步线下通稿</p></li></ul><ul class="task-list"><li><p>跟踪权威辟谣素材是否上线</p></li><li><p>监测新增关联关键词与长尾问题</p></li><li><p>准备 FAQ 供客服统一答复</p></li></ul><div class="table-wrap"><table><caption>核心信源与传播路径</caption><tbody><tr><td class="align-center"><p><strong>时间节点</strong></p></td><td class="align-center"><p><strong>事件内容</strong></p></td><td class="align-center"><p><strong>主要渠道</strong></p></td></tr><tr><td><p>T0</p></td><td><p>线下冲突视频首次上传</p></td><td><p>短视频平台 / 私聊转发</p></td></tr><tr><td><p>T0+6h</p></td><td><p>登上热搜，出现二次剪辑</p></td><td><p>微博 / 朋友圈</p></td></tr><tr><td><p>T0+18h</p></td><td><p>官方回应并发布事实澄清</p></td><td><p>政务号 / 新闻客户端</p></td></tr><tr><td><p>T0+24h</p></td><td><p>专家解读，舆论重心转向责任归属</p></td><td><p>视频号直播 / 行业社群</p></td></tr></tbody></table></div><h3 id="charts-demo">2.1.2 图表组件演示</h3><p>折线 / 柱状（含横向、堆叠）/ 饼图 / 圆环 / 雷达 / 极区 / 散点 / 气泡等多类型图表，用于验证 Chart.js 兼容性。</p>
         <div class="chart-card">
-          <div class="chart-title">请求量与成功率（折线）</div>
+          
           <div class="chart-container">
             <canvas id="chart-1" data-config-id="chart-config-1"></canvas>
           </div>
           
-        <div class="chart-fallback" data-prebuilt="true" data-widget-id="chart_line_ops">
+        <div class="chart-fallback" data-prebuilt="true" data-widget-id="demo-volume-trend">
           <table>
             <thead>
-              <tr><th>类别</th><th>请求量</th><th>成功率</th></tr>
+              <tr><th>类别</th><th>主流媒体</th><th>社交平台</th></tr>
             </thead>
             <tbody>
-              <tr><td>周一</td><td>320</td><td>97.1</td></tr><tr><td>周二</td><td>360</td><td>97.5</td></tr><tr><td>周三</td><td>340</td><td>97.0</td></tr><tr><td>周四</td><td>410</td><td>98.2</td></tr><tr><td>周五</td><td>450</td><td>98.6</td></tr><tr><td>周六</td><td>300</td><td>96.5</td></tr><tr><td>周日</td><td>280</td><td>96.0</td></tr>
+              <tr><td>T0</td><td>12</td><td>8</td></tr><tr><td>T0+6h</td><td>18</td><td>10</td></tr><tr><td>T0+12h</td><td>23</td><td>15</td></tr><tr><td>T0+18h</td><td>30</td><td>28</td></tr><tr><td>T0+24h</td><td>26</td><td>40</td></tr>
             </tbody>
           </table>
         </div>
@@ -1507,18 +2568,18 @@ img, canvas, svg {
         </div>
         
         <div class="chart-card">
-          <div class="chart-title">渠道曝光与点击（柱）</div>
+          
           <div class="chart-container">
             <canvas id="chart-2" data-config-id="chart-config-2"></canvas>
           </div>
           
-        <div class="chart-fallback" data-prebuilt="true" data-widget-id="chart_bar_vertical">
+        <div class="chart-fallback" data-prebuilt="true" data-widget-id="demo-stacked-sentiment">
           <table>
             <thead>
-              <tr><th>类别</th><th>曝光</th><th>点击</th></tr>
+              <tr><th>类别</th><th>正向</th><th>中性</th><th>负向</th></tr>
             </thead>
             <tbody>
-              <tr><td>搜索</td><td>1200</td><td>260</td></tr><tr><td>推送</td><td>980</td><td>210</td></tr><tr><td>社交</td><td>860</td><td>180</td></tr><tr><td>直达</td><td>540</td><td>140</td></tr>
+              <tr><td>周一</td><td>18</td><td>22</td><td>12</td></tr><tr><td>周二</td><td>22</td><td>20</td><td>14</td></tr><tr><td>周三</td><td>24</td><td>18</td><td>10</td></tr><tr><td>周四</td><td>19</td><td>21</td><td>9</td></tr><tr><td>周五</td><td>16</td><td>23</td><td>11</td></tr>
             </tbody>
           </table>
         </div>
@@ -1526,18 +2587,18 @@ img, canvas, svg {
         </div>
         
         <div class="chart-card">
-          <div class="chart-title">团队人天分布（横向柱）</div>
+          
           <div class="chart-container">
             <canvas id="chart-3" data-config-id="chart-config-3"></canvas>
           </div>
           
-        <div class="chart-fallback" data-prebuilt="true" data-widget-id="chart_bar_horizontal">
+        <div class="chart-fallback" data-prebuilt="true" data-widget-id="demo-horizontal-voice">
           <table>
             <thead>
-              <tr><th>类别</th><th>人天</th></tr>
+              <tr><th>类别</th><th>声量对比</th></tr>
             </thead>
             <tbody>
-              <tr><td>交付</td><td>42</td></tr><tr><td>算法</td><td>51</td></tr><tr><td>产品</td><td>33</td></tr><tr><td>运营</td><td>27</td></tr>
+              <tr><td>微博</td><td>42</td></tr><tr><td>短视频</td><td>58</td></tr><tr><td>社区论坛</td><td>27</td></tr><tr><td>新闻客户端</td><td>36</td></tr>
             </tbody>
           </table>
         </div>
@@ -1545,18 +2606,18 @@ img, canvas, svg {
         </div>
         
         <div class="chart-card">
-          <div class="chart-title">成本结构（饼）</div>
+          
           <div class="chart-container">
             <canvas id="chart-4" data-config-id="chart-config-4"></canvas>
           </div>
           
-        <div class="chart-fallback" data-prebuilt="true" data-widget-id="chart_pie_cost">
+        <div class="chart-fallback" data-prebuilt="true" data-widget-id="demo-stance-pie">
           <table>
             <thead>
-              <tr><th>类别</th><th>成本</th></tr>
+              <tr><th>类别</th><th>立场分布</th></tr>
             </thead>
             <tbody>
-              <tr><td>算力</td><td>45</td></tr><tr><td>存储</td><td>22</td></tr><tr><td>带宽</td><td>18</td></tr><tr><td>监控</td><td>15</td></tr>
+              <tr><td>支持</td><td>36</td></tr><tr><td>中立</td><td>28</td></tr><tr><td>质疑</td><td>21</td></tr>
             </tbody>
           </table>
         </div>
@@ -1564,18 +2625,18 @@ img, canvas, svg {
         </div>
         
         <div class="chart-card">
-          <div class="chart-title">质量维度（环形）</div>
+          
           <div class="chart-container">
             <canvas id="chart-5" data-config-id="chart-config-5"></canvas>
           </div>
           
-        <div class="chart-fallback" data-prebuilt="true" data-widget-id="chart_doughnut_quality">
+        <div class="chart-fallback" data-prebuilt="true" data-widget-id="demo-sentiment-share">
           <table>
             <thead>
-              <tr><th>类别</th><th>评分</th></tr>
+              <tr><th>类别</th><th>关注度占比</th></tr>
             </thead>
             <tbody>
-              <tr><td>完整性</td><td>23</td></tr><tr><td>一致性</td><td>21</td></tr><tr><td>及时性</td><td>22</td></tr><tr><td>可追溯</td><td>20</td></tr>
+              <tr><td>政策</td><td>24</td></tr><tr><td>经济</td><td>30</td></tr><tr><td>社会</td><td>28</td></tr><tr><td>技术</td><td>18</td></tr>
             </tbody>
           </table>
         </div>
@@ -1583,18 +2644,18 @@ img, canvas, svg {
         </div>
         
         <div class="chart-card">
-          <div class="chart-title">交付成熟度雷达</div>
+          
           <div class="chart-container">
             <canvas id="chart-6" data-config-id="chart-config-6"></canvas>
           </div>
           
-        <div class="chart-fallback" data-prebuilt="true" data-widget-id="chart_radar_maturity">
+        <div class="chart-fallback" data-prebuilt="true" data-widget-id="demo-response-radar">
           <table>
             <thead>
-              <tr><th>类别</th><th>当前</th><th>目标</th></tr>
+              <tr><th>类别</th><th>官方渠道</th><th>民间讨论</th></tr>
             </thead>
             <tbody>
-              <tr><td>策略</td><td>78</td><td>90</td></tr><tr><td>数据</td><td>74</td><td>88</td></tr><tr><td>模型</td><td>76</td><td>90</td></tr><tr><td>监控</td><td>70</td><td>86</td></tr><tr><td>协同</td><td>79</td><td>90</td></tr><tr><td>反馈</td><td>72</td><td>88</td></tr>
+              <tr><td>透明度</td><td>78</td><td>64</td></tr><tr><td>响应速度</td><td>88</td><td>72</td></tr><tr><td>一致性</td><td>82</td><td>58</td></tr><tr><td>互动度</td><td>66</td><td>74</td></tr><tr><td>信息量</td><td>91</td><td>63</td></tr>
             </tbody>
           </table>
         </div>
@@ -1602,18 +2663,18 @@ img, canvas, svg {
         </div>
         
         <div class="chart-card">
-          <div class="chart-title">渠道热度（极区）</div>
+          
           <div class="chart-container">
             <canvas id="chart-7" data-config-id="chart-config-7"></canvas>
           </div>
           
-        <div class="chart-fallback" data-prebuilt="true" data-widget-id="chart_polar_hotness">
+        <div class="chart-fallback" data-prebuilt="true" data-widget-id="demo-channel-polar">
           <table>
             <thead>
-              <tr><th>类别</th><th>热度</th></tr>
+              <tr><th>类别</th><th>渠道渗透度</th></tr>
             </thead>
             <tbody>
-              <tr><td>UGC</td><td>18</td></tr><tr><td>客服</td><td>16</td></tr><tr><td>销售</td><td>20</td></tr><tr><td>社区</td><td>14</td></tr><tr><td>媒体</td><td>12</td></tr>
+              <tr><td>短视频</td><td>62</td></tr><tr><td>微博</td><td>54</td></tr><tr><td>社区论坛</td><td>38</td></tr><tr><td>新闻客户端</td><td>45</td></tr><tr><td>线下反馈</td><td>28</td></tr>
             </tbody>
           </table>
         </div>
@@ -1621,18 +2682,18 @@ img, canvas, svg {
         </div>
         
         <div class="chart-card">
-          <div class="chart-title">延迟与满意度（散点）</div>
+          
           <div class="chart-container">
             <canvas id="chart-8" data-config-id="chart-config-8"></canvas>
           </div>
           
-        <div class="chart-fallback" data-prebuilt="true" data-widget-id="chart_scatter_latency">
+        <div class="chart-fallback" data-prebuilt="true" data-widget-id="demo-correlation-scatter">
           <table>
             <thead>
-              <tr><th>类别</th><th>样本</th></tr>
+              <tr><th>类别</th><th>帖子散点</th></tr>
             </thead>
             <tbody>
-              <tr><td>120</td><td>{"x": 120, "y": 88}</td></tr><tr><td>180</td><td>{"x": 180, "y": 83}</td></tr><tr><td>260</td><td>{"x": 260, "y": 78}</td></tr><tr><td>320</td><td>{"x": 320, "y": 70}</td></tr><tr><td>90</td><td>{"x": 90, "y": 92}</td></tr><tr><td>210</td><td>{"x": 210, "y": 80}</td></tr>
+              <tr><td>-0.65</td><td>{"x": -0.65, "y": 120}</td></tr><tr><td>-0.25</td><td>{"x": -0.25, "y": 190}</td></tr><tr><td>0.05</td><td>{"x": 0.05, "y": 260}</td></tr><tr><td>0.42</td><td>{"x": 0.42, "y": 340}</td></tr><tr><td>0.78</td><td>{"x": 0.78, "y": 410}</td></tr>
             </tbody>
           </table>
         </div>
@@ -1640,62 +2701,544 @@ img, canvas, svg {
         </div>
         
         <div class="chart-card">
-          <div class="chart-title">集群容量与利用率（气泡）</div>
+          
           <div class="chart-container">
             <canvas id="chart-9" data-config-id="chart-config-9"></canvas>
           </div>
           
-        <div class="chart-fallback" data-prebuilt="true" data-widget-id="chart_bubble_capacity">
+        <div class="chart-fallback" data-prebuilt="true" data-widget-id="demo-impact-bubble">
           <table>
             <thead>
-              <tr><th>类别</th><th>集群</th></tr>
+              <tr><th>类别</th><th>渠道分布</th></tr>
             </thead>
             <tbody>
-              <tr><td>A</td><td>{"x": 28, "y": 65, "r": 14}</td></tr><tr><td>B</td><td>{"x": 46, "y": 78, "r": 18}</td></tr><tr><td>C</td><td>{"x": 32, "y": 58, "r": 12}</td></tr><tr><td>D</td><td>{"x": 60, "y": 84, "r": 20}</td></tr>
+              <tr><td>8</td><td>{"x": 8, "y": 35, "r": 12}</td></tr><tr><td>12</td><td>{"x": 12, "y": -28, "r": 10}</td></tr><tr><td>18</td><td>{"x": 18, "y": 22, "r": 14}</td></tr><tr><td>25</td><td>{"x": 25, "y": 48, "r": 16}</td></tr><tr><td>6</td><td>{"x": 6, "y": -12, "r": 8}</td></tr>
             </tbody>
           </table>
         </div>
         
         </div>
-        
-        <div class="chart-card wordcloud-card">
-          <div class="chart-title">高频反馈词</div>
-          <div class="chart-container">
-            <canvas id="chart-10" data-config-id="chart-config-10"></canvas>
-          </div>
+        <h3 id="advanced-blocks">2.1.3 高阶块与富媒体</h3><blockquote><p>“公众最关心的信息是真相与责任边界。”</p><p>—— 模拟引用，验证引用块样式</p></blockquote><div class="callout tone-warning"><strong>排版边界提示</strong><p>callout 内部仅放轻量内容，超出部分会自动溢出到外层。</p><ul><li><p>支持嵌套列表 / 表格 / 数学公式</p></li><li><p>可在这里放置提醒或操作步骤</p></li></ul></div><div class="engine-quote engine-insight">  <div class="engine-quote__header">    <span class="engine-quote__dot"></span>    <span class="engine-quote__title">Insight Agent</span>  </div>  <div class="engine-quote__body"><p><strong>模型认为 24 小时内保持回应频次，可避免信息真空。</strong></p><p>建议同时准备简短 FAQ，便于多渠道统一口径。</p></div></div>
+        <div class="swot-container">
           
-        <div class="chart-fallback" data-prebuilt="true" data-widget-id="wordcloud_topics">
-          <table>
-            <thead>
-              <tr><th>关键词</th><th>权重</th><th>类别</th></tr>
+        <div class="swot-card swot-card--html">
+          <div class="swot-card__head">
+            <div><div class="swot-card__title">舆论场 SWOT 速览</div><p class="swot-card__summary">覆盖当前情绪分布、潜在风险与机会。</p></div>
+            
+            <div class="swot-legend">
+              <span class="swot-legend__item strength">S 优势</span>
+              <span class="swot-legend__item weakness">W 劣势</span>
+              <span class="swot-legend__item opportunity">O 机会</span>
+              <span class="swot-legend__item threat">T 威胁</span>
+            </div>
+        
+          </div>
+          <div class="swot-grid">
+        <div class="swot-cell swot-cell--pageable strength swot-cell--first" data-swot-key="strengths">
+          <div class="swot-cell__meta">
+            <span class="swot-pill strength">S</span>
+            <div>
+              <div class="swot-cell__title">优势 Strengths</div>
+              <div class="swot-cell__caption">2 条要点</div>
+            </div>
+          </div>
+          <ul class="swot-list">
+            <li class="swot-item">
+              <div class="swot-item-title">官方快速响应</div>
+              <div class="swot-item-desc">首条澄清视频 3 小时内上线</div>
+            </li>
+        
+            <li class="swot-item">
+              <div class="swot-item-title">同城媒体配合<span class="swot-item-tags"><span class="swot-tag">高</span></span></div>
+              
+            </li>
+        </ul>
+        </div>
+        <div class="swot-cell swot-cell--pageable weakness" data-swot-key="weaknesses">
+          <div class="swot-cell__meta">
+            <span class="swot-pill weakness">W</span>
+            <div>
+              <div class="swot-cell__title">劣势 Weaknesses</div>
+              <div class="swot-cell__caption">2 条要点</div>
+            </div>
+          </div>
+          <ul class="swot-list">
+            <li class="swot-item">
+              <div class="swot-item-title">早期谣言存量大</div>
+              <div class="swot-item-desc">相关转发仍占 30%</div>
+            </li>
+        
+            <li class="swot-item">
+              <div class="swot-item-title">外部专家尚未统一口径</div>
+              
+            </li>
+        </ul>
+        </div>
+        <div class="swot-cell swot-cell--pageable opportunity" data-swot-key="opportunities">
+          <div class="swot-cell__meta">
+            <span class="swot-pill opportunity">O</span>
+            <div>
+              <div class="swot-cell__title">机会 Opportunities</div>
+              <div class="swot-cell__caption">2 条要点</div>
+            </div>
+          </div>
+          <ul class="swot-list">
+            <li class="swot-item">
+              <div class="swot-item-title">社区共建讨论</div>
+              <div class="swot-item-desc">自发组织“辟谣志愿者”话题，情绪正向</div>
+            </li>
+        
+            <li class="swot-item">
+              <div class="swot-item-title">公益合作窗口<span class="swot-item-tags"><span class="swot-tag">中</span></span></div>
+              
+            </li>
+        </ul>
+        </div>
+        <div class="swot-cell swot-cell--pageable threat" data-swot-key="threats">
+          <div class="swot-cell__meta">
+            <span class="swot-pill threat">T</span>
+            <div>
+              <div class="swot-cell__title">威胁 Threats</div>
+              <div class="swot-cell__caption">2 条要点</div>
+            </div>
+          </div>
+          <ul class="swot-list">
+            <li class="swot-item">
+              <div class="swot-item-title">跨平台剪辑继续发酵<span class="swot-item-tags"><span class="swot-tag">高</span></span></div>
+              
+            </li>
+        
+            <li class="swot-item">
+              <div class="swot-item-title">个别自媒体煽动情绪</div>
+              <div class="swot-item-evidence">佐证：存在地域标签化倾向</div>
+            </li>
+        </ul>
+        </div></div>
+        </div>
+        
+          
+        <div class="swot-pdf-wrapper">
+          <table class="swot-pdf-table">
+            <caption class="swot-pdf-caption">舆论场 SWOT 速览</caption>
+            <thead class="swot-pdf-thead">
+              <tr>
+                <th class="swot-pdf-th-quadrant">象限</th>
+                <th class="swot-pdf-th-num">序号</th>
+                <th class="swot-pdf-th-title">要点</th>
+                <th class="swot-pdf-th-detail">详细说明</th>
+                <th class="swot-pdf-th-tags">影响</th>
+              </tr>
+              
+            <tr class="swot-pdf-summary-row">
+              <td colspan="4" class="swot-pdf-summary">覆盖当前情绪分布、潜在风险与机会。</td>
+            </tr>
             </thead>
-            <tbody>
-              <tr><td>稳定性</td><td>12</td><td>产品</td></tr><tr><td>召回率</td><td>9</td><td>算法</td></tr><tr><td>延迟</td><td>8</td><td>性能</td></tr><tr><td>易用性</td><td>10</td><td>体验</td></tr><tr><td>多模态</td><td>6</td><td>能力</td></tr><tr><td>自动化</td><td>5</td><td>流程</td></tr><tr><td>items</td><td>[{'word': '稳定性', 'weight': 12, 'category': '产品'}, {'word': '召回率', 'weight': 9, 'category': '算法'}, {'word': '延迟', 'weight': 8, 'category': '性能'}, {'word': '易用性', 'weight': 10, 'category': '体验'}, {'word': '多模态', 'weight': 6, 'category': '能力'}, {'word': '自动化', 'weight': 5, 'category': '流程'}]</td><td>-</td></tr>
-            </tbody>
+            
+          <tbody class="swot-pdf-quadrant swot-pdf-strength">
+            
+            <tr class="swot-pdf-item-row swot-pdf-strength">
+              <td rowspan="2" class="swot-pdf-quadrant-label swot-pdf-strength">
+                <span class="swot-pdf-code">S</span>
+                <span class="swot-pdf-label-text">优势</span>
+              </td>
+              <td class="swot-pdf-item-num">1</td>
+              <td class="swot-pdf-item-title">官方快速响应</td>
+              <td class="swot-pdf-item-detail">首条澄清视频 3 小时内上线</td>
+              <td class="swot-pdf-item-tags"></td>
+            </tr>
+            <tr class="swot-pdf-item-row swot-pdf-strength">
+              <td class="swot-pdf-item-num">2</td>
+              <td class="swot-pdf-item-title">同城媒体配合</td>
+              <td class="swot-pdf-item-detail">-</td>
+              <td class="swot-pdf-item-tags"><span class="swot-pdf-tag">高</span></td>
+            </tr>
+          </tbody>
+          <tbody class="swot-pdf-quadrant swot-pdf-weakness">
+            
+            <tr class="swot-pdf-item-row swot-pdf-weakness">
+              <td rowspan="2" class="swot-pdf-quadrant-label swot-pdf-weakness">
+                <span class="swot-pdf-code">W</span>
+                <span class="swot-pdf-label-text">劣势</span>
+              </td>
+              <td class="swot-pdf-item-num">1</td>
+              <td class="swot-pdf-item-title">早期谣言存量大</td>
+              <td class="swot-pdf-item-detail">相关转发仍占 30%</td>
+              <td class="swot-pdf-item-tags"></td>
+            </tr>
+            <tr class="swot-pdf-item-row swot-pdf-weakness">
+              <td class="swot-pdf-item-num">2</td>
+              <td class="swot-pdf-item-title">外部专家尚未统一口径</td>
+              <td class="swot-pdf-item-detail">-</td>
+              <td class="swot-pdf-item-tags"></td>
+            </tr>
+          </tbody>
+          <tbody class="swot-pdf-quadrant swot-pdf-opportunity">
+            
+            <tr class="swot-pdf-item-row swot-pdf-opportunity">
+              <td rowspan="2" class="swot-pdf-quadrant-label swot-pdf-opportunity">
+                <span class="swot-pdf-code">O</span>
+                <span class="swot-pdf-label-text">机会</span>
+              </td>
+              <td class="swot-pdf-item-num">1</td>
+              <td class="swot-pdf-item-title">社区共建讨论</td>
+              <td class="swot-pdf-item-detail">自发组织“辟谣志愿者”话题，情绪正向</td>
+              <td class="swot-pdf-item-tags"></td>
+            </tr>
+            <tr class="swot-pdf-item-row swot-pdf-opportunity">
+              <td class="swot-pdf-item-num">2</td>
+              <td class="swot-pdf-item-title">公益合作窗口</td>
+              <td class="swot-pdf-item-detail">-</td>
+              <td class="swot-pdf-item-tags"><span class="swot-pdf-tag">中</span></td>
+            </tr>
+          </tbody>
+          <tbody class="swot-pdf-quadrant swot-pdf-threat">
+            
+            <tr class="swot-pdf-item-row swot-pdf-threat">
+              <td rowspan="2" class="swot-pdf-quadrant-label swot-pdf-threat">
+                <span class="swot-pdf-code">T</span>
+                <span class="swot-pdf-label-text">威胁</span>
+              </td>
+              <td class="swot-pdf-item-num">1</td>
+              <td class="swot-pdf-item-title">跨平台剪辑继续发酵</td>
+              <td class="swot-pdf-item-detail">-</td>
+              <td class="swot-pdf-item-tags"><span class="swot-pdf-tag">高</span></td>
+            </tr>
+            <tr class="swot-pdf-item-row swot-pdf-threat">
+              <td class="swot-pdf-item-num">2</td>
+              <td class="swot-pdf-item-title">个别自媒体煽动情绪</td>
+              <td class="swot-pdf-item-detail">佐证：存在地域标签化倾向</td>
+              <td class="swot-pdf-item-tags"></td>
+            </tr>
+          </tbody>
           </table>
         </div>
         
         </div>
         
-</section><section id="appendix-v2" class="chapter">
-<h2 id="c3-appendix-v2">三、 使用步骤</h2><p>将本IR直接交给HTMLRenderer/PDFRenderer，观察日志与输出。</p><ul><li><p>运行 regenerate_latest_html/pdf 或直接调用渲染器</p></li><li><p>对照 chart_validation_stats 是否全部通过</p></li><li><p>检查 PDF 中的图表/词云/公式是否齐全</p></li></ul>
+        <div class="pest-container">
+          
+        <div class="pest-card pest-card--html">
+          <div class="pest-card__head">
+            <div><div class="pest-card__title">宏观环境脉冲扫描（PEST）</div><p class="pest-card__summary">模拟四大维度的外部约束与机会，验证 pestTable 的渲染样式。</p></div>
+            
+            <div class="pest-legend">
+              <span class="pest-legend__item political">P 政治</span>
+              <span class="pest-legend__item economic">E 经济</span>
+              <span class="pest-legend__item social">S 社会</span>
+              <span class="pest-legend__item technological">T 技术</span>
+            </div>
+        
+          </div>
+          <div class="pest-strips">
+        <div class="pest-strip pest-strip--pageable political pest-strip--first" data-pest-key="political">
+          <div class="pest-strip__indicator political">
+            <span class="pest-code">P</span>
+          </div>
+          <div class="pest-strip__content">
+            <div class="pest-strip__header">
+              <div class="pest-strip__title">政治因素 Political</div>
+              <div class="pest-strip__caption">2 条要点</div>
+            </div>
+            <ul class="pest-list">
+            <li class="pest-item">
+              <div class="pest-item-title">地方条例征求意见<span class="pest-item-tags"><span class="pest-tag">正面利好</span></span></div>
+              <div class="pest-item-desc">短视频发布需实名溯源，平台合规沟通窗口期开启</div>
+            </li>
+        
+            <li class="pest-item">
+              <div class="pest-item-title">监管关注情绪煽动<span class="pest-item-tags"><span class="pest-tag">持续观察</span></span></div>
+              <div class="pest-item-desc">对夸大矛盾的账号重点巡查，舆论阈值下调</div>
+            </li>
+        </ul>
+          </div>
+        </div>
+        <div class="pest-strip pest-strip--pageable economic" data-pest-key="economic">
+          <div class="pest-strip__indicator economic">
+            <span class="pest-code">E</span>
+          </div>
+          <div class="pest-strip__content">
+            <div class="pest-strip__header">
+              <div class="pest-strip__title">经济因素 Economic</div>
+              <div class="pest-strip__caption">2 条要点</div>
+            </div>
+            <ul class="pest-list">
+            <li class="pest-item">
+              <div class="pest-item-title">周边商户营收波动<span class="pest-item-tags"><span class="pest-tag">中性</span></span></div>
+              <div class="pest-item-desc">客流短期下滑 12%，但直播带货订单上升</div>
+            </li>
+        
+            <li class="pest-item">
+              <div class="pest-item-title">品牌赞助谨慎<span class="pest-item-tags"><span class="pest-tag">不确定</span></span></div>
+              <div class="pest-item-desc">赞助延期观察声誉风险，对官宣节奏有压力</div>
+            </li>
+        </ul>
+          </div>
+        </div>
+        <div class="pest-strip pest-strip--pageable social" data-pest-key="social">
+          <div class="pest-strip__indicator social">
+            <span class="pest-code">S</span>
+          </div>
+          <div class="pest-strip__content">
+            <div class="pest-strip__header">
+              <div class="pest-strip__title">社会因素 Social</div>
+              <div class="pest-strip__caption">2 条要点</div>
+            </div>
+            <ul class="pest-list">
+            <li class="pest-item">
+              <div class="pest-item-title">核心群体情绪分化<span class="pest-item-tags"><span class="pest-tag">负面影响</span></span></div>
+              <div class="pest-item-desc">本地居民关注安全，外地游客关注体验与退款</div>
+            </li>
+        
+            <li class="pest-item">
+              <div class="pest-item-title">高校社群自发求证<span class="pest-item-tags"><span class="pest-tag">正面利好</span></span></div>
+              <div class="pest-item-desc">校媒与学生会组织“以图搜图”科普贴，情绪趋稳</div>
+            </li>
+        </ul>
+          </div>
+        </div>
+        <div class="pest-strip pest-strip--pageable technological" data-pest-key="technological">
+          <div class="pest-strip__indicator technological">
+            <span class="pest-code">T</span>
+          </div>
+          <div class="pest-strip__content">
+            <div class="pest-strip__header">
+              <div class="pest-strip__title">技术因素 Technological</div>
+              <div class="pest-strip__caption">2 条要点</div>
+            </div>
+            <ul class="pest-list">
+            <li class="pest-item">
+              <div class="pest-item-title">AI 生成内容被混入<span class="pest-item-tags"><span class="pest-tag">负面影响</span></span></div>
+              <div class="pest-item-desc">局部画面被放大后再传播，需水印溯源工具辅助鉴伪</div>
+            </li>
+        
+            <li class="pest-item">
+              <div class="pest-item-title">多模态检索上线<span class="pest-item-tags"><span class="pest-tag">正面利好</span></span></div>
+              <div class="pest-item-desc">平台试行“视频反诈”模型，自动提示剪辑痕迹</div>
+            </li>
+        </ul>
+          </div>
+        </div></div>
+        </div>
+        
+          
+        <div class="pest-pdf-wrapper">
+          <table class="pest-pdf-table">
+            <caption class="pest-pdf-caption">宏观环境脉冲扫描（PEST）</caption>
+            <thead class="pest-pdf-thead">
+              <tr>
+                <th class="pest-pdf-th-dimension">维度</th>
+                <th class="pest-pdf-th-num">序号</th>
+                <th class="pest-pdf-th-title">要点</th>
+                <th class="pest-pdf-th-detail">详细说明</th>
+                <th class="pest-pdf-th-tags">趋势/影响</th>
+              </tr>
+              
+            <tr class="pest-pdf-summary-row">
+              <td colspan="4" class="pest-pdf-summary">模拟四大维度的外部约束与机会，验证 pestTable 的渲染样式。</td>
+            </tr>
+            </thead>
+            
+          <tbody class="pest-pdf-dimension pest-pdf-political">
+            
+            <tr class="pest-pdf-item-row pest-pdf-political">
+              <td rowspan="2" class="pest-pdf-dimension-label pest-pdf-political">
+                <span class="pest-pdf-code">P</span>
+                <span class="pest-pdf-label-text">政治因素</span>
+              </td>
+              <td class="pest-pdf-item-num">1</td>
+              <td class="pest-pdf-item-title">地方条例征求意见</td>
+              <td class="pest-pdf-item-detail">短视频发布需实名溯源，平台合规沟通窗口期开启</td>
+              <td class="pest-pdf-item-tags"><span class="pest-pdf-tag">正面利好</span></td>
+            </tr>
+            <tr class="pest-pdf-item-row pest-pdf-political">
+              <td class="pest-pdf-item-num">2</td>
+              <td class="pest-pdf-item-title">监管关注情绪煽动</td>
+              <td class="pest-pdf-item-detail">对夸大矛盾的账号重点巡查，舆论阈值下调</td>
+              <td class="pest-pdf-item-tags"><span class="pest-pdf-tag">持续观察</span></td>
+            </tr>
+          </tbody>
+          <tbody class="pest-pdf-dimension pest-pdf-economic">
+            
+            <tr class="pest-pdf-item-row pest-pdf-economic">
+              <td rowspan="2" class="pest-pdf-dimension-label pest-pdf-economic">
+                <span class="pest-pdf-code">E</span>
+                <span class="pest-pdf-label-text">经济因素</span>
+              </td>
+              <td class="pest-pdf-item-num">1</td>
+              <td class="pest-pdf-item-title">周边商户营收波动</td>
+              <td class="pest-pdf-item-detail">客流短期下滑 12%，但直播带货订单上升</td>
+              <td class="pest-pdf-item-tags"><span class="pest-pdf-tag">中性</span></td>
+            </tr>
+            <tr class="pest-pdf-item-row pest-pdf-economic">
+              <td class="pest-pdf-item-num">2</td>
+              <td class="pest-pdf-item-title">品牌赞助谨慎</td>
+              <td class="pest-pdf-item-detail">赞助延期观察声誉风险，对官宣节奏有压力</td>
+              <td class="pest-pdf-item-tags"><span class="pest-pdf-tag">不确定</span></td>
+            </tr>
+          </tbody>
+          <tbody class="pest-pdf-dimension pest-pdf-social">
+            
+            <tr class="pest-pdf-item-row pest-pdf-social">
+              <td rowspan="2" class="pest-pdf-dimension-label pest-pdf-social">
+                <span class="pest-pdf-code">S</span>
+                <span class="pest-pdf-label-text">社会因素</span>
+              </td>
+              <td class="pest-pdf-item-num">1</td>
+              <td class="pest-pdf-item-title">核心群体情绪分化</td>
+              <td class="pest-pdf-item-detail">本地居民关注安全，外地游客关注体验与退款</td>
+              <td class="pest-pdf-item-tags"><span class="pest-pdf-tag">负面影响</span></td>
+            </tr>
+            <tr class="pest-pdf-item-row pest-pdf-social">
+              <td class="pest-pdf-item-num">2</td>
+              <td class="pest-pdf-item-title">高校社群自发求证</td>
+              <td class="pest-pdf-item-detail">校媒与学生会组织“以图搜图”科普贴，情绪趋稳</td>
+              <td class="pest-pdf-item-tags"><span class="pest-pdf-tag">正面利好</span></td>
+            </tr>
+          </tbody>
+          <tbody class="pest-pdf-dimension pest-pdf-technological">
+            
+            <tr class="pest-pdf-item-row pest-pdf-technological">
+              <td rowspan="2" class="pest-pdf-dimension-label pest-pdf-technological">
+                <span class="pest-pdf-code">T</span>
+                <span class="pest-pdf-label-text">技术因素</span>
+              </td>
+              <td class="pest-pdf-item-num">1</td>
+              <td class="pest-pdf-item-title">AI 生成内容被混入</td>
+              <td class="pest-pdf-item-detail">局部画面被放大后再传播，需水印溯源工具辅助鉴伪</td>
+              <td class="pest-pdf-item-tags"><span class="pest-pdf-tag">负面影响</span></td>
+            </tr>
+            <tr class="pest-pdf-item-row pest-pdf-technological">
+              <td class="pest-pdf-item-num">2</td>
+              <td class="pest-pdf-item-title">多模态检索上线</td>
+              <td class="pest-pdf-item-detail">平台试行“视频反诈”模型，自动提示剪辑痕迹</td>
+              <td class="pest-pdf-item-tags"><span class="pest-pdf-tag">正面利好</span></td>
+            </tr>
+          </tbody>
+          </table>
+        </div>
+        
+        </div>
+        <pre class="code-block" data-lang="json"><code>{
+  "event": "热点示例",
+  "topic": "公共事件",
+  "status": "monitoring"
+}</code></pre><div class="math-block">$$ E = mc^2 $$</div><div class="figure-placeholder">图像外链被替换为友好提示，可验证 figure 占位效果。</div><hr /><p>本章节的 inline math 兜底验证：<span class="math-inline">\( p(t)=p_0 e^{\lambda t} \)</span>；以上覆盖所有允许块及标记。</p>
 </section>
 </main>
-<script type="application/json" id="chart-config-1">{"widgetId": "chart_line_ops", "widgetType": "chart.js/line", "props": {"type": "line", "title": "请求量与成功率（折线）", "options": {"tension": 0.32, "plugins": {"legend": {"position": "bottom"}}}}, "data": {"labels": ["周一", "周二", "周三", "周四", "周五", "周六", "周日"], "datasets": [{"label": "请求量", "data": [320, 360, 340, 410, 450, 300, 280], "borderColor": "#7C3AED", "fill": false}, {"label": "成功率", "data": [97.1, 97.5, 97.0, 98.2, 98.6, 96.5, 96.0], "borderColor": "#16A34A", "fill": false}]}, "dataRef": null}</script>
-<script type="application/json" id="chart-config-2">{"widgetId": "chart_bar_vertical", "widgetType": "chart.js/bar", "props": {"type": "bar", "title": "渠道曝光与点击（柱）", "options": {"plugins": {"legend": {"position": "bottom"}}}}, "data": {"labels": ["搜索", "推送", "社交", "直达"], "datasets": [{"label": "曝光", "data": [1200, 980, 860, 540], "backgroundColor": "#7C3AED"}, {"label": "点击", "data": [260, 210, 180, 140], "backgroundColor": "#38BDF8"}]}, "dataRef": null}</script>
-<script type="application/json" id="chart-config-3">{"widgetId": "chart_bar_horizontal", "widgetType": "chart.js/bar", "props": {"type": "bar", "title": "团队人天分布（横向柱）", "options": {"indexAxis": "y", "plugins": {"legend": {"display": false}}, "scales": {"x": {"beginAtZero": true}}}}, "data": {"labels": ["交付", "算法", "产品", "运营"], "datasets": [{"label": "人天", "data": [42, 51, 33, 27], "backgroundColor": ["#7C3AED", "#C084FC", "#38BDF8", "#A855F7"]}]}, "dataRef": null}</script>
-<script type="application/json" id="chart-config-4">{"widgetId": "chart_pie_cost", "widgetType": "chart.js/pie", "props": {"type": "pie", "title": "成本结构（饼）"}, "data": {"labels": ["算力", "存储", "带宽", "监控"], "datasets": [{"label": "成本", "data": [45, 22, 18, 15], "backgroundColor": ["#7C3AED", "#34D399", "#F59E0B", "#0EA5E9"]}]}, "dataRef": null}</script>
-<script type="application/json" id="chart-config-5">{"widgetId": "chart_doughnut_quality", "widgetType": "chart.js/doughnut", "props": {"type": "doughnut", "title": "质量维度（环形）"}, "data": {"labels": ["完整性", "一致性", "及时性", "可追溯"], "datasets": [{"label": "评分", "data": [23, 21, 22, 20], "backgroundColor": ["#16A34A", "#7C3AED", "#F97316", "#0EA5E9"]}]}, "dataRef": null}</script>
-<script type="application/json" id="chart-config-6">{"widgetId": "chart_radar_maturity", "widgetType": "chart.js/radar", "props": {"type": "radar", "title": "交付成熟度雷达"}, "data": {"labels": ["策略", "数据", "模型", "监控", "协同", "反馈"], "datasets": [{"label": "当前", "data": [78, 74, 76, 70, 79, 72], "backgroundColor": "rgba(124,58,237,0.25)", "borderColor": "#7C3AED"}, {"label": "目标", "data": [90, 88, 90, 86, 90, 88], "backgroundColor": "rgba(56,189,248,0.25)", "borderColor": "#38BDF8"}]}, "dataRef": null}</script>
-<script type="application/json" id="chart-config-7">{"widgetId": "chart_polar_hotness", "widgetType": "chart.js/polarArea", "props": {"type": "polarArea", "title": "渠道热度（极区）"}, "data": {"labels": ["UGC", "客服", "销售", "社区", "媒体"], "datasets": [{"label": "热度", "data": [18, 16, 20, 14, 12], "backgroundColor": ["#7C3AED", "#22C55E", "#F97316", "#0EA5E9", "#F59E0B"]}]}, "dataRef": null}</script>
-<script type="application/json" id="chart-config-8">{"widgetId": "chart_scatter_latency", "widgetType": "chart.js/scatter", "props": {"type": "scatter", "title": "延迟与满意度（散点）"}, "data": {"datasets": [{"label": "样本", "data": [{"x": 120, "y": 88}, {"x": 180, "y": 83}, {"x": 260, "y": 78}, {"x": 320, "y": 70}, {"x": 90, "y": 92}, {"x": 210, "y": 80}], "backgroundColor": "#7C3AED"}], "labels": ["120", "180", "260", "320", "90", "210"]}, "dataRef": null}</script>
-<script type="application/json" id="chart-config-9">{"widgetId": "chart_bubble_capacity", "widgetType": "chart.js/bubble", "props": {"type": "bubble", "title": "集群容量与利用率（气泡）"}, "data": {"labels": ["A", "B", "C", "D"], "datasets": [{"label": "集群", "data": [{"x": 28, "y": 65, "r": 14}, {"x": 46, "y": 78, "r": 18}, {"x": 32, "y": 58, "r": 12}, {"x": 60, "y": 84, "r": 20}], "backgroundColor": "rgba(124,58,237,0.35)", "borderColor": "#7C3AED"}]}, "dataRef": null}</script>
-<script type="application/json" id="chart-config-10">{"widgetId": "wordcloud_topics", "widgetType": "wordcloud/insights", "props": {"title": "高频反馈词", "data": [{"word": "稳定性", "weight": 12, "category": "产品"}, {"word": "召回率", "weight": 9, "category": "算法"}, {"word": "延迟", "weight": 8, "category": "性能"}, {"word": "易用性", "weight": 10, "category": "体验"}, {"word": "多模态", "weight": 6, "category": "能力"}, {"word": "自动化", "weight": 5, "category": "流程"}]}, "data": {"items": [{"word": "稳定性", "weight": 12, "category": "产品"}, {"word": "召回率", "weight": 9, "category": "算法"}, {"word": "延迟", "weight": 8, "category": "性能"}, {"word": "易用性", "weight": 10, "category": "体验"}, {"word": "多模态", "weight": 6, "category": "能力"}, {"word": "自动化", "weight": 5, "category": "流程"}]}, "dataRef": null}</script>
+<script type="application/json" id="chart-config-1">{"widgetId": "demo-volume-trend", "widgetType": "chart.js/line", "props": {"type": "line", "options": {"responsive": true, "plugins": {"legend": {"position": "bottom"}}, "scales": {"y": {"title": {"display": true, "text": "提及量"}}}}}, "data": {"labels": ["T0", "T0+6h", "T0+12h", "T0+18h", "T0+24h"], "datasets": [{"label": "主流媒体", "data": [12, 18, 23, 30, 26], "borderColor": "#2980b9", "backgroundColor": "rgba(41,128,185,0.18)", "tension": 0.25, "fill": false}, {"label": "社交平台", "data": [8, 10, 15, 28, 40], "borderColor": "#c0392b", "backgroundColor": "rgba(192,57,43,0.2)", "tension": 0.35, "fill": false}]}, "dataRef": null}</script>
+<script type="application/json" id="chart-config-2">{"widgetId": "demo-stacked-sentiment", "widgetType": "chart.js/bar", "props": {"type": "bar", "options": {"responsive": true, "plugins": {"legend": {"position": "bottom"}}, "scales": {"x": {"stacked": true}, "y": {"stacked": true, "title": {"display": true, "text": "信息量"}}}}}, "data": {"labels": ["周一", "周二", "周三", "周四", "周五"], "datasets": [{"label": "正向", "data": [18, 22, 24, 19, 16], "backgroundColor": "#27ae60"}, {"label": "中性", "data": [22, 20, 18, 21, 23], "backgroundColor": "#f39c12"}, {"label": "负向", "data": [12, 14, 10, 9, 11], "backgroundColor": "#c0392b"}]}, "dataRef": null}</script>
+<script type="application/json" id="chart-config-3">{"widgetId": "demo-horizontal-voice", "widgetType": "chart.js/bar", "props": {"type": "bar", "options": {"indexAxis": "y", "plugins": {"legend": {"position": "right"}}, "scales": {"x": {"title": {"display": true, "text": "提及量(万)"}}}}}, "data": {"labels": ["微博", "短视频", "社区论坛", "新闻客户端"], "datasets": [{"label": "声量对比", "data": [42, 58, 27, 36], "backgroundColor": ["#2ecc71", "#3498db", "#9b59b6", "#f39c12"]}]}, "dataRef": null}</script>
+<script type="application/json" id="chart-config-4">{"widgetId": "demo-stance-pie", "widgetType": "chart.js/pie", "props": {"type": "pie", "options": {"plugins": {"legend": {"position": "bottom"}}}}, "data": {"labels": ["支持", "中立", "质疑"], "datasets": [{"label": "立场分布", "data": [36, 28, 21], "backgroundColor": ["#27ae60", "#f1c40f", "#c0392b"]}]}, "dataRef": null}</script>
+<script type="application/json" id="chart-config-5">{"widgetId": "demo-sentiment-share", "widgetType": "chart.js/doughnut", "props": {"type": "doughnut", "options": {"plugins": {"legend": {"position": "right"}, "tooltip": {"enabled": true}}}}, "data": {"labels": ["政策", "经济", "社会", "技术"], "datasets": [{"label": "关注度占比", "data": [24, 30, 28, 18], "backgroundColor": ["#8e44ad", "#16a085", "#e67e22", "#2980b9"], "hoverOffset": 6}]}, "dataRef": null}</script>
+<script type="application/json" id="chart-config-6">{"widgetId": "demo-response-radar", "widgetType": "chart.js/radar", "props": {"type": "radar", "options": {"plugins": {"legend": {"position": "top"}}, "scales": {"r": {"beginAtZero": true, "max": 100}}}}, "data": {"labels": ["透明度", "响应速度", "一致性", "互动度", "信息量"], "datasets": [{"label": "官方渠道", "data": [78, 88, 82, 66, 91], "backgroundColor": "rgba(46,204,113,0.15)", "borderColor": "#2ecc71", "pointBackgroundColor": "#27ae60"}, {"label": "民间讨论", "data": [64, 72, 58, 74, 63], "backgroundColor": "rgba(52,152,219,0.12)", "borderColor": "#3498db", "pointBackgroundColor": "#2980b9"}]}, "dataRef": null}</script>
+<script type="application/json" id="chart-config-7">{"widgetId": "demo-channel-polar", "widgetType": "chart.js/polarArea", "props": {"type": "polarArea"}, "data": {"labels": ["短视频", "微博", "社区论坛", "新闻客户端", "线下反馈"], "datasets": [{"label": "渠道渗透度", "data": [62, 54, 38, 45, 28], "backgroundColor": ["rgba(231,76,60,0.65)", "rgba(142,68,173,0.6)", "rgba(52,152,219,0.55)", "rgba(46,204,113,0.55)", "rgba(241,196,15,0.6)"]}]}, "dataRef": null}</script>
+<script type="application/json" id="chart-config-8">{"widgetId": "demo-correlation-scatter", "widgetType": "chart.js/scatter", "props": {"type": "scatter", "options": {"plugins": {"legend": {"position": "bottom"}}, "scales": {"x": {"title": {"display": true, "text": "情绪极性"}, "min": -1, "max": 1}, "y": {"title": {"display": true, "text": "互动量"}, "beginAtZero": true}}}}, "data": {"datasets": [{"label": "帖子散点", "data": [{"x": -0.65, "y": 120}, {"x": -0.25, "y": 190}, {"x": 0.05, "y": 260}, {"x": 0.42, "y": 340}, {"x": 0.78, "y": 410}], "backgroundColor": "rgba(52,152,219,0.7)"}], "labels": ["-0.65", "-0.25", "0.05", "0.42", "0.78"]}, "dataRef": null}</script>
+<script type="application/json" id="chart-config-9">{"widgetId": "demo-impact-bubble", "widgetType": "chart.js/bubble", "props": {"type": "bubble", "options": {"plugins": {"legend": {"position": "bottom"}}, "scales": {"x": {"title": {"display": true, "text": "曝光量 (万)"}, "beginAtZero": true}, "y": {"title": {"display": true, "text": "情绪强度"}, "min": -100, "max": 100}}}}, "data": {"datasets": [{"label": "渠道分布", "data": [{"x": 8, "y": 35, "r": 12}, {"x": 12, "y": -28, "r": 10}, {"x": 18, "y": 22, "r": 14}, {"x": 25, "y": 48, "r": 16}, {"x": 6, "y": -12, "r": 8}], "backgroundColor": "rgba(192,57,43,0.55)", "borderColor": "#c0392b"}], "labels": ["8", "12", "18", "25", "6"]}, "dataRef": null}</script>
 <script>
 document.documentElement.classList.remove('no-js');
 document.documentElement.classList.add('js-ready');
 
-const chartRegistry = [];
+/* ========== Theme Button Web Component (已注释，改用 action-btn 风格) ========== */
+/*
+(() => {
+  const themeButtonFunc = (root, initTheme, changeTheme) => {
+    const checkbox = root.querySelector('.theme-checkbox');
+    // 初始化状态
+    if (initTheme === 'dark') {
+      checkbox.checked = true;
+    }
+    // 核心交互：勾选切换 dark/light，外部通过 changeTheme 回调同步主题
+    checkbox.addEventListener('change', (e) => {
+      const isDark = e.target.checked;
+      changeTheme(isDark ? 'dark' : 'light');
+    });
+  };
+
+  class ThemeButton extends HTMLElement {
+    constructor() { super(); }
+    connectedCallback() {
+      const initTheme = this.getAttribute("value") || "light";
+      const size = +this.getAttribute("size") || 1.5;
+      
+      const shadow = this.attachShadow({ mode: "closed" });
+      const container = document.createElement("div");
+      container.setAttribute("class", "container");
+      container.style.fontSize = `${size * 10}px`;
+
+      // 组件结构：checkbox + label，label 内含天空/星星/云层与月亮圆点，视觉上是主题切换拨钮
+      container.innerHTML = [
+        '<div class="toggle-wrapper">',
+        '  <input type="checkbox" class="theme-checkbox" id="theme-toggle-input">',
+        '  <label for="theme-toggle-input" class="toggle-label">',
+        '    <div class="toggle-background">',
+        '      <div class="stars">',
+        '        <span class="star"></span>',
+        '        <span class="star"></span>',
+        '        <span class="star"></span>',
+        '        <span class="star"></span>',
+        '      </div>',
+        '      <div class="clouds">',
+        '        <span class="cloud"></span>',
+        '        <span class="cloud"></span>',
+        '      </div>',
+        '    </div>',
+        '    <div class="toggle-circle">',
+        '      <div class="moon-crater"></div>',
+        '      <div class="moon-crater"></div>',
+        '      <div class="moon-crater"></div>',
+        '    </div>',
+        '  </label>',
+        '</div>'
+      ].join('');
+
+      const style = document.createElement("style");
+      style.textContent = [
+        '* { box-sizing: border-box; margin: 0; padding: 0; }',
+        '.container { display: inline-block; position: relative; width: 5.4em; height: 2.6em; vertical-align: middle; }',
+        '.toggle-wrapper { width: 100%; height: 100%; }',
+        '.theme-checkbox { display: none; }',
+        '.toggle-label { display: block; width: 100%; height: 100%; border-radius: 2.6em; background-color: #87CEEB; cursor: pointer; position: relative; overflow: hidden; transition: background-color 0.5s ease; box-shadow: inset 0 0.1em 0.3em rgba(0,0,0,0.2); }',
+        '.theme-checkbox:checked + .toggle-label { background-color: #1F2937; }',
+        '.toggle-circle { position: absolute; top: 0.2em; left: 0.2em; width: 2.2em; height: 2.2em; border-radius: 50%; background-color: #FFD700; box-shadow: 0 0.1em 0.2em rgba(0,0,0,0.3); transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1), background-color 0.5s ease; z-index: 2; }',
+        '.theme-checkbox:checked + .toggle-label .toggle-circle { transform: translateX(2.8em); background-color: #F3F4F6; box-shadow: inset -0.2em -0.2em 0.2em rgba(0,0,0,0.1), 0 0.1em 0.2em rgba(255,255,255,0.2); }',
+        '.moon-crater { position: absolute; background-color: rgba(200, 200, 200, 0.6); border-radius: 50%; opacity: 0; transition: opacity 0.3s ease; }',
+        '.theme-checkbox:checked + .toggle-label .toggle-circle .moon-crater { opacity: 1; }',
+        '.moon-crater:nth-child(1) { width: 0.6em; height: 0.6em; top: 0.4em; left: 0.8em; }',
+        '.moon-crater:nth-child(2) { width: 0.4em; height: 0.4em; top: 1.2em; left: 0.4em; }',
+        '.moon-crater:nth-child(3) { width: 0.3em; height: 0.3em; top: 1.4em; left: 1.2em; }',
+        '.toggle-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }',
+        '.clouds { position: absolute; width: 100%; height: 100%; transition: transform 0.5s ease, opacity 0.5s ease; opacity: 1; }',
+        '.theme-checkbox:checked + .toggle-label .clouds { transform: translateY(100%); opacity: 0; }',
+        '.cloud { position: absolute; background-color: #fff; border-radius: 2em; opacity: 0.9; }',
+        '.cloud::before { content: ""; position: absolute; top: -40%; left: 15%; width: 50%; height: 100%; background-color: inherit; border-radius: 50%; }',
+        '.cloud::after { content: ""; position: absolute; top: -55%; left: 45%; width: 50%; height: 120%; background-color: inherit; border-radius: 50%; }',
+        '.cloud:nth-child(1) { width: 1.4em; height: 0.5em; top: 0.8em; right: 1.0em; }',
+        '.cloud:nth-child(2) { width: 1.0em; height: 0.4em; top: 1.6em; right: 2.0em; opacity: 0.7; }',
+        '.stars { position: absolute; width: 100%; height: 100%; transition: transform 0.5s ease, opacity 0.5s ease; transform: translateY(-100%); opacity: 0; }',
+        '.theme-checkbox:checked + .toggle-label .stars { transform: translateY(0); opacity: 1; }',
+        '.star { position: absolute; background-color: #FFF; border-radius: 50%; width: 0.15em; height: 0.15em; box-shadow: 0 0 0.2em #FFF; animation: twinkle 2s infinite ease-in-out; }',
+        '.star:nth-child(1) { top: 0.6em; left: 1.0em; animation-delay: 0s; }',
+        '.star:nth-child(2) { top: 1.6em; left: 1.8em; width: 0.1em; height: 0.1em; animation-delay: 0.5s; }',
+        '.star:nth-child(3) { top: 0.8em; left: 2.4em; width: 0.12em; height: 0.12em; animation-delay: 1s; }',
+        '.star:nth-child(4) { top: 1.8em; left: 0.8em; width: 0.08em; height: 0.08em; animation-delay: 1.5s; }',
+        '@keyframes twinkle { 0%, 100% { opacity: 0.4; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }'
+      ].join(' ');
+
+      const changeThemeWrapper = (detail) => {
+        this.dispatchEvent(new CustomEvent("change", { detail }));
+      };
+      
+      themeButtonFunc(container, initTheme, changeThemeWrapper);
+      shadow.appendChild(style);
+      shadow.appendChild(container);
+    }
+  }
+  customElements.define("theme-button", ThemeButton);
+})();
+*/
+/* ========== End Theme Button Web Component ========== */
+ 
+ const chartRegistry = [];
 const wordCloudRegistry = new Map();
 const STABLE_CHART_TYPES = ['line', 'bar'];
 const CHART_TYPE_LABELS = {
@@ -2189,6 +3732,7 @@ function wordcloudColor(category) {
 }
 
 function renderWordCloudFallback(canvas, items, reason) {
+  // 词云失败时的显示形式：隐藏 canvas，展示徽章列表（词+权重），保证“可见数据”而非空白
   const card = canvas.closest('.chart-card') || canvas.parentElement;
   if (!card) return;
   const wrapper = canvas.parentElement && canvas.parentElement.classList && canvas.parentElement.classList.contains('chart-container')
@@ -2407,6 +3951,7 @@ function createFallbackTable(labels, datasets) {
 }
 
 function renderChartFallback(canvas, payload, reason) {
+  // 图表失败时的显示形式：切换到表格数据（categories x series），并在卡片上标记 fallback 状态
   const card = canvas.closest('.chart-card') || canvas.parentElement;
   if (!card) return;
   clearChartDegradeNote(card);
@@ -2713,6 +4258,7 @@ function hideExportOverlay(delay) {
 
 // exportPdf已移除
 function exportPdf() {
+  // 导出按钮交互：禁用按钮+打开遮罩，使用 html2canvas + jsPDF 渲染 main，再恢复按钮与遮罩
   const target = document.querySelector('main');
   if (!target || typeof jspdf === 'undefined' || typeof jspdf.jsPDF !== 'function') {
     alert('PDF导出依赖未就绪');
@@ -2830,20 +4376,72 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }, 260);
-  const themeBtn = document.getElementById('theme-toggle');
-  if (themeBtn) {
-    themeBtn.addEventListener('click', () => {
-      document.body.classList.toggle('dark-mode');
+  // 旧版 Web Component 主题按钮（已注释）
+  // const themeBtn = document.getElementById('theme-toggle');
+  // if (themeBtn) {
+  //   themeBtn.addEventListener('change', (e) => {
+  //     if (e.detail === 'dark') {
+  //       document.body.classList.add('dark-mode');
+  //     } else {
+  //       document.body.classList.remove('dark-mode');
+  //     }
+  //     chartRegistry.forEach(applyChartTheme);
+  //     rerenderWordclouds();
+  //   });
+  // }
+
+  // 新版 action-btn 风格主题按钮
+  const themeBtnNew = document.getElementById('theme-toggle-btn');
+  if (themeBtnNew) {
+    const sunIcon = themeBtnNew.querySelector('.sun-icon');
+    const moonIcon = themeBtnNew.querySelector('.moon-icon');
+    let isDark = document.body.classList.contains('dark-mode');
+
+    const updateThemeUI = () => {
+      if (isDark) {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+      } else {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+      }
+    };
+    updateThemeUI();
+
+    themeBtnNew.addEventListener('click', () => {
+      isDark = !isDark;
+      if (isDark) {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+      updateThemeUI();
       chartRegistry.forEach(applyChartTheme);
       rerenderWordclouds();
     });
   }
   const printBtn = document.getElementById('print-btn');
   if (printBtn) {
+    // 打印按钮：直接调用浏览器打印，依赖 @media print 控制布局
     printBtn.addEventListener('click', () => window.print());
   }
+  // 为所有 action-btn 添加鼠标追踪光晕效果
+  document.querySelectorAll('.action-btn').forEach(btn => {
+    btn.addEventListener('mousemove', (e) => {
+      const rect = btn.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      btn.style.setProperty('--mouse-x', x + '%');
+      btn.style.setProperty('--mouse-y', y + '%');
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.setProperty('--mouse-x', '50%');
+      btn.style.setProperty('--mouse-y', '50%');
+    });
+  });
   const exportBtn = document.getElementById('export-btn');
   if (exportBtn) {
+    // 导出按钮：调用 exportPdf（html2canvas + jsPDF），并驱动遮罩/进度提示
     exportBtn.addEventListener('click', exportPdf);
   }
   window.addEventListener('resize', rerenderWordclouds);

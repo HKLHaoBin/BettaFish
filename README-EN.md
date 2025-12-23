@@ -23,6 +23,13 @@
 
 </div>
 
+> [!IMPORTANT]  
+> Check out our newly released prediction engine: [MiroFish - A Simple and Universal Swarm Intelligence Engine for Predicting Everything](https://github.com/666ghj/MiroFish)
+> 
+> <img src="static/image/MiroFish_logo_compressed.jpeg" alt="banner" width="300">
+>
+> The "Data Analysis Three-Step Approach" is now fully connected: We are excited to announce the official release of MiroFish! With the final piece of the puzzle in place, we have built a complete pipeline from BettaFish (data collection and analysis) to MiroFish (panoramic prediction). The closed loop from raw data to intelligent decision-making is now complete, making it possible to foresee the future!
+
 ## ⚡ Project Overview
 
 **"BettaFish"** is an innovative multi-agent public opinion analysis system built from scratch. It helps break information cocoons, restore the original public sentiment, predict future trends, and assist decision-making. Users only need to raise analysis needs like chatting; the agents automatically analyze 30+ mainstream social platforms at home and abroad and millions of public comments.
@@ -254,10 +261,11 @@ BettaFish/
 ├── templates/                              # Flask frontend templates
 │   └── index.html                          # Main interface HTML
 ├── static/                                 # Static resources
-│   └── image/                              # Image resources
-│       ├── logo_compressed.png
-│       ├── framework.png
-│       └── ...
+│   ├── image/                              # Image resources
+│   │   └── ...
+│   ├── Partial README for PDF Exporting/   # PDF export dependency setup guide
+│   └── v2_report_example/                  # Report rendering examples
+│       └── report_all_blocks_demo/         # Full block types demo (HTML/PDF/MD)
 ├── logs/                                   # Runtime log directory
 ├── final_reports/                          # Final generated report files
 │   ├── ir/                                 # Report IR JSON files
@@ -721,13 +729,12 @@ We welcome all forms of contributions!
 
 ## 🦖 Next Development Plan
 
-The system has currently completed only the first two steps of the "three-step approach": requirement input -> detailed analysis. The missing step is prediction, and directly handing this over to LLM lacks persuasiveness.
+The system has now completed the final prediction step! Visit 【MiroFish - Predict Everything】: https://github.com/666ghj/MiroFish
 
 <div align="center">
+<img src="static/image/MiroFish_logo_compressed.jpeg" alt="banner" width="800">
 <img src="static/image/banner_compressed.png" alt="banner" width="800">
 </div>
-
-Currently, after a long period of crawling and collection, we have accumulated massive data on topic popularity trends over time, trending events, and other change patterns across the entire network. We now have the conditions to develop prediction models. Our team will apply our technical reserves in time series models, graph neural networks, multimodal fusion, and other prediction model technologies to achieve truly data-driven public opinion prediction functionality.
 
 ## ⚠️ Disclaimer
 

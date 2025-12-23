@@ -13,8 +13,10 @@
 - pie (饼图)
 - doughnut (圆环图)
 - radar (雷达图)
-- polarArea (极地区域图)
+- polararea (极地区域图)
 - scatter (散点图)
+- bubble (气泡图)
+- horizontalbar (横向柱状图)
 """
 
 from __future__ import annotations
@@ -66,18 +68,18 @@ class ChartValidator:
 
     # 支持的图表类型
     SUPPORTED_CHART_TYPES = {
-        'line', 'bar', 'pie', 'doughnut', 'radar', 'polarArea', 'scatter',
-        'bubble', 'horizontalBar'
+        'line', 'bar', 'pie', 'doughnut', 'radar', 'polararea', 'scatter',
+        'bubble', 'horizontalbar'
     }
 
     # 需要labels的图表类型
     LABEL_REQUIRED_TYPES = {
-        'line', 'bar', 'radar', 'polarArea', 'pie', 'doughnut'
+        'line', 'bar', 'radar', 'polararea', 'pie', 'doughnut'
     }
 
     # 需要数值数据的图表类型
     NUMERIC_DATA_TYPES = {
-        'line', 'bar', 'radar', 'polarArea', 'pie', 'doughnut'
+        'line', 'bar', 'radar', 'polararea', 'pie', 'doughnut'
     }
 
     # 需要特殊数据格式的图表类型

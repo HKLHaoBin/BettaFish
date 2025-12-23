@@ -24,6 +24,13 @@
 
 </div>
 
+> [!IMPORTANT]  
+> 查看我们最新发布的预测引擎：[MiroFish-简洁通用的群体智能引擎，预测万物](https://github.com/666ghj/MiroFish)
+> 
+> <img src="static/image/MiroFish_logo_compressed.jpeg" alt="banner" width="300">
+>
+> “数据分析三板斧”全线贯通：我们激动的宣布 MiroFish 正式发布！随着最后一块版图补齐，我们构建了从 BettaFish（数据收集与分析）到 MiroFish（全景预测）的完整链路。至此，从原始数据到智能决策的闭环已成，让预见未来成为可能！
+
 ## ⚡ 项目概述
 
 “**微舆**” 是一个从0实现的创新型 多智能体 舆情分析系统，帮助大家破除信息茧房，还原舆情原貌，预测未来走向，辅助决策。用户只需像聊天一样提出分析需求，智能体开始全自动分析 国内外30+主流社媒 与 数百万条大众评论。
@@ -255,10 +262,11 @@ BettaFish/
 ├── templates/                              # Flask前端模板
 │   └── index.html                          # 主界面HTML
 ├── static/                                 # 静态资源
-│   └── image/                              # 图片资源
-│       ├── logo_compressed.png
-│       ├── framework.png
-│       └── ...
+│   ├── image/                              # 图片资源
+│   │   └── ...
+│   ├── Partial README for PDF Exporting/   # PDF导出依赖配置说明
+│   └── v2_report_example/                  # 报告渲染示例
+│       └── report_all_blocks_demo/         # 全块类型演示（HTML/PDF/MD）
 ├── logs/                                   # 运行日志目录
 ├── final_reports/                          # 最终生成的报告文件
 │   ├── ir/                                 # 报告IR JSON文件
@@ -728,13 +736,12 @@ class DeepSearchAgent:
 
 ## 🦖 下一步开发计划
 
-现在系统只完成了"三板斧"中的前两步，即：输入要求->详细分析，还缺少一步预测，直接将他继续交给LLM是不具有说服力的。
+现在系统完成了最后一步预测！访问查看【MiroFish-预测万物】：https://github.com/666ghj/MiroFish
 
 <div align="center">
+<img src="static/image/MiroFish_logo_compressed.jpeg" alt="banner" width="800">
 <img src="static/image/banner_compressed.png" alt="banner" width="800">
 </div>
-
-目前我们经过很长一段时间的爬取收集，拥有了大量全网话题热度随时间、爆点等的变化趋势热度数据，已经具备了可以开发预测模型的条件。我们团队将运用时序模型、图神经网络、多模态融合等预测模型技术储备于此，实现真正基于数据驱动的舆情预测功能。
 
 ## ⚠️ 免责声明
 
